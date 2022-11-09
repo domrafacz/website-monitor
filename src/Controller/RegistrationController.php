@@ -21,7 +21,6 @@ class RegistrationController extends AbstractController
         private readonly FormLoginAuthenticator $authenticator
     ) {}
 
-
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserRepository $userRepository, UserAuthenticatorInterface $authenticatorManager): Response
     {
@@ -39,7 +38,7 @@ class RegistrationController extends AbstractController
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
-                    $form->get('plainPassword')->getData()
+                    strval($form->get('plainPassword')->getData())
                 )
             );
 

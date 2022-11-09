@@ -43,8 +43,8 @@ class CreateUserCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $email = $input->getArgument('email');
-        $password = $input->getArgument('password');
+        $email = strval($input->getArgument('email'));
+        $password = strval($input->getArgument('password'));
 
         if ($this->isPasswordValid($password) === false) {
             $io->error('Given password is not strong enough!');
