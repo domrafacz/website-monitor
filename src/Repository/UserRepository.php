@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repository;
 
@@ -56,7 +57,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->save($user, true);
     }
 
-    public function findOneByUsername(string $username): User
+    public function findOneByUsername(string $username): ?User
     {
         return $this->findOneBy(
             ['email' => $username]

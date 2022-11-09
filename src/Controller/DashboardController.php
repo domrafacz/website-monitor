@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -13,6 +14,6 @@ class DashboardController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function dashboard() : Response
     {
-        return new Response('dashboard');
+        return $this->render('dashboard/dashboard.html.twig');
     }
 }
