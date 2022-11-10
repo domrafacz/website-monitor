@@ -4,7 +4,8 @@
 
 {% block body %}
     <div class="container-fluid">
-
+        current: {{ app.request.locale|locale_name(app.request.locale) }}
+        lang: {{ app.user.language }}
     </div>
 
 
