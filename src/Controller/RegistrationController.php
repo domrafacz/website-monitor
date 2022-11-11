@@ -6,7 +6,9 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -17,12 +19,14 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(
-        private readonly FormLoginAuthenticator $authenticator
-    ) {}
+    #[Route('/register')]
+    public function redirectLocale(Request $request): Response
+    {
+        return $this->redirectToRoute('app_register', ['_locale' => $request->getLocale()]);
+    }
 
-    #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserRepository $userRepository, UserAuthenticatorInterface $authenticatorManager): Response
+    #[Route('/{_locale}/register', name: 'app_register', requirements: ['_locale' => '%app.locales%'])]
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserRepository $userRepository, UserAuthenticatorInterface $authenticatorManager, FormLoginAuthenticator $formLoginAuthenticator): Response
     {
         //redirect already authenticated users
         if ($this->isGranted('ROLE_USER')) {
@@ -46,7 +50,7 @@ class RegistrationController extends AbstractController
 
             $rememberMe = new RememberMeBadge();
             $rememberMe->enable();
-            $authenticatorManager->authenticateUser($user, $this->authenticator, $request, [$rememberMe]);
+            $authenticatorManager->authenticateUser($user, $formLoginAuthenticator, $request, [$rememberMe]);
 
             return $this->redirectToRoute('app_dashboard');
         }

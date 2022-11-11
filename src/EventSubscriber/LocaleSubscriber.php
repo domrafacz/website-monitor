@@ -13,7 +13,7 @@ class LocaleSubscriber implements EventSubscriberInterface
         private readonly string $defaultLocale
     ) {}
 
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
         if (!$request->hasPreviousSession()) {
@@ -23,7 +23,7 @@ class LocaleSubscriber implements EventSubscriberInterface
         if ($locale = $request->attributes->get('_locale')) {
             $request->getSession()->set('_locale', $locale);
         } else {
-            $request->setLocale($request->getSession()->get('_locale', $this->defaultLocale));
+            $request->setLocale(strval($request->getSession()->get('_locale', $this->defaultLocale)));
         }
     }
 

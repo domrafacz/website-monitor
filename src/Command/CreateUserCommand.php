@@ -57,6 +57,7 @@ class CreateUserCommand extends Command
         }
 
         $user = new User();
+        $user->setRoles(['ROLE_USER']);
         $user->setEmail($email);
         $user->setPassword(
             $this->userPasswordHasher->hashPassword(
@@ -64,6 +65,7 @@ class CreateUserCommand extends Command
                 $password
             )
         );
+        $user->setLanguage('en');
 
         $this->userRepository->save($user, true);
 

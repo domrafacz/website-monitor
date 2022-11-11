@@ -33,7 +33,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255, options: ['default' => 'en'])]
-    private ?string $language = null;
+    private string $language = 'en';
 
     public function getId(): ?int
     {
@@ -106,7 +106,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    public function getLanguage(): ?string
+    public function getLanguage(): string
     {
         return $this->language;
     }

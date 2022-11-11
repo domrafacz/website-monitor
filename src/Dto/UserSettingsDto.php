@@ -9,5 +9,5 @@ use Symfony\Component\Validator\Constraints as Assert;
 class UserSettingsDto
 {
     #[Assert\NotBlank]
-    public ?string $language = null;
+    public string $language;
 }

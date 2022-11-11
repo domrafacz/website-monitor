@@ -10,8 +10,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class HomepageController extends AbstractController
 {
     #[Route('/', name: 'app_homepage')]
-    public function homepage() : Response
+    public function homepage(): Response
     {
-        return new Response('homepage');
+        if ($this->isGranted('ROLE_USER')) {
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        return $this->redirectToRoute('app_login');
     }
 }

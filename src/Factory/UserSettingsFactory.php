@@ -9,9 +9,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserSettingsFactory
 {
-    /** @var User $user */
     public function createDto(UserInterface $user): UserSettingsDto
     {
+        /** @var User $user */
         $userSettings = new UserSettingsDto();
         $userSettings->language = $user->getLanguage();
 
