@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Login{% endblock %}
+{% block title %}{% trans %}login{% endtrans %}{% endblock %}
 
 {% block body %}
     {% if error %}
@@ -12,32 +12,30 @@
             <div class="col-md-4 login-form-container">
                 <div class="card rounded-3 border-0 shadow">
                     <div class="card-body">
-                        <h1 class="text-center">Login</h1>
+                        <h1 class="text-center">{% trans %}login{% endtrans %}</h1>
                         <form action="{{ path('app_login') }}" method="post">
                             <div class="mb-3">
                                 <div class="form-group">
-                                    <label class="form-label" for="username">Email:</label>
+                                    <label class="form-label" for="username">{% trans %}email{% endtrans %}</label>
                                     <input type="text" class="form-control" id="username" name="_username"
                                            value="{{ last_username }}"/>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <div class="form-group">
-                                    <label class="form-label" for="password">Password:</label>
+                                    <label class="form-label" for="password">{% trans %}password{% endtrans %}</label>
                                     <input type="password" class="form-control" id="password" name="_password"/>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="_remember_me" id="rememberMeCheckbox" checked/>
-                                    <label class="form-check-label" for="rememberMeCheckbox">
-                                        Remember me
-                                    </label>
+                                    <label class="form-check-label" for="rememberMeCheckbox">{% trans %}remember_me{% endtrans %}</label>
                                 </div>
                             </div>
                             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                             <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-purple-moon btn-rounded border-0">Login</button>
+                                <button type="submit" id="login_submit" class="btn btn-purple-moon btn-rounded border-0">{% trans %}login_button{% endtrans %}</button>
                             </div>
                         </form>
                     </div>

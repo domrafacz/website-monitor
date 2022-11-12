@@ -15,12 +15,13 @@ use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 class UserSettingsController extends AbstractController
 {
     #[Route('/user-settings', name: 'app_user_settings')]
-    #[IsGranted('ROLE_USER')]
     public function settingsController(Request $request, UserSettingsManager $userSettingsManager): Response
     {
         if (!$user = $this->getUser()) {
             throw new UserNotFoundException();
         }
+
+        $this->denyAccessUnlessGranted('ROLE_USER');
 
         $userSettingsDto = $userSettingsManager->get($user);
         $form = $this->createForm(UserSettingsType::class, $userSettingsDto);

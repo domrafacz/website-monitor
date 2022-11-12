@@ -27,7 +27,7 @@ class LoginControllerTest extends WebTestCase
     public function testLoginForm(): void
     {
         $crawler = $this->client->request('GET', '/en/login');
-        $form = $crawler->selectButton('Login')->form();
+        $form = $crawler->filter('#login_submit')->form();
         $this->client->submit($form, [
             '_username'    => 'test1@test.com',
             '_password' => 'Test123#',

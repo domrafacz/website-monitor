@@ -17,11 +17,14 @@ class UserSettingsType extends AbstractType
         $builder
             ->add('language', ChoiceType::class, [
                 'choices' => [
-                    'English' => 'en',
-                    'Polish' => 'pl',
+                    'english' => 'en',
+                    'polish' => 'pl',
                 ],
+                'label' => 'language',
             ])
-            ->add('save', SubmitType::class);
+            ->add('save', SubmitType::class, [
+                'label' => 'save',
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

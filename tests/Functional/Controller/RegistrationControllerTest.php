@@ -15,8 +15,8 @@ class RegistrationControllerTest extends WebTestCase
         $client->request('GET', '/register');
         $crawler = $client->followRedirect();
 
-        $button = $crawler->selectButton('Register');
-        $this->assertTrue($button->count() == 1);
+        $input = $crawler->filter('#registration_form_email');
+        $this->assertTrue($input->count() == 1);
     }
 
     public function testRedirectWhenAuthenticated(): void
@@ -30,7 +30,6 @@ class RegistrationControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         $client->request('GET', '/en/register');
-
         $this->assertResponseRedirects('/dashboard');
     }
 
@@ -40,8 +39,7 @@ class RegistrationControllerTest extends WebTestCase
         $container = static::getContainer();
         $crawler = $client->request('GET', '/en/register');
 
-        $buttonCrawlerNode = $crawler->selectButton('Register');
-        $form = $buttonCrawlerNode->form();
+        $form = $crawler->filter('#register_submit')->form();
 
         $client->submit($form, [
             'registration_form[email]'    => 'test2@test.com',

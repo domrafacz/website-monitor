@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}{% trans %}register{% endtrans %}{% endblock %}
 
 {% block body %}
     <div class="container-fluid register-bg">
@@ -8,15 +8,13 @@
             <div class="col-md-4 register-form-container">
                 <div class="card rounded-3 border-0 shadow">
                     <div class="card-body">
-                        <h1 class="text-center">Register</h1>
+                        <h1 class="text-center">{% trans %}register{% endtrans %}</h1>
                         {{ form_start(registrationForm) }}
                         {{ form_row(registrationForm.email) }}
-                        {{ form_row(registrationForm.plainPassword, {
-                            label: 'Password'
-                        }) }}
+                        {{ form_row(registrationForm.plainPassword) }}
                         {{ form_row(registrationForm.agreeTerms) }}
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-purple-moon btn-rounded border-0">Register</button>
+                            <button type="submit" id="register_submit" class="btn btn-purple-moon btn-rounded border-0">{% trans %}register_button{% endtrans %}</button>
                         </div>
                         {{ form_end(registrationForm) }}
                     </div>
