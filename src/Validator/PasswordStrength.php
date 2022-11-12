@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraint;
 #[\Attribute]
 class PasswordStrength extends Constraint
 {
-    public string $message = 'The password must be at least 8 characters long and must contain at least one digit, one letter and one nonalphanumeric character.';
+    public string $message = 'password_strength_message';
 
     public int $minLength = 8;
     public int $maxLength = 4096;

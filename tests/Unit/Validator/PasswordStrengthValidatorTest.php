@@ -21,27 +21,27 @@ class PasswordStrengthValidatorTest extends ConstraintValidatorTestCase
         return new PasswordStrengthValidator();
     }
 
-    public function testNullIsValid()
+    public function testNullIsValid(): void
     {
         $this->validator->validate(null, new PasswordStrength());
 
         $this->assertNoViolation();
     }
 
-    public function testEmptyStringIsValid()
+    public function testEmptyStringIsValid(): void
     {
         $this->validator->validate('', new PasswordStrength());
 
         $this->assertNoViolation();
     }
 
-    public function testExpectsStringCompatibleType()
+    public function testExpectsStringCompatibleType(): void
     {
         $this->expectException(UnexpectedValueException::class);
         $this->validator->validate(new \stdClass(), new PasswordStrength());
     }
 
-    public function testExpectsCompatibleConstrain()
+    public function testExpectsCompatibleConstrain(): void
     {
         $this->expectException(UnexpectedTypeException::class);
         $this->validator->validate('Test123$', new NotBlank());

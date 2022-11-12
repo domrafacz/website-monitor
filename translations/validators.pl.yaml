@@ -1,0 +1,4 @@
+username_taken: 'Ten adres email jest już zajęty'
+password_strength_message: 'Hasło musi się składać z przynajmniej 8 znaków, musi zawierać cyfrę, dużą literę oraz znak specjalny.'
+must_agree_terms: 'Musisz zaakceptować regulamin.'
+enter_password: 'Musisz wprowadzić hasło'

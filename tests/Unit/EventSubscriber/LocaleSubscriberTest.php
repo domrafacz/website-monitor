@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class LocaleSubscriberTest extends TestCase
 {
-    public function testGetSubscribedEvents()
+    public function testGetSubscribedEvents(): void
     {
         $events = LocaleSubscriber::getSubscribedEvents();
         $this->assertArrayHasKey(KernelEvents::REQUEST, $events);

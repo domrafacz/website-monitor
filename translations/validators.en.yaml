@@ -1,0 +1,4 @@
+username_taken: 'There is already an account with this email'
+password_strength_message: 'The password must be at least 8 characters long and must contain at least one digit, one letter and one nonalphanumeric character.'
+must_agree_terms: 'You must agree to our terms.'
+enter_password: 'Please enter a password'
