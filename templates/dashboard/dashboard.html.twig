@@ -1,12 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}{% trans %}dashboard_title{% endtrans %}{% endblock %}
 
 {% block body %}
-    <div class="container-fluid">
-        current: {{ app.request.locale|locale_name(app.request.locale) }}
-        lang: {{ app.user.language }}
+    {% include('dashboard/_sidebar.html.twig') %}
+    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+        {% include('dashboard/_navbar.html.twig') %}
     </div>
-
-
 {% endblock %}

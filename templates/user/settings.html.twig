@@ -1,11 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% trans %}user_settings{% endtrans %}{% endblock %}
+{% block title %}{% trans %}user_settings_title{% endtrans %}{% endblock %}
 
 {% block body %}
-    <div class="container-fluid">
-        {{ form(form) }}
+    {% include('dashboard/_sidebar.html.twig') %}
+    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+        {% include('dashboard/_navbar.html.twig') %}
+        <div class="p-3">
+            {{ form(form) }}
+        </div>
     </div>
-
-
 {% endblock %}
