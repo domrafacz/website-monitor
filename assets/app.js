@@ -31,9 +31,6 @@ window.dashboardSidebarToggle = function() {
 }
 
 window.addEventListener("resize", function(event) {
-    //sidebar.classList.contains("section-filter")
-    console.log(document.body.clientWidth + ' wide by ' + document.body.clientHeight+' high');
-
     if (document.body.clientWidth < 768) {
         sidebar.classList.remove("hide")
     } else {

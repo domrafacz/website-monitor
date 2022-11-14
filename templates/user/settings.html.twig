@@ -6,8 +6,33 @@
     {% include('dashboard/_sidebar.html.twig') %}
     <div class="wrapper d-flex flex-column min-vh-100 bg-light">
         {% include('dashboard/_navbar.html.twig') %}
-        <div class="p-3">
-            {{ form(form) }}
+        <div class="p-4">
+            <h3>{% trans %}user_settings_title{% endtrans %}</h3>
+            {% include('dashboard/_flash_messages.html.twig') %}
+            <div class="row pt-3">
+                <div class="col-md-3 mb-4">
+                    <div class="list-group shadow-sm settings-list" id="list-tab" role="tablist">
+                        <a class="list-group-item list-group-item-action active" id="list-home-list" data-bs-toggle="list" href="#list-home" role="tab" aria-controls="list-home">{% trans %}settings_general{% endtrans %}</a>
+                        <a class="list-group-item list-group-item-action" id="list-profile-list" data-bs-toggle="list" href="#list-profile" role="tab" aria-controls="list-profile">{% trans %}settings_change_password{% endtrans %}</a>
+                        <a class="list-group-item list-group-item-action" id="list-delete-account-list" data-bs-toggle="list" href="#list-delete-account" role="tab" aria-controls="list-profile">{% trans %}settings_delete_account{% endtrans %}</a>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">
+                            <div class="bg-white p-3 shadow-sm">
+                                {{ form(form_general_settings) }}
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">...</div>
+                        <div class="tab-pane fade" id="list-delete-account" role="tabpanel" aria-labelledby="list-delete-account">
+                            <div class="bg-white p-3 shadow-sm">
+                                {{ form(form_delete_user) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

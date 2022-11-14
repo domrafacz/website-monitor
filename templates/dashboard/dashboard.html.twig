@@ -6,5 +6,10 @@
     {% include('dashboard/_sidebar.html.twig') %}
     <div class="wrapper d-flex flex-column min-vh-100 bg-light">
         {% include('dashboard/_navbar.html.twig') %}
+        <div class="p-4">
+            <h3>{% trans %}dashboard_title{% endtrans %}</h3>
+        </div>
+        {% include('dashboard/_flash_messages.html.twig') %}
+
     </div>
 {% endblock %}

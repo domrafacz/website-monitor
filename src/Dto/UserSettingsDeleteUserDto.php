@@ -5,8 +5,8 @@ namespace App\Dto;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class UserSettingsDto
+class UserSettingsDeleteUserDto
 {
     #[Assert\NotBlank]
-    public string $language;
+    public string $plainPassword;
 }

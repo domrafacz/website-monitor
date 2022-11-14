@@ -46,6 +46,8 @@ class RegistrationController extends AbstractController
                 )
             );
 
+            $user->setLanguage($request->getLocale());
+
             $userRepository->save($user, true);
 
             $rememberMe = new RememberMeBadge();

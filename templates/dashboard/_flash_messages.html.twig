@@ -1,0 +1,15 @@
+{% set alert_label = 'dark' %}
+{% for label, messages in app.flashes %}
+    {% if label == 'error' %}
+        {% set alert_label = 'danger' %}
+    {% elseif label == 'warning' %}
+        {% set alert_label = 'warning' %}
+    {% elseif label == 'success' %}
+        {% set alert_label = 'success' %}
+    {% endif %}
+    {% for message in messages %}
+        <div class="alert alert-{{ alert_label }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
