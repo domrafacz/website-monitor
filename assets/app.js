@@ -15,10 +15,6 @@ window.bootstrap = require('bootstrap/dist/js/bootstrap.bundle.js');
 var sidebar = document.getElementById("sidebar");
 var sidebarScreenHover = document.getElementById("sidebar-screen-hover");
 
-/*
-small screen hide by default show when has class show
-big screen show by default hide when has class hide
- */
 
 window.dashboardSidebarToggle = function() {
 
