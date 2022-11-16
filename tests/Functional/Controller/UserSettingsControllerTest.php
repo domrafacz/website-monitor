@@ -6,7 +6,6 @@ namespace App\Tests\Functional\Controller;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use \Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 
 class UserSettingsControllerTest extends WebTestCase
 {
@@ -89,5 +88,29 @@ class UserSettingsControllerTest extends WebTestCase
 
         //this means something went wrong and user was not redirected to logout page
         $this->assertResponseIsSuccessful();
+    }
+
+    public function testChangePassword(): void
+    {
+        $container = static::getContainer();
+
+        $userRepository = $container->get(UserRepository::class);
+        $testUser = $userRepository->findOneByUsername('test1@test.com');
+
+        $this->client->loginUser($testUser);
+
+        $crawler = $this->client->request('GET', '/user-settings');
+
+        $form = $crawler->filter('#user_settings_password_change_change')->form();
+        $form->setValues([
+            'user_settings_password_change[currentPassword]' => 'Test123#',
+            'user_settings_password_change[newPassword][first]' => 'Test123##',
+            'user_settings_password_change[newPassword][second]' => 'Test123##',
+        ]);
+
+        $this->client->submit($form);
+
+        $updatedUser = $userRepository->findOneByUsername('test1@test.com');
+        $this->assertNotEquals($testUser->getPassword(),$updatedUser->getPassword());
     }
 }

@@ -3,3 +3,5 @@ password_strength_message: 'Hasło musi się składać z przynajmniej 8 znaków,
 must_agree_terms: 'Musisz zaakceptować regulamin.'
 enter_password: 'Musisz wprowadzić hasło'
 agree_user_delete_error: 'Musisz wyrazić zgodę na usunięcie konta'
+incorrect_password: 'Podane hasło jest nieprawidłowe'
+new_passwords_not_identical: 'Podane hasło nie jest identyczne'

@@ -3,3 +3,5 @@ password_strength_message: 'The password must be at least 8 characters long and 
 must_agree_terms: 'You must agree to our terms.'
 enter_password: 'Please enter a password'
 agree_user_delete_error: 'You must agree to delete your account'
+incorrect_password: 'Given password is incorrect'
+new_passwords_not_identical: 'Given password is not identical'
