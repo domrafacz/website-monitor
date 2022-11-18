@@ -5,7 +5,6 @@ namespace App\Controller;
 
 use App\Dto\UserSettingsChangePasswordDto;
 use App\Dto\UserSettingsDeleteUserDto;
-use App\Entity\User;
 use App\Form\UserSettingsDeleteUserType;
 use App\Form\UserSettingsPasswordChangeType;
 use App\Form\UserSettingsType;
@@ -14,10 +13,8 @@ use App\Service\UserSettingsManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserSettingsController extends AbstractController
@@ -25,11 +22,8 @@ class UserSettingsController extends AbstractController
     #[Route('/user-settings', name: 'app_user_settings')]
     public function settingsController(Request $request, UserSettingsManager $userSettingsManager, UserManager $userManager, TranslatorInterface $translator, TokenStorageInterface $tokenStorage): Response
     {
-        if (!$user = $this->getUser()) {
-            throw new UserNotFoundException();
-        }
+        $user = $userManager->getCurrentUser();
 
-        /** @var User $user */
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $userSettingsDto = $userSettingsManager->get($user);

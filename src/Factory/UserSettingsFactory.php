@@ -5,13 +5,11 @@ namespace App\Factory;
 
 use App\Dto\UserSettingsDto;
 use App\Entity\User;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserSettingsFactory
 {
-    public function createDto(UserInterface $user): UserSettingsDto
+    public function createDto(User $user): UserSettingsDto
     {
-        /** @var User $user */
         $userSettings = new UserSettingsDto();
         $userSettings->language = $user->getLanguage();
 

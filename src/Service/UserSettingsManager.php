@@ -8,7 +8,6 @@ use App\Factory\UserSettingsFactory;
 use App\Repository\UserRepository;
 use App\Entity\User;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserSettingsManager
 {
@@ -18,15 +17,14 @@ class UserSettingsManager
         private readonly UserSettingsFactory $userSettingsFactory,
     ) {}
 
-    public function update(UserInterface $user, UserSettingsDto $userSettingsDto): void
+    public function update(User $user, UserSettingsDto $userSettingsDto): void
     {
-        /** @var User $user */
         $user->setLanguage($userSettingsDto->language);
         $this->updateLanguage($userSettingsDto->language);
         $this->userRepository->save($user, true);
     }
 
-    public function get(UserInterface $user): UserSettingsDto
+    public function get(User $user): UserSettingsDto
     {
         return $this->userSettingsFactory->createDto($user);
     }

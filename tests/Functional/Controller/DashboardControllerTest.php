@@ -26,3 +26,4 @@ class DashboardControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
     }
 }
+
