@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}websites_title{% endtrans %}{% endblock %}
+
+{% block body %}
+    {% include('dashboard/_sidebar.html.twig') %}
+    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+        {% include('dashboard/_navbar.html.twig') %}
+        <div class="p-4">
+            <h3>{% trans %}websites_title{% endtrans %}</h3>
+            <div class="pt-3">
+                <a href="{{ path('app_websites_add') }}" class="btn btn-success mb-3" style="width: 6rem;">Dodaj</a>
+                <div class="md-12 bg-white p-3 shadow-sm">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Url</th>
+                                    <th scope="col">Last status</th>
+                                    <th scope="col">Last check</th>
+                                    <th scope="col">SSl expire time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for website in websites.getIterator %}
+                            <tr>
+                                <th>{{ website.getUrl }}</th>
+                                <td>{{ website.getLastStatus }}</td>
+                                <td>{{ website.getLastCheck }}</td>
+                                <td>{{ website.getCertExpiryTime }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include('dashboard/_flash_messages.html.twig') %}
+    </div>
+{% endblock %}

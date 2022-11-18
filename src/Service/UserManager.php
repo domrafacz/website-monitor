@@ -6,12 +6,16 @@ namespace App\Service;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 class UserManager
 {
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly Security $security,
     ) {}
 
     public function delete(User $user): void
@@ -27,5 +31,18 @@ class UserManager
         );
 
         $this->userRepository->upgradePassword($user, $hashedPassword);
+    }
+
+    public function getCurrentUser(): User
+    {
+        if (!$user = $this->security->getUser()) {
+            throw new UserNotFoundException();
+        }
+
+        if (!$user instanceof User) {
+            throw new UnexpectedTypeException('Wrong user instance', User::class);
+        }
+
+        return $user;
     }
 }

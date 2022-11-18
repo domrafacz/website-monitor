@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -34,6 +36,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, options: ['default' => 'en'])]
     private string $language = 'en';
+
+    /**
+     * @var Collection<int, Website> $websites
+     */
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Website::class)]
+    private Collection $websites;
+
+    public function __construct()
+    {
+        $this->websites = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -114,6 +127,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLanguage(string $language): self
     {
         $this->language = $language;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Website>
+     */
+    public function getWebsites(): Collection
+    {
+        return $this->websites;
+    }
+
+    public function addWebsite(Website $website): self
+    {
+        if (!$this->websites->contains($website)) {
+            $this->websites->add($website);
+            $website->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWebsite(Website $website): self
+    {
+        if ($this->websites->removeElement($website)) {
+            // set the owning side to null (unless already changed)
+            if ($website->getOwner() === $this) {
+                $website->setOwner(null);
+            }
+        }
 
         return $this;
     }
