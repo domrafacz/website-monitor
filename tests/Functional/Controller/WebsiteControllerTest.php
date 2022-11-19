@@ -23,7 +23,7 @@ class WebsiteControllerTest extends WebTestCase
         $testUser = $this->userRepository->findOneByUsername('test1@test.com');
         $this->client->loginUser($testUser);
 
-        $crawler = $this->client->request('GET', '/websites/add');
+        $crawler = $this->client->request('GET', '/website/add');
         $form = $crawler->filter('#add_website_add')->form();
         $this->client->submit($form, [
             'add_website[url]' => 'https://google.com',

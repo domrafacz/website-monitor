@@ -8,14 +8,16 @@
         {% include('dashboard/_navbar.html.twig') %}
         <div class="p-4">
             <h3>{% trans %}websites_title{% endtrans %}</h3>
+            {% include('dashboard/_flash_messages.html.twig') %}
             <div class="pt-3">
-                <a href="{{ path('app_websites_add') }}" class="btn btn-success mb-3" style="width: 6rem;">Dodaj</a>
+                <a href="{{ path('app_website_add') }}" class="btn btn-success mb-3" style="width: 6rem;">{% trans %}add{% endtrans %}</a>
                 <div class="md-12 bg-white p-3 shadow-sm">
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table table-hover websites-list">
                             <thead>
                                 <tr>
                                     <th scope="col">Url</th>
+                                    <th scope="col">Status</th>
                                     <th scope="col">Last status</th>
                                     <th scope="col">Last check</th>
                                     <th scope="col">SSl expire time</th>
@@ -23,11 +25,40 @@
                             </thead>
                             <tbody>
                             {% for website in websites.getIterator %}
-                            <tr>
-                                <th>{{ website.getUrl }}</th>
-                                <td>{{ website.getLastStatus }}</td>
-                                <td>{{ website.getLastCheck }}</td>
-                                <td>{{ website.getCertExpiryTime }}</td>
+                            <tr data-url="{{ path('app_website_details', {id: website.getId}) }}">
+                                <td>
+                                    <a href="{{ path('app_website_details', {id: website.getId}) }}" class="text-dark">
+                                        {{ website.getUrl }}
+                                    </a>
+                                </td>
+                                <td>
+                                {% if website.isEnabled == true %}
+                                    <span class="badge text-bg-success">Enabled</span>
+                                {% else %}
+                                    <span class="badge text-bg-danger">Disabled</span>
+                                {% endif %}
+                                </td>
+                                <td>
+                                {% if website.getLastStatus == constant('STATUS_OK', website) %}
+                                    <span class="badge text-bg-success">OK</span>
+                                {% else %}
+                                    <span class="badge text-bg-danger">ERROR</span>
+                                {% endif %}
+                                </td>
+                                <td>
+                                {% if website.getLastCheck is null %}
+                                    <span class="badge text-bg-secondary">Unavailable</span>
+                                {% else %}
+                                    add date
+                                {% endif %}
+                                </td>
+                                <td>
+                                {% if website.getCertExpiryTime is null %}
+                                    <span class="badge text-bg-secondary">Unavailable</span>
+                                {% else %}
+                                    add date
+                                {% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                             </tbody>
@@ -36,6 +67,5 @@
                 </div>
             </div>
         </div>
-        {% include('dashboard/_flash_messages.html.twig') %}
     </div>
 {% endblock %}

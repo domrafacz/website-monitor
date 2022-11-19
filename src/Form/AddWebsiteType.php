@@ -47,7 +47,7 @@ class AddWebsiteType extends AbstractType
                 'label' => 'enabled',
             ])
             ->add('add', SubmitType::class, [
-                'label' => 'add',
+                'label' => 'save',
             ])
         ;
     }

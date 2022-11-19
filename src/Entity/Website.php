@@ -12,6 +12,7 @@ class Website
 {
     public const STATUS_OK = 1;
     public const STATUS_ERROR = 2;
+    public const STATUS_TIMEOUT = 3;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

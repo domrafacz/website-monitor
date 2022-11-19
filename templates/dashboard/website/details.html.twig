@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}website_details_title{% endtrans %} - {{ website.getUrl }}{% endblock %}
+
+{% block body %}
+    {% include('dashboard/_sidebar.html.twig') %}
+    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+        {% include('dashboard/_navbar.html.twig') %}
+        <div class="p-4">
+            <h3>{% trans %}website_details_title{% endtrans %}</h3>
+            <div class="pt-3">
+                <div class="d-flex mb-3">
+                    <a href="{{ path('app_website_edit', {id: website.getId}) }}" class="btn btn-primary ms-auto" style="width: 6rem;">{% trans %}edit{% endtrans %}</a>
+                    <a href="" class="btn btn-danger ms-2" style="width: 6rem;">{% trans %}delete{% endtrans %}</a>
+                </div>
+                <div class="row row-cols-md-2 row-cols-xxl-4 row-cols-xl-2">
+                    <div class="col-md">
+                        <div class="card bg-white border-0 mb-3 shadow-sm">
+                            <div class="card-body ps-4">
+                                <h6 class="card-title">Uptime (24h)</h6>
+                                <p class="card-text uptime">
+                                    <i class="fa-solid fa-circle-up icon-green"></i>
+                                    <span class="uptime-number ps-3">99.87%</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="card bg-white border-0 mb-3 shadow-sm">
+                            <div class="card-body ps-4">
+                                <h6 class="card-title">Uptime (30d)</h6>
+                                <p class="card-text uptime">
+                                    <i class="fa-solid fa-circle-up icon-yellow"></i>
+                                    <span class="uptime-number ps-3">98.87%</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="card bg-white border-0 mb-3 shadow-sm">
+                            <div class="card-body ps-4">
+                                <h6 class="card-title">Number of incidents</h6>
+                                <p class="card-text uptime">
+                                    <i class="fa-solid fa-circle-xmark icon-red"></i>
+                                    <span class="uptime-number ps-3">4</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="card bg-white border-0 mb-3 shadow-sm">
+                            <div class="card-body ps-4">
+                                <h6 class="card-title">Avg response time (24h)</h6>
+                                <p class="card-text uptime">
+                                    <span class="uptime-number">751 ms</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="md-12 bg-white p-3 shadow-sm">
+                </div>
+            </div>
+        </div>
+        {% include('dashboard/_flash_messages.html.twig') %}
+    </div>
+{% endblock %}

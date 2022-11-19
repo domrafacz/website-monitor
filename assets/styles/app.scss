@@ -99,3 +99,26 @@
   background-color: #6779b1;
   border-color: #6779b1;
 }
+
+.card-text {
+  .uptime-number {
+    font-size: 2.5rem;
+    font-weight: 500;
+  }
+
+  i {
+    font-size: 2.5rem;
+  }
+
+  i.icon-green {
+    color: #47b950;
+  }
+
+  i.icon-yellow {
+    color: #f3ab0a;
+  }
+
+  i.icon-red {
+    color: #c03434;
+  }
+}
