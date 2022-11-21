@@ -7,6 +7,7 @@ use App\Dto\WebsiteDto;
 use App\Entity\Website;
 use App\Factory\WebsiteFactory;
 use App\Form\AddWebsiteType;
+use App\Form\DeleteWebsiteType;
 use App\Repository\WebsiteRepository;
 use App\Service\UserManager;
 use App\Service\WebsiteManager;
@@ -14,8 +15,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 
 class WebsiteController extends AbstractController
 {
@@ -40,8 +43,13 @@ class WebsiteController extends AbstractController
 
     #[Route('/website/edit/{id}', name: 'app_website_edit')]
     #[IsGranted('ROLE_USER')]
-    public function edit(Website $website, Request $request, WebsiteFactory $websiteFactory, WebsiteManager $websiteManager, TranslatorInterface $translator): Response
+    public function edit(int $id, Request $request, WebsiteFactory $websiteFactory, WebsiteManager $websiteManager, TranslatorInterface $translator, UserManager $userManager): Response
     {
+        if (!$website = $userManager->getCurrentUser()->findWebsite($id))
+        {
+            throw new NotFoundHttpException(sprintf('Website not found, id: %s', $id));
+        }
+
         $websiteDto = $websiteFactory->createDto($website);
         $form = $this->createForm(AddWebsiteType::class, $websiteDto);
 
@@ -60,11 +68,25 @@ class WebsiteController extends AbstractController
 
     #[Route('/website/details/{id}', name: 'app_website_details')]
     #[IsGranted('ROLE_USER')]
-    public function details(Website $website): Response
+    public function details(int $id, Request $request, UserManager $userManager, WebsiteManager $websiteManager, TranslatorInterface $translator): Response
     {
-        //add post delete form
+        if (!$website = $userManager->getCurrentUser()->findWebsite($id))
+        {
+            throw new NotFoundHttpException(sprintf('Website not found, id: %s', $id));
+        }
+
+        $deleteForm = $this->createForm(DeleteWebsiteType::class);
+        $deleteForm->handleRequest($request);
+
+        if ($deleteForm->isSubmitted() && $deleteForm->isValid()) {
+            $websiteManager->delete($website, true);
+            $this->addFlash('success', $translator->trans('flash_website_deleted'));
+            return $this->redirectToRoute('app_websites');
+        }
+
         return $this->render('dashboard/website/details.html.twig', [
-           'website' => $website,
+            'website' => $website,
+            'delete_form' => $deleteForm->createView(),
         ]);
     }
 
