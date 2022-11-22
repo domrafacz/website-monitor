@@ -29,3 +29,14 @@ services:
     App\EventSubscriber\LocaleSubscriber:
         arguments:
             $defaultLocale: '%kernel.default_locale%'
+
+    Symfony\Component\HttpClient\NoPrivateNetworkHttpClient:
+        arguments:
+            - '@http_client'
+
+    App\Service\RequestsRunner:
+        bind:
+            $allowPrivateNetworks: '%env(ALLOW_PRIVATE_NETWORKS)%'
+
+
+    #Symfony\Contracts\HttpClient\HttpClientInterface:

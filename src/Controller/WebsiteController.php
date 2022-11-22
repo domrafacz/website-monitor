@@ -4,11 +4,9 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Dto\WebsiteDto;
-use App\Entity\Website;
 use App\Factory\WebsiteFactory;
 use App\Form\AddWebsiteType;
 use App\Form\DeleteWebsiteType;
-use App\Repository\WebsiteRepository;
 use App\Service\UserManager;
 use App\Service\WebsiteManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -18,7 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 
 class WebsiteController extends AbstractController
 {
@@ -89,5 +86,4 @@ class WebsiteController extends AbstractController
             'delete_form' => $deleteForm->createView(),
         ]);
     }
-
 }

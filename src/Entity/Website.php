@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\WebsiteRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -21,7 +23,8 @@ class Website
 
     #[ORM\ManyToOne(inversedBy: 'websites')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $owner = null;
+    /** @phpstan-ignore-next-line  */
+    private ?User $owner;
 
     #[ORM\Column(length: 255)]
     private string $url;
@@ -49,6 +52,17 @@ class Website
 
     #[ORM\Column]
     private bool $enabled;
+
+    /**
+     * @var Collection<int, ResponseLog> $responseLogs
+     */
+    #[ORM\OneToMany(mappedBy: 'website', targetEntity: ResponseLog::class, orphanRemoval: true)]
+    private Collection $responseLogs;
+
+    public function __construct()
+    {
+        $this->responseLogs = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -171,6 +185,36 @@ class Website
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ResponseLog>
+     */
+    public function getResponseLogs(): Collection
+    {
+        return $this->responseLogs;
+    }
+
+    public function addResponseLog(ResponseLog $responseLog): self
+    {
+        if (!$this->responseLogs->contains($responseLog)) {
+            $this->responseLogs->add($responseLog);
+            $responseLog->setWebsite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResponseLog(ResponseLog $responseLog): self
+    {
+        if ($this->responseLogs->removeElement($responseLog)) {
+            // set the owning side to null (unless already changed)
+            if ($responseLog->getWebsite() === $this) {
+                $responseLog->setWebsite(null);
+            }
+        }
 
         return $this;
     }

@@ -8,10 +8,11 @@
         {% include('dashboard/_navbar.html.twig') %}
         <div class="p-4">
             <h3>{% trans %}website_details_title{% endtrans %}</h3>
+            {% include('dashboard/_flash_messages.html.twig') %}
             <div class="pt-3">
                 <div class="d-flex mb-3">
                     <a href="{{ path('app_website_edit', {id: website.getId}) }}" class="btn btn-primary ms-auto" style="width: 6rem;">{% trans %}edit{% endtrans %}</a>
-                    <a href="" class="btn btn-danger ms-2" style="width: 6rem;">{% trans %}delete{% endtrans %}</a>
+                    <button class="btn btn-danger ms-2" style="width: 6rem;" data-bs-toggle="modal" data-bs-target="#delete-website-modal">{% trans %}delete{% endtrans %}</button>
                 </div>
                 <div class="row row-cols-md-2 row-cols-xxl-4 row-cols-xl-2">
                     <div class="col-md">
@@ -62,6 +63,18 @@
                 </div>
             </div>
         </div>
-        {% include('dashboard/_flash_messages.html.twig') %}
+    </div>
+    <div class="modal fade" id="delete-website-modal" tabindex="-1" aria-labelledby="delete-website-modal-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="delete-website-modal-label">{% trans %}delete_website_modal_title{% endtrans %}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ form(delete_form) }}
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}

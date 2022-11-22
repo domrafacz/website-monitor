@@ -31,4 +31,9 @@ class WebsiteManager
         $user->addWebsite($website);
         $this->websiteRepository->save($website, $flush);
     }
+
+    public function delete(Website $website, bool $flush = true): void
+    {
+        $this->websiteRepository->remove($website, $flush);
+    }
 }

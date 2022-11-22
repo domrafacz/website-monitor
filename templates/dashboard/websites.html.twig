@@ -49,14 +49,14 @@
                                 {% if website.getLastCheck is null %}
                                     <span class="badge text-bg-secondary">Unavailable</span>
                                 {% else %}
-                                    add date
+                                    {{ website.getLastCheck|ago }}
                                 {% endif %}
                                 </td>
                                 <td>
                                 {% if website.getCertExpiryTime is null %}
                                     <span class="badge text-bg-secondary">Unavailable</span>
                                 {% else %}
-                                    add date
+                                    {{ website.getCertExpiryTime|ago }}
                                 {% endif %}
                                 </td>
                             </tr>

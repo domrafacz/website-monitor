@@ -40,6 +40,12 @@ class WebsiteRepository extends ServiceEntityRepository
         }
     }
 
+    /** @return array<int, Website>|null */
+    public function findAllEnabled(): ?array
+    {
+        return $this->findBy(['enabled' => 1]);
+    }
+
 //    /**
 //     * @return Website[] Returns an array of Website objects
 //     */

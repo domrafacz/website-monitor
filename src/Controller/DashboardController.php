@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Repository\WebsiteRepository;
 use App\Service\UserManager;
+use Doctrine\Common\Collections\Criteria;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +27,10 @@ class DashboardController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function websites(UserManager $userManager): Response
     {
-        $websites = $userManager->getCurrentUser()->getWebsites();
+        $criteria = Criteria::create()
+            ->orderBy(array('id' => Criteria::ASC));
+
+        $websites = $userManager->getCurrentUser()->getWebsites()->matching($criteria);
 
         return $this->render('dashboard/websites.html.twig', [
             'websites' => $websites,
