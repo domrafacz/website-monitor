@@ -1,0 +1,9 @@
+parameters:
+    level: 9
+    paths:
+        - src
+    doctrine:
+    	objectManagerLoader: tests/ObjectManager.php
+includes:
+	- vendor/phpstan/phpstan-doctrine/extension.neon
+	- vendor/phpstan/phpstan-doctrine/rules.neon
