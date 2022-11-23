@@ -1,0 +1,53 @@
+# https://help.github.com/en/actions
+name: Symfony 6 app tests
+on:
+  push:
+    branches:
+      - master
+jobs:
+  symfony:
+    name: Symfony 6.1 (PHP ${{ matrix.php-versions }})
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: '!ChangeMe!'
+          POSTGRES_DB: app
+        ports:
+          - 5432/tcp
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
+
+    strategy:
+      matrix:
+        php-version: [ '8.1' ]
+
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v3
+
+      - name: "Setup PHP, extensions and composer"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, curl
+          tools: composer:v2
+
+      - name: "Set composer cache directory"
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: "Composer install"
+        run: composer install --no-interaction --no-progress --dev
+
+      - name: "Run Migration"
+        run: |
+          php bin/console doctrine:schema:update --force || echo "No migrations found or schema update failed"
+          php bin/console doctrine:migrations:migrate || echo "No migrations found or migration failed"
+          php bin/console doctrine:fixtures:load || echo "No fixtures found or fixtures failed"
+        env:
+          DATABASE_URL: postgres://app:!ChangeMe!@127.0.0.1:${{ job.services.postgres.ports[5432] }}/app?charset=UTF-8
+      - name: "Run tests"
+        run: bin/phpunit --coverage-text
