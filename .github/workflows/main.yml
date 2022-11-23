@@ -22,8 +22,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [ '8.1' ]
-
+        php-version: ['8.1']
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v3
@@ -31,7 +30,7 @@ jobs:
       - name: "Setup PHP, extensions and composer"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php-version }}
           extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, curl
           tools: composer:v2
 
