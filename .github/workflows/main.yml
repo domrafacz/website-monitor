@@ -34,6 +34,9 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, curl
           tools: composer:v2
 
+      - name: "Setup .env file"
+        run: cp .env.example .env
+
       - name: "Set composer cache directory"
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
