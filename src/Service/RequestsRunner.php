@@ -104,8 +104,6 @@ class RequestsRunner
         if (!empty($errors)) {
             // TODO better error handling
             $status = Website::STATUS_ERROR;
-            echo 'id: '.$website->getUrl().' errors: ';
-            print_r($errors);
         }
 
         $website->setLastCheck(new \DateTimeImmutable());
@@ -153,7 +151,7 @@ class RequestsRunner
     }
 
     /** @return array{}|array<int, int|string> */
-    public function getErrors(?int $websiteId): array
+    private function getErrors(?int $websiteId): array
     {
         $errors = [];
 
@@ -170,7 +168,7 @@ class RequestsRunner
         return $errors;
     }
 
-    public function addError(?int $websiteId, string $message): void
+    private function addError(?int $websiteId, string $message): void
     {
         if (!$websiteId) {
             return;
@@ -179,7 +177,7 @@ class RequestsRunner
         $this->errors[] = ['website_id' => $websiteId, 'error' => $message];
     }
 
-    public function addResponseTime(?int $websiteId, float $startTime): void
+    private function addResponseTime(?int $websiteId, float $startTime): void
     {
         if (!$websiteId) {
             return;
@@ -193,7 +191,7 @@ class RequestsRunner
         }
     }
 
-    public function getResponseTime(?int $websiteId): int
+    private function getResponseTime(?int $websiteId): int
     {
         if (!$websiteId) {
             return 0;

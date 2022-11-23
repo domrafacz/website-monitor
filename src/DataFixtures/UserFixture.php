@@ -24,8 +24,19 @@ class UserFixture extends Fixture
                 'Test123#'
             )
         );
-
         $manager->persist($user);
+
+        $user2 = new User();
+        $user2->setEmail('test11@test.com');
+        $user2->setLanguage('en');
+        $user2->setPassword(
+            $this->userPasswordHasher->hashPassword(
+                $user2,
+                'Test123#'
+            )
+        );
+        $manager->persist($user2);
+
         $manager->flush();
     }
 }
