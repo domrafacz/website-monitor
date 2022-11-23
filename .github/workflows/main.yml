@@ -44,12 +44,23 @@ jobs:
       - name: "Composer install"
         run: composer install --no-interaction --no-progress --dev
 
+      - name: "npm install"
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - run: yarn install
+
+      - run: npm install
+
+      - run: yarn dev
+
       - name: "Run Migrations and tests"
         run: |
           php bin/console doctrine:database:drop --env=test --force --if-exists || echo "Could not drop database"
           php bin/console doctrine:database:create --env=test --if-not-exists || echo "Could not create database"
           php bin/console doctrine:migrations:migrate --env=test || echo "No migrations found or migration failed"
-          php bin/console doctrine:fixtures:load --append --no-interaction || echo "No fixtures found or fixtures failed"
+          php bin/console doctrine:fixtures:load --env=test --append --no-interaction || echo "No fixtures found or fixtures failed"
           php bin/phpunit --coverage-text
         env:
           DATABASE_URL: postgres://app:!ChangeMe!@127.0.0.1:${{ job.services.postgres.ports[5432] }}/app?charset=UTF-8
