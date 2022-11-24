@@ -58,6 +58,9 @@ class Website
     #[ORM\OneToMany(mappedBy: 'website', targetEntity: ResponseLog::class, orphanRemoval: true)]
     private Collection $responseLogs;
 
+    #[ORM\Column(type: Types::SMALLINT, options: ['default' => 200])]
+    private int $expectedStatusCode;
+
     public function __construct()
     {
         $this->responseLogs = new ArrayCollection();
@@ -214,6 +217,18 @@ class Website
                 $responseLog->setWebsite(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getExpectedStatusCode(): ?int
+    {
+        return $this->expectedStatusCode;
+    }
+
+    public function setExpectedStatusCode(int $expectedStatusCode): self
+    {
+        $this->expectedStatusCode = $expectedStatusCode;
 
         return $this;
     }

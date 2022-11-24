@@ -39,6 +39,9 @@ class AddWebsiteType extends AbstractType
             ->add('frequency', IntegerType::class, [
                 'label' => 'frequency_minutes'
             ])
+            ->add('expectedStatusCode', IntegerType::class, [
+                'label' => 'expected_status_code'
+            ])
             ->add('enabled', ChoiceType::class, [
                 'choices' => [
                     'yes' => true,

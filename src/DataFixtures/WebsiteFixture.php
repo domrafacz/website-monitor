@@ -32,6 +32,8 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         $website->setFrequency(1);
         $website->setEnabled(true);
         $website->setOwner($user);
+        $website->setExpectedStatusCode(302);
+
 
         $manager->persist($website);
 
@@ -43,6 +45,7 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         $website2->setFrequency(1);
         $website2->setEnabled(true);
         $website2->setOwner($user);
+        $website2->setExpectedStatusCode(404);
 
         $manager->persist($website2);
 
@@ -54,6 +57,7 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         $website3->setFrequency(1);
         $website3->setEnabled(true);
         $website3->setOwner($user);
+        $website3->setExpectedStatusCode(200);
 
         $manager->persist($website3);
 
@@ -71,6 +75,7 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         $website4->setFrequency(1);
         $website4->setEnabled(true);
         $website4->setOwner($user2);
+        $website4->setExpectedStatusCode(200);
 
         $manager->persist($website4);
 

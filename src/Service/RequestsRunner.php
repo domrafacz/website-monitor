@@ -99,7 +99,17 @@ class RequestsRunner
             $website->setCertExpiryTime($this->getCertExpireDate($response));
         }
 
-        // TODO add expected status check
+        try {
+            if ($response->getStatusCode() != $website->getExpectedStatusCode()) {
+                $status = Website::STATUS_ERROR;
+                // TODO add translation
+                $errors[] = sprintf('Unexpected HTTP status code: %d, expected: %d',
+                    $response->getStatusCode(),
+                    $website->getExpectedStatusCode()
+                );
+            }
+        } catch (TransportExceptionInterface $e) {
+        }
 
         if (!empty($errors)) {
             // TODO better error handling
@@ -111,6 +121,10 @@ class RequestsRunner
 
         if (($website->getLastStatus() != Website::STATUS_OK) && $status == Website::STATUS_OK) {
             // TODO send notification website is back up
+        }
+
+        if (($website->getLastStatus() == Website::STATUS_OK) && $status == Website::STATUS_ERROR) {
+            // TODO create downtime entity
         }
 
         $responseLog = new ResponseLog(

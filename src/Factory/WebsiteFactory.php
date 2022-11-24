@@ -18,6 +18,7 @@ class WebsiteFactory
         $dto->timeout = $website->getTimeout();
         $dto->frequency = $website->getFrequency();
         $dto->enabled = $website->isEnabled();
+        $dto->expectedStatusCode = $website->getExpectedStatusCode();
 
         return $dto;
     }
@@ -32,6 +33,7 @@ class WebsiteFactory
         $website->setTimeout($dto->timeout);
         $website->setFrequency($dto->frequency);
         $website->setEnabled($dto->enabled);
+        $website->setExpectedStatusCode($dto->expectedStatusCode);
 
         return $website;
     }

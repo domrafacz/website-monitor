@@ -42,4 +42,11 @@ class WebsiteDto
 
     public bool $enabled = true;
 
+    #[Assert\Range(
+        notInRangeMessage: 'validator_range',
+        min: 100,
+        max: 599,
+    )]
+    public int $expectedStatusCode = 200;
+
 }

@@ -39,6 +39,11 @@ class ResponseLogRepository extends ServiceEntityRepository
         }
     }
 
+    public function getCountByStatusTimeRange(): int
+    {
+
+    }
+
 //    /**
 //     * @return ResponseLog[] Returns an array of ResponseLog objects
 //     */

@@ -27,6 +27,7 @@ class RequestsRunnerTest extends KernelTestCase
         $website->setFrequency(1);
         $website->setEnabled(true);
         $website->setLastStatus(Website::STATUS_ERROR);
+        $website->setExpectedStatusCode(200);
 
         $website2 = new Website();
         $website2->setUrl('https://nonexistent.nonexistent');
@@ -36,6 +37,7 @@ class RequestsRunnerTest extends KernelTestCase
         $website2->setFrequency(1);
         $website2->setEnabled(true);
         $website2->setLastStatus(Website::STATUS_ERROR);
+        $website2->setExpectedStatusCode(200);
 
         $requestRunner = new RequestsRunner(
             $client,
