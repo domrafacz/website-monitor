@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\DowntimeLog;
 use App\Entity\ResponseLog;
 use App\Entity\Website;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -93,12 +95,16 @@ class RequestsRunner
         $status = Website::STATUS_OK;
         $website = $this->getWebsite($response);
         $errors = $this->getErrors($website->getId());
+        $datetime = new \DateTimeImmutable();
+        $datetime = $datetime->setTimestamp(intval($response->getInfo('start_time')));
 
+        //checking if cert has been changed
         if ($website->getCertExpiryTime() != $this->getCertExpireDate($response)){
             //TODO add notification
             $website->setCertExpiryTime($this->getCertExpireDate($response));
         }
 
+        //checking status code
         try {
             if ($response->getStatusCode() != $website->getExpectedStatusCode()) {
                 $status = Website::STATUS_ERROR;
@@ -111,26 +117,34 @@ class RequestsRunner
         } catch (TransportExceptionInterface $e) {
         }
 
+        //errors handling
         if (!empty($errors)) {
-            // TODO better error handling
             $status = Website::STATUS_ERROR;
         }
 
-        $website->setLastCheck(new \DateTimeImmutable());
-        $website->setLastStatus($status);
-
+        //executes when website goes down
         if (($website->getLastStatus() != Website::STATUS_OK) && $status == Website::STATUS_OK) {
             // TODO send notification website is back up
+            $downtimeLog = $this->getRecentDowntimeLog($website);
+
+            if ($downtimeLog && $downtimeLog->getEndTime() == null) {
+                $downtimeLog->setEndTime($datetime);
+                $this->entityManager->persist($downtimeLog);
+            }
         }
 
+        //executes when site goes back up
         if (($website->getLastStatus() == Website::STATUS_OK) && $status == Website::STATUS_ERROR) {
-            // TODO create downtime entity
+            $this->createDowntimeLog($website, $errors);
         }
+
+        $website->setLastCheck($datetime);
+        $website->setLastStatus($status);
 
         $responseLog = new ResponseLog(
             $website,
             $status,
-            new \DateTimeImmutable(),
+            $datetime,
             $this->getResponseTime($website->getId())
         );
 
@@ -212,5 +226,29 @@ class RequestsRunner
         }
 
         return $this->responsesTime[$websiteId] ?? 0;
+    }
+
+    private function createDowntimeLog(Website $website, array $errors): void
+    {
+        $downtimeLog = new DowntimeLog();
+        $downtimeLog->setWebsite($website);
+        $downtimeLog->setStartTime(new \DateTimeImmutable());
+        $downtimeLog->setInitialError($errors);
+
+        $this->entityManager->persist($downtimeLog);
+    }
+
+    private function getRecentDowntimeLog(Website $website): ?DowntimeLog
+    {
+        $criteria = Criteria::create()
+            ->orderBy(array('id' => Criteria::DESC));
+
+        $downtimeLog = $website->getDowntimeLogs()->matching($criteria)->first();
+
+        if ($downtimeLog instanceof DowntimeLog) {
+            return $downtimeLog;
+        } else {
+            return null;
+        }
     }
 }

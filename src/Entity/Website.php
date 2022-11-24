@@ -59,11 +59,15 @@ class Website
     private Collection $responseLogs;
 
     #[ORM\Column(type: Types::SMALLINT, options: ['default' => 200])]
-    private int $expectedStatusCode;
+    private int $expectedStatusCode = 200;
+
+    #[ORM\OneToMany(mappedBy: 'website', targetEntity: DowntimeLog::class, orphanRemoval: true)]
+    private Collection $downtimeLogs;
 
     public function __construct()
     {
         $this->responseLogs = new ArrayCollection();
+        $this->downtimeLogs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -229,6 +233,36 @@ class Website
     public function setExpectedStatusCode(int $expectedStatusCode): self
     {
         $this->expectedStatusCode = $expectedStatusCode;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DowntimeLog>
+     */
+    public function getDowntimeLogs(): Collection
+    {
+        return $this->downtimeLogs;
+    }
+
+    public function addDowntimeLog(DowntimeLog $downtimeLog): self
+    {
+        if (!$this->downtimeLogs->contains($downtimeLog)) {
+            $this->downtimeLogs->add($downtimeLog);
+            $downtimeLog->setWebsite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDowntimeLog(DowntimeLog $downtimeLog): self
+    {
+        if ($this->downtimeLogs->removeElement($downtimeLog)) {
+            // set the owning side to null (unless already changed)
+            if ($downtimeLog->getWebsite() === $this) {
+                $downtimeLog->setWebsite(null);
+            }
+        }
 
         return $this;
     }

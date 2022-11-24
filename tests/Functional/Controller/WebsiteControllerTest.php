@@ -93,4 +93,25 @@ class WebsiteControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(404);
     }
+
+    public function testWebsiteIncidents(): void
+    {
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $this->client->loginUser($testUser);
+
+        $this->client->request('GET', '/website/incidents/'.$testUser->getWebsites()->first()->getId());
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testWebsiteIncidentsInvalidId(): void
+    {
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $this->client->loginUser($testUser);
+
+        $secondUser = $this->userRepository->findOneByUsername('test11@test.com');
+        $this->client->request('GET', '/website/incidents/'.$secondUser->getWebsites()->first()->getId());
+
+        $this->assertResponseStatusCodeSame(404);
+    }
 }

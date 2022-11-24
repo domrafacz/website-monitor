@@ -34,7 +34,6 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         $website->setOwner($user);
         $website->setExpectedStatusCode(302);
 
-
         $manager->persist($website);
 
         $website2 = new Website();
@@ -53,7 +52,7 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         $website3->setUrl('https://www.koreatimes.co.kr/');
         $website3->setRequestMethod('GET');
         $website3->setMaxRedirects(20);
-        $website3->setTimeout(0);
+        $website3->setTimeout(1);
         $website3->setFrequency(1);
         $website3->setEnabled(true);
         $website3->setOwner($user);
@@ -75,7 +74,7 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         $website4->setFrequency(1);
         $website4->setEnabled(true);
         $website4->setOwner($user2);
-        $website4->setExpectedStatusCode(200);
+        $website2->setExpectedStatusCode(200);
 
         $manager->persist($website4);
 

@@ -9,6 +9,7 @@ use App\Form\AddWebsiteType;
 use App\Form\DeleteWebsiteType;
 use App\Service\UserManager;
 use App\Service\WebsiteManager;
+use Doctrine\Common\Collections\Criteria;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -84,6 +85,25 @@ class WebsiteController extends AbstractController
         return $this->render('dashboard/website/details.html.twig', [
             'website' => $website,
             'delete_form' => $deleteForm->createView(),
+        ]);
+    }
+
+    #[Route('/website/incidents/{id}', name: 'app_website_incidents')]
+    #[IsGranted('ROLE_USER')]
+    public function incidents(int $id, UserManager $userManager): Response
+    {
+        if (!$website = $userManager->getCurrentUser()->findWebsite($id))
+        {
+            throw new NotFoundHttpException(sprintf('Website not found, id: %s', $id));
+        }
+
+        $criteria = Criteria::create()
+            ->orderBy(array('id' => Criteria::DESC));
+
+        $downtimeLogs = $website->getDowntimeLogs()->matching($criteria);
+
+        return $this->render('dashboard/website/incidents.html.twig', [
+           'downtime_logs' => $downtimeLogs,
         ]);
     }
 }

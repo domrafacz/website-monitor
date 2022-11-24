@@ -18,7 +18,7 @@
                     <div class="col-md">
                         <div class="card bg-white border-0 mb-3 shadow-sm">
                             <div class="card-body ps-4">
-                                <h6 class="card-title">Uptime (24h)</h6>
+                                <h6 class="card-title">{% trans %}uptime_24h{% endtrans %}</h6>
                                 <p class="card-text uptime">
                                     <i class="fa-solid fa-circle-up icon-green"></i>
                                     <span class="uptime-number ps-3">99.87%</span>
@@ -29,7 +29,7 @@
                     <div class="col-md">
                         <div class="card bg-white border-0 mb-3 shadow-sm">
                             <div class="card-body ps-4">
-                                <h6 class="card-title">Uptime (30d)</h6>
+                                <h6 class="card-title">{% trans %}uptime_30d{% endtrans %}</h6>
                                 <p class="card-text uptime">
                                     <i class="fa-solid fa-circle-up icon-yellow"></i>
                                     <span class="uptime-number ps-3">98.87%</span>
@@ -40,10 +40,17 @@
                     <div class="col-md">
                         <div class="card bg-white border-0 mb-3 shadow-sm">
                             <div class="card-body ps-4">
-                                <h6 class="card-title">Number of incidents</h6>
+                                <h6 class="card-title">{% trans %}number_of_incidents{% endtrans %}</h6>
                                 <p class="card-text uptime">
-                                    <i class="fa-solid fa-circle-xmark icon-red"></i>
-                                    <span class="uptime-number ps-3">4</span>
+                                    {% if website.getDowntimeLogs.count() > 0 %}
+                                        <i class="fa-solid fa-circle-xmark icon-red"></i>
+                                    {% else %}
+                                        <i class="fa-solid fa-circle-check icon-green"></i>
+                                    {% endif %}
+                                    <span class="uptime-number ps-3">{{ website.getDowntimeLogs.count() }}</span>
+                                    {% if website.getDowntimeLogs.count() > 0 %}
+                                        <a class="text-dark text-decoration-none" href="{{ path('app_website_incidents', {id: website.getId}) }}">({% trans %}show_details{% endtrans %})</a>
+                                    {% endif %}
                                 </p>
                             </div>
                         </div>
@@ -51,7 +58,7 @@
                     <div class="col-md">
                         <div class="card bg-white border-0 mb-3 shadow-sm">
                             <div class="card-body ps-4">
-                                <h6 class="card-title">Avg response time (24h)</h6>
+                                <h6 class="card-title">{% trans %}average_response_time_24h{% endtrans %}</h6>
                                 <p class="card-text uptime">
                                     <span class="uptime-number">751 ms</span>
                                 </p>
