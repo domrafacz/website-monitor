@@ -9,6 +9,7 @@ use App\Form\AddWebsiteType;
 use App\Form\DeleteWebsiteType;
 use App\Service\UserManager;
 use App\Service\WebsiteManager;
+use App\Service\WebsiteStatisticsProvider;
 use Doctrine\Common\Collections\Criteria;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -66,7 +67,7 @@ class WebsiteController extends AbstractController
 
     #[Route('/website/details/{id}', name: 'app_website_details')]
     #[IsGranted('ROLE_USER')]
-    public function details(int $id, Request $request, UserManager $userManager, WebsiteManager $websiteManager, TranslatorInterface $translator): Response
+    public function details(int $id, Request $request, UserManager $userManager, WebsiteManager $websiteManager, TranslatorInterface $translator, WebsiteStatisticsProvider $statisticsProvider): Response
     {
         if (!$website = $userManager->getCurrentUser()->findWebsite($id))
         {
@@ -85,6 +86,7 @@ class WebsiteController extends AbstractController
         return $this->render('dashboard/website/details.html.twig', [
             'website' => $website,
             'delete_form' => $deleteForm->createView(),
+            'statistics_provider' => $statisticsProvider,
         ]);
     }
 

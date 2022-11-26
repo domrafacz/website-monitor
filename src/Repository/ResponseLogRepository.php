@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repository;
 
@@ -37,11 +38,6 @@ class ResponseLogRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
-    }
-
-    public function getCountByStatusTimeRange(): int
-    {
-
     }
 
 //    /**

@@ -22,6 +22,7 @@ class WebsiteManager
         $website->setTimeout($dto->timeout);
         $website->setFrequency($dto->frequency);
         $website->setEnabled($dto->enabled);
+        $website->setExpectedStatusCode($dto->expectedStatusCode);
 
         $this->websiteRepository->save($website, true);
     }

@@ -178,7 +178,7 @@ class RequestsRunner
         return null;
     }
 
-    /** @return array{}|array<int, int|string> */
+    /** @return array{}|array<int, string> */
     private function getErrors(?int $websiteId): array
     {
         $errors = [];
@@ -189,7 +189,9 @@ class RequestsRunner
 
         foreach ($this->errors as $key => $error) {
             if ($error['website_id'] == $websiteId) {
-                $errors[] = $error['error'];
+                if (is_string($error['error'])) {
+                    $errors[] = $error['error'];
+                }
             }
         }
 
@@ -228,6 +230,7 @@ class RequestsRunner
         return $this->responsesTime[$websiteId] ?? 0;
     }
 
+    /** @param array<int, string> $errors */
     private function createDowntimeLog(Website $website, array $errors): void
     {
         $downtimeLog = new DowntimeLog();

@@ -52,15 +52,14 @@ class Website
     #[ORM\Column]
     private bool $enabled;
 
-    /**
-     * @var Collection<int, ResponseLog> $responseLogs
-     */
+    /** @var Collection<int, ResponseLog> $responseLogs */
     #[ORM\OneToMany(mappedBy: 'website', targetEntity: ResponseLog::class, orphanRemoval: true)]
     private Collection $responseLogs;
 
     #[ORM\Column(type: Types::SMALLINT, options: ['default' => 200])]
-    private int $expectedStatusCode = 200;
+    private int $expectedStatusCode;
 
+    /** @var Collection<int, DowntimeLog> $downtimeLogs */
     #[ORM\OneToMany(mappedBy: 'website', targetEntity: DowntimeLog::class, orphanRemoval: true)]
     private Collection $downtimeLogs;
 
@@ -225,7 +224,7 @@ class Website
         return $this;
     }
 
-    public function getExpectedStatusCode(): ?int
+    public function getExpectedStatusCode(): int
     {
         return $this->expectedStatusCode;
     }

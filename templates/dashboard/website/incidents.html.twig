@@ -21,7 +21,12 @@
                         <tbody>
                         {% for log in downtime_logs.getIterator %}
                             <tr>
-                                <td>{{ log.getStartTime|date }}</td>
+                                <td>
+                                    {{ log.getStartTime|date }}
+                                    {% if log.getEndTime is null %}
+                                    ({{ log.getStartTime|ago }})
+                                    {% endif %}
+                                </td>
                                 <td>
                                     {% if log.getEndTime is null %}
                                         <span class="badge text-bg-danger">{% trans %}ongoing{% endtrans %}</span>

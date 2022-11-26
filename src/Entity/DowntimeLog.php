@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity;
 
@@ -15,14 +16,16 @@ class DowntimeLog
 
     #[ORM\ManyToOne(inversedBy: 'downtimeLogs')]
     #[ORM\JoinColumn(nullable: false)]
+    /** @phpstan-ignore-next-line  */
     private ?Website $website = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $startTime = null;
+    private \DateTimeImmutable $startTime;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $endTime = null;
 
+    /** @var array<int, string> $initialError */
     #[ORM\Column]
     private array $initialError = [];
 
@@ -43,7 +46,7 @@ class DowntimeLog
         return $this;
     }
 
-    public function getStartTime(): ?\DateTimeImmutable
+    public function getStartTime(): \DateTimeImmutable
     {
         return $this->startTime;
     }
@@ -67,11 +70,13 @@ class DowntimeLog
         return $this;
     }
 
+    /** @return array<int, string> */
     public function getInitialError(): array
     {
         return $this->initialError;
     }
 
+    /** @param array<int, string> $initialError */
     public function setInitialError(array $initialError): self
     {
         $this->initialError = $initialError;

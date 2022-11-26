@@ -21,7 +21,7 @@
                                 <h6 class="card-title">{% trans %}uptime_24h{% endtrans %}</h6>
                                 <p class="card-text uptime">
                                     <i class="fa-solid fa-circle-up icon-green"></i>
-                                    <span class="uptime-number ps-3">99.87%</span>
+                                    <span class="uptime-number ps-3">{{ statistics_provider.getUptime24H(website) }}%</span>
                                 </p>
                             </div>
                         </div>
@@ -32,7 +32,7 @@
                                 <h6 class="card-title">{% trans %}uptime_30d{% endtrans %}</h6>
                                 <p class="card-text uptime">
                                     <i class="fa-solid fa-circle-up icon-yellow"></i>
-                                    <span class="uptime-number ps-3">98.87%</span>
+                                    <span class="uptime-number ps-3">{{ statistics_provider.getUptime30D(website) }}%</span>
                                 </p>
                             </div>
                         </div>
