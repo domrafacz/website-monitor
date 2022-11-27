@@ -60,7 +60,13 @@
                             <div class="card-body ps-4">
                                 <h6 class="card-title">{% trans %}average_response_time_24h{% endtrans %}</h6>
                                 <p class="card-text uptime">
-                                    <span class="uptime-number">751 ms</span>
+                                    <span class="uptime-number">
+                                    {% if average_response_time_24h > 1000 %}
+                                        {{ average_response_time_24h/1000 }} s
+                                    {% else %}
+                                        {{ average_response_time_24h }} ms
+                                    {% endif %}
+                                    </span>
                                 </p>
                             </div>
                         </div>

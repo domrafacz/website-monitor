@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\ResponseLog;
+use App\Entity\Website;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -38,6 +39,23 @@ class ResponseLogRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function getAverageResponseTimeFilterByPeriod(Website $website, \DateTimeImmutable $startTime, \DateTimeImmutable $endTime): int
+    {
+        $query = $this->getEntityManager()->createQuery(
+            'SELECT AVG(r.responseTime) AS average
+            FROM App\Entity\ResponseLog r
+            WHERE r.website = :website
+            AND r.time >= :startTime
+            AND r.time <= :endTime'
+        )->setParameter('website', $website)
+            ->setParameter('startTime', $startTime)
+            ->setParameter('endTime', $endTime);
+
+        $result = $query->getResult();
+
+        return intval($result[0]['average']);
     }
 
 //    /**

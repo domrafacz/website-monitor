@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\DataFixtures;
 
+use App\Entity\DowntimeLog;
+use App\Entity\ResponseLog;
 use App\Entity\Website;
 use App\Repository\UserRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -27,14 +29,15 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         $website = new Website();
         $website->setUrl('https://google.com');
         $website->setRequestMethod('GET');
+        $website->setExpectedStatusCode(302);
         $website->setMaxRedirects(0);
         $website->setTimeout(10);
         $website->setFrequency(1);
         $website->setEnabled(true);
         $website->setOwner($user);
-        $website->setExpectedStatusCode(302);
 
         $manager->persist($website);
+
 
         $website2 = new Website();
         $website2->setUrl('https://nonexistent.nonexistent');
@@ -43,8 +46,8 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         $website2->setTimeout(2);
         $website2->setFrequency(1);
         $website2->setEnabled(true);
-        $website2->setOwner($user);
         $website2->setExpectedStatusCode(404);
+        $website2->setOwner($user);
 
         $manager->persist($website2);
 
@@ -55,8 +58,8 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         $website3->setTimeout(1);
         $website3->setFrequency(1);
         $website3->setEnabled(true);
-        $website3->setOwner($user);
         $website3->setExpectedStatusCode(200);
+        $website3->setOwner($user);
 
         $manager->persist($website3);
 
@@ -67,17 +70,49 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         }
 
         $website4 = new Website();
-        $website4->setUrl('https://google.com');
+        $website4->setUrl('https://bing.com');
         $website4->setRequestMethod('GET');
         $website4->setMaxRedirects(20);
         $website4->setTimeout(0);
         $website4->setFrequency(1);
         $website4->setEnabled(true);
+        $website4->setExpectedStatusCode(200);
         $website4->setOwner($user2);
-        $website2->setExpectedStatusCode(200);
 
         $manager->persist($website4);
 
+        $manager->flush();
+
+        $responseLog = new ResponseLog(
+            $website,
+            Website::STATUS_OK,
+            new \DateTimeImmutable(),
+            1500,
+        );
+
+        $currentTime = new \DateTimeImmutable();
+        $downtimeLog1 = new DowntimeLog();
+        $downtimeLog1->setWebsite($website);
+        $downtimeLog1->setStartTime($currentTime->setTimestamp($currentTime->getTimestamp() - 3000));
+        $downtimeLog1->setEndTime($currentTime->setTimestamp($currentTime->getTimestamp() - 2500));
+        $downtimeLog1->setInitialError(['Unexpected HTTP status code: 200, expected: 301']);
+
+        $downtimeLog2 = new DowntimeLog();
+        $downtimeLog2->setWebsite($website);
+        $downtimeLog2->setStartTime($currentTime->setTimestamp($currentTime->getTimestamp() - 200000));
+        $downtimeLog2->setEndTime($currentTime->setTimestamp($currentTime->getTimestamp() - 199900));
+        $downtimeLog2->setInitialError(['Unexpected HTTP status code: 200, expected: 301']);
+
+        $downtimeLog3 = new DowntimeLog();
+        $downtimeLog3->setWebsite($website);
+        $downtimeLog3->setStartTime($currentTime->setTimestamp($currentTime->getTimestamp() - 1000));
+        $downtimeLog3->setEndTime(null);
+        $downtimeLog3->setInitialError(['Unexpected HTTP status code: 200, expected: 301']);
+
+        $manager->persist($responseLog);
+        $manager->persist($downtimeLog1);
+        $manager->persist($downtimeLog2);
+        $manager->persist($downtimeLog3);
         $manager->flush();
     }
 

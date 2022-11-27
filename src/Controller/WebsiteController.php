@@ -15,7 +15,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -46,7 +45,7 @@ class WebsiteController extends AbstractController
     {
         if (!$website = $userManager->getCurrentUser()->findWebsite($id))
         {
-            throw new NotFoundHttpException(sprintf('Website not found, id: %s', $id));
+            throw $this->createNotFoundException(sprintf('Website not found, id: %s', $id));
         }
 
         $websiteDto = $websiteFactory->createDto($website);
@@ -71,7 +70,7 @@ class WebsiteController extends AbstractController
     {
         if (!$website = $userManager->getCurrentUser()->findWebsite($id))
         {
-            throw new NotFoundHttpException(sprintf('Website not found, id: %s', $id));
+            throw $this->createNotFoundException(sprintf('Website not found, id: %s', $id));
         }
 
         $deleteForm = $this->createForm(DeleteWebsiteType::class);
@@ -87,6 +86,7 @@ class WebsiteController extends AbstractController
             'website' => $website,
             'delete_form' => $deleteForm->createView(),
             'statistics_provider' => $statisticsProvider,
+            'average_response_time_24h' => $statisticsProvider->getAverageResponseTime24H($website),
         ]);
     }
 
@@ -96,7 +96,7 @@ class WebsiteController extends AbstractController
     {
         if (!$website = $userManager->getCurrentUser()->findWebsite($id))
         {
-            throw new NotFoundHttpException(sprintf('Website not found, id: %s', $id));
+            throw $this->createNotFoundException(sprintf('Website not found, id: %s', $id));
         }
 
         $criteria = Criteria::create()
