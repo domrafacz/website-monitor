@@ -13,9 +13,10 @@ class Notifier
         private readonly MessageBusInterface $bus,
     ) {}
 
+    /** @param null|array<string, string> $options */
     public function sendNotification(int $type, string $subject, string $message, ?array $options = null): void
     {
-        $notifierMessage = $this->messageFactory->create(0, $subject, $message, $options);
+        $notifierMessage = $this->messageFactory->create(0, $subject, $message, $options ?? []);
         $this->bus->dispatch($notifierMessage);
     }
 }

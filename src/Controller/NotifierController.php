@@ -64,7 +64,11 @@ class NotifierController extends AbstractController
         }
 
         if (!$form->isSubmitted()) {
-            $form->setData(array_merge($channel->getOptions(), ['name' => $channel->getName()]));
+            if ($channel->getOptions() === null) {
+                $form->setData(['name' => $channel->getName()]);
+            } else {
+                $form->setData(array_merge($channel->getOptions(), ['name' => $channel->getName()]));
+            }
         }
 
         return $this->render('dashboard/notifier/edit.html.twig', [

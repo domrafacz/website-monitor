@@ -63,6 +63,7 @@ class Website
     #[ORM\OneToMany(mappedBy: 'website', targetEntity: DowntimeLog::class, orphanRemoval: true)]
     private Collection $downtimeLogs;
 
+    /** @var Collection<int, NotifierChannel> $notifierChannels */
     #[ORM\ManyToMany(targetEntity: NotifierChannel::class, inversedBy: 'websites')]
     private Collection $notifierChannels;
 

@@ -39,12 +39,17 @@ class NotifierChannel
     #[ORM\Column(nullable: true)]
     private ?array $options = [];
 
+    /** @var Collection<int, Website> $websites */
     #[ORM\ManyToMany(targetEntity: Website::class, mappedBy: 'notifierChannels')]
     private Collection $websites;
 
     #[ORM\Column(length: 255, options: ['default' => 'noname'])]
     private string $name;
 
+    /**
+     * @param ArrayCollection<int, Website>|null $websites
+     * @param array<string, string>|null $options
+     */
     public function __construct(User $owner, int $type, string $name, ?array $options = null, ArrayCollection $websites = null)
     {
         $this->owner = $owner;
@@ -71,7 +76,7 @@ class NotifierChannel
         return $this;
     }
 
-    public function getType(): ?int
+    public function getType(): int
     {
         return $this->type;
     }

@@ -99,17 +99,18 @@ class RequestsRunner
         $errors = $this->getErrors($website->getId());
         $datetime = new \DateTimeImmutable();
         $datetime = $datetime->setTimestamp(intval($response->getInfo('start_time')));
+        $certExpireTime = $this->getCertExpireDate($response);
 
         //checking if cert has been changed
-        if ($website->getCertExpiryTime() !== null && $website->getCertExpiryTime() != $this->getCertExpireDate($response)){
+        if ($website->getCertExpiryTime() !== null && $certExpireTime !== null && $website->getCertExpiryTime() != $certExpireTime){
             $message = sprintf("Previous expire date: %s\nNew expire date: %s",
                 $website->getCertExpiryTime()->format('Y-m-d H:i:s'),
-                $this->getCertExpireDate($response)->format('Y-m-d H:i:s'),
+                $certExpireTime->format('Y-m-d H:i:s'),
             );
             $this->sendNotification($website, 'Website certificate changed', $message);
-            $website->setCertExpiryTime($this->getCertExpireDate($response));
-        } elseif ($website->getCertExpiryTime() === null && $this->getCertExpireDate($response) !== null) {
-            $website->setCertExpiryTime($this->getCertExpireDate($response));
+            $website->setCertExpiryTime($certExpireTime);
+        } elseif ($website->getCertExpiryTime() === null && $certExpireTime !== null) {
+            $website->setCertExpiryTime($certExpireTime);
         }
 
         //checking status code
@@ -140,7 +141,7 @@ class RequestsRunner
                 $message = sprintf("Url: %s \nIncident start: %s \nIncident end: %s",
                     $website->getUrl(),
                     $downtimeLog->getStartTime()->format('Y-m-d H:i:s'),
-                    $downtimeLog->getEndTime()->format('Y-m-d H:i:s'),
+                    $datetime->format('Y-m-d H:i:s'),
                 );
                 $this->sendNotification($website, 'Website is back online', $message);
             }

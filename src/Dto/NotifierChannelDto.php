@@ -12,5 +12,6 @@ class NotifierChannelDto
     )]
     public string $name;
 
+    /** @var array<string, string> $options */
     public array $options;
 }

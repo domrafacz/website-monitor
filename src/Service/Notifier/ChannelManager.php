@@ -5,6 +5,7 @@ namespace App\Service\Notifier;
 
 use App\Entity\NotifierChannel;
 use App\Entity\User;
+use App\Entity\Website;
 use App\Repository\NotifierChannelRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -14,7 +15,10 @@ class ChannelManager
         private readonly NotifierChannelRepository $channelsRepository,
     ) {}
 
-    /** @param null|array<string, string> $options */
+    /**
+     * @param null|array<string, string> $options
+     * @param ArrayCollection<int, Website>|null $websites
+     */
     public function add(int $type, User $user, string $name, ?array $options = null, ArrayCollection $websites = null): void
     {
         $channel = new NotifierChannel(
@@ -28,6 +32,7 @@ class ChannelManager
         $this->channelsRepository->save($channel, true);
     }
 
+    /** @param null|array<string, string> $options */
     public function update(NotifierChannel $channel, string $name, ?array $options): void
     {
         $channel->setName($name);
