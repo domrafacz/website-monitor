@@ -1,0 +1,7 @@
+<td>
+    {{ channels_types[channel.type].name }}
+</td>
+<td style="min-width:150px;">
+    {% trans %}telegram_api_token{% endtrans %}: {{ channel.options.apiToken }}<br>
+    {% trans %}telegram_chat_id{% endtrans %}: {{ channel.options.chatId }}
+</td>

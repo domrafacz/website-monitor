@@ -3,6 +3,8 @@
 {% block title %}{% trans %}website_details_title{% endtrans %} - {{ website.getUrl }}{% endblock %}
 
 {% block body %}
+    {% set channel_icons = ['fa-brands fa-telegram'] %}
+    {% set channel_toggle_token = csrf_token('website-toggle-notifier-channel') %}
     {% include('dashboard/_sidebar.html.twig') %}
     <div class="wrapper d-flex flex-column min-vh-100 bg-light">
         {% include('dashboard/_navbar.html.twig') %}
@@ -72,7 +74,35 @@
                         </div>
                     </div>
                 </div>
-                <div class="md-12 bg-white p-3 shadow-sm">
+                <div class="p-2">
+                    <div class="row p-1">
+                        <div class="col-lg-4 col-xl-3 bg-white shadow-sm p-0">
+                            <div class="p-1 text-center">
+                                <h6 class="pt-1">{% trans %}website_channels_list{% endtrans %}</h6>
+                            </div>
+                            <ul class="list-group website-channel-list">
+                                {% for channel in app.user.notifierChannels.getIterator %}
+                                    {% if website.hasNotifierChannel(channel.id) %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span>
+                                                <i class="text-success {{ channel_icons[channel.type] }}"></i>
+                                                {{ channel.name }}
+                                            </span>
+                                            <a href="{{ path('app_website_toggle_notifier_channel', {'websiteId': website.id, 'channelId': channel.id, 'token': channel_toggle_token|url_encode }) }}" class="btn btn-secondary" style="width: 80px;">disable</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span class="opacity-25">
+                                                <i class="text-secondary {{ channel_icons[channel.type] }}"></i>
+                                                {{ channel.name }}
+                                            </span>
+                                            <a href="{{ path('app_website_toggle_notifier_channel', {'websiteId': website.id, 'channelId': channel.id, 'token': channel_toggle_token|url_encode }) }}" class="btn btn-success" style="width: 80px;">enable</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

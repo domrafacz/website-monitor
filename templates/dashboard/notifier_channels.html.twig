@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}notifier_channels_title{% endtrans %}{% endblock %}
+
+{% block body %}
+    {% include('dashboard/_sidebar.html.twig') %}
+    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+        {% include('dashboard/_navbar.html.twig') %}
+        <div class="p-4">
+            <h3>{% trans %}notifier_channels_title{% endtrans %}</h3>
+            {% include('dashboard/_flash_messages.html.twig') %}
+            <div class="pt-3">
+                <a href="{{ path('app_notifier_add_channel') }}" class="btn btn-success mb-3" style="width: 6rem;">{% trans %}add{% endtrans %}</a>
+                {% if notifier_channels.count > 0 %}
+                    <div class="md-12 bg-white p-3 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                <tr>
+                                    <th scope="col">{% trans %}notifier_channel_name{% endtrans %}</th>
+                                    <th scope="col">{% trans %}channel_type{% endtrans %}</th>
+                                    <th scope="col">{% trans %}channel_options{% endtrans %}</th>
+                                    <th scope="col" class="text-center" style="width: 185px;">{% trans %}options{% endtrans %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for channel in notifier_channels.getIterator %}
+                                    <tr>
+                                        {% include 'dashboard/notifier/channels/_name_row.html.twig' %}
+                                        {% include 'dashboard/notifier/channels/_' ~ channels_types[channel.type].name|lower ~ '_row.html.twig' %}
+                                        {% include 'dashboard/notifier/channels/_options_row.html.twig' %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning border border-warning">{% trans %}empty_notification_channel_list_message{% endtrans %}</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

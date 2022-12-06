@@ -6,6 +6,7 @@ namespace App\Service;
 use App\Entity\DowntimeLog;
 use App\Entity\ResponseLog;
 use App\Entity\Website;
+use App\Service\Notifier\Notifier;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
@@ -19,6 +20,7 @@ class RequestsRunner
         private readonly HttpClientInterface $client,
         private readonly NoPrivateNetworkHttpClient $privateNetworkHttpClient,
         private readonly EntityManagerInterface $entityManager,
+        private readonly Notifier $notifier,
         private readonly bool $allowPrivateNetworks,
         /** @var array<ResponseInterface> $responses */
         private array $responses = [],
@@ -99,8 +101,14 @@ class RequestsRunner
         $datetime = $datetime->setTimestamp(intval($response->getInfo('start_time')));
 
         //checking if cert has been changed
-        if ($website->getCertExpiryTime() != $this->getCertExpireDate($response)){
-            //TODO add notification
+        if ($website->getCertExpiryTime() !== null && $website->getCertExpiryTime() != $this->getCertExpireDate($response)){
+            $message = sprintf("Previous expire date: %s\nNew expire date: %s",
+                $website->getCertExpiryTime()->format('Y-m-d H:i:s'),
+                $this->getCertExpireDate($response)->format('Y-m-d H:i:s'),
+            );
+            $this->sendNotification($website, 'Website certificate changed', $message);
+            $website->setCertExpiryTime($this->getCertExpireDate($response));
+        } elseif ($website->getCertExpiryTime() === null && $this->getCertExpireDate($response) !== null) {
             $website->setCertExpiryTime($this->getCertExpireDate($response));
         }
 
@@ -124,18 +132,28 @@ class RequestsRunner
 
         //executes when website goes down
         if (($website->getLastStatus() != Website::STATUS_OK) && $status == Website::STATUS_OK) {
-            // TODO send notification website is back up
             $downtimeLog = $this->getRecentDowntimeLog($website);
 
             if ($downtimeLog && $downtimeLog->getEndTime() == null) {
                 $downtimeLog->setEndTime($datetime);
                 $this->entityManager->persist($downtimeLog);
+                $message = sprintf("Url: %s \nIncident start: %s \nIncident end: %s",
+                    $website->getUrl(),
+                    $downtimeLog->getStartTime()->format('Y-m-d H:i:s'),
+                    $downtimeLog->getEndTime()->format('Y-m-d H:i:s'),
+                );
+                $this->sendNotification($website, 'Website is back online', $message);
             }
         }
 
         //executes when site goes back up
         if (($website->getLastStatus() == Website::STATUS_OK) && $status == Website::STATUS_ERROR) {
             $this->createDowntimeLog($website, $errors);
+            $message = sprintf("Url: %s \nErrors: %s",
+                $website->getUrl(),
+                implode("\n", $errors)
+            );
+            $this->sendNotification($website, 'Website is down', $message);
         }
 
         $website->setLastCheck($datetime);
@@ -252,6 +270,14 @@ class RequestsRunner
             return $downtimeLog;
         } else {
             return null;
+        }
+    }
+
+    private function sendNotification(Website $website, string $subject, string $message): void
+    {
+        foreach ($website->getNotifierChannels()->getIterator() as $channel) {
+            // TODO add translation
+            $this->notifier->sendNotification($channel->getType(), $subject, $message, $channel->getOptions());
         }
     }
 }

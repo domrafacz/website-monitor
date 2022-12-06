@@ -15,6 +15,12 @@
                 {% trans %}websites_link{% endtrans %}
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{{ path('app_notifier_channels') }}" class="nav-link sidebar-link" aria-current="page">
+                <i class="fa-solid fa-server"></i>
+                {% trans %}notifier_channels_link{% endtrans %}
+            </a>
+        </li>
     </ul>
 </div>
 <div id="sidebar-screen-hover" onclick="dashboardSidebarToggle()"></div>

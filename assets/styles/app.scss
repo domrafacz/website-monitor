@@ -122,3 +122,16 @@
     color: #c03434;
   }
 }
+
+.website-channel-list {
+  border-radius: 0;
+  li {
+    border: 0;
+    border-bottom: solid 1px #a4a4a4;
+    border-radius: 0;
+  }
+
+  li:last-child {
+    border-bottom: 0;
+  }
+}

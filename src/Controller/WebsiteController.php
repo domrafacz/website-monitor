@@ -7,6 +7,8 @@ use App\Dto\WebsiteDto;
 use App\Factory\WebsiteFactory;
 use App\Form\AddWebsiteType;
 use App\Form\DeleteWebsiteType;
+use App\Repository\NotifierChannelRepository;
+use App\Repository\WebsiteRepository;
 use App\Service\UserManager;
 use App\Service\WebsiteManager;
 use App\Service\WebsiteStatisticsProvider;
@@ -66,7 +68,7 @@ class WebsiteController extends AbstractController
 
     #[Route('/website/details/{id}', name: 'app_website_details')]
     #[IsGranted('ROLE_USER')]
-    public function details(int $id, Request $request, UserManager $userManager, WebsiteManager $websiteManager, TranslatorInterface $translator, WebsiteStatisticsProvider $statisticsProvider): Response
+    public function details(int $id, Request $request, UserManager $userManager, WebsiteManager $websiteManager, TranslatorInterface $translator, WebsiteStatisticsProvider $statisticsProvider, NotifierChannelRepository $channelRepository, WebsiteRepository $websiteRepository): Response
     {
         if (!$website = $userManager->getCurrentUser()->findWebsite($id))
         {
@@ -75,6 +77,7 @@ class WebsiteController extends AbstractController
 
         $deleteForm = $this->createForm(DeleteWebsiteType::class);
         $deleteForm->handleRequest($request);
+
 
         if ($deleteForm->isSubmitted() && $deleteForm->isValid()) {
             $websiteManager->delete($website, true);
@@ -107,5 +110,27 @@ class WebsiteController extends AbstractController
         return $this->render('dashboard/website/incidents.html.twig', [
            'downtime_logs' => $downtimeLogs,
         ]);
+    }
+
+    #[Route('/website/toggle-notifier-channel/{websiteId}/{channelId}/{token}', name: 'app_website_toggle_notifier_channel')]
+    #[IsGranted('ROLE_USER')]
+    public function toggleNotifierChannel(int $websiteId, int $channelId, string $token, UserManager $userManager, WebsiteRepository $websiteRepository): Response
+    {
+        if (!$website = $userManager->getCurrentUser()->findWebsite($websiteId))
+        {
+            throw $this->createNotFoundException(sprintf('Website not found, id: %s', $websiteId));
+        }
+
+        if (!$channel = $userManager->getCurrentUser()->findNotifierChannel($channelId))
+        {
+            throw $this->createNotFoundException(sprintf('Notifier channel not found, id: %s', $channelId));
+        }
+
+        if ($this->isCsrfTokenValid('website-toggle-notifier-channel', $token)) {
+            $website->toggleNotifierChannel($channel);
+            $websiteRepository->save($website, true);
+        }
+
+        return $this->redirectToRoute('app_website_details', ['id' => $websiteId]);
     }
 }

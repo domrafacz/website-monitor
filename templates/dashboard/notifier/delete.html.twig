@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}notifier_delete_channel_title{% endtrans %}{% endblock %}
+
+{% block body %}
+    {% include('dashboard/_sidebar.html.twig') %}
+    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+        {% include('dashboard/_navbar.html.twig') %}
+        <div class="p-4">
+            <h3>{% trans %}notifier_delete_channel_title{% endtrans %}</h3>
+            <div class="pt-3">
+                <div class="md-12 bg-white p-3 shadow-sm">
+                    <div class="mb-3">
+                        <label for="disabledId" class="form-label">Id</label>
+                        <input type="text" id="disabledId" class="form-control" value="{{ channel.id }}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="disabledType" class="form-label">{%trans %}type{% endtrans %}</label>
+                        <input type="text" id="disabledType" class="form-control" value="{{ constant('CHANNELS', channel)[channel.type].name }}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="disabledName" class="form-label">{%trans %}notifier_channel_name{% endtrans %}</label>
+                        <input type="text" id="disabledName" class="form-control" value="{{ channel.name }}" disabled>
+                    </div>
+                    {{ form(form) }}
+                </div>
+            </div>
+        </div>
+        {% include('dashboard/_flash_messages.html.twig') %}
+    </div>
+{% endblock %}

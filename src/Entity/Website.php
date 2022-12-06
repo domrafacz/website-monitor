@@ -63,10 +63,14 @@ class Website
     #[ORM\OneToMany(mappedBy: 'website', targetEntity: DowntimeLog::class, orphanRemoval: true)]
     private Collection $downtimeLogs;
 
+    #[ORM\ManyToMany(targetEntity: NotifierChannel::class, inversedBy: 'websites')]
+    private Collection $notifierChannels;
+
     public function __construct()
     {
         $this->responseLogs = new ArrayCollection();
         $this->downtimeLogs = new ArrayCollection();
+        $this->notifierChannels = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -264,5 +268,52 @@ class Website
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, NotifierChannel>
+     */
+    public function getNotifierChannels(): Collection
+    {
+        return $this->notifierChannels;
+    }
+
+    public function addNotifierChannel(NotifierChannel $notifierChannel): self
+    {
+        if (!$this->notifierChannels->contains($notifierChannel)) {
+            $this->notifierChannels->add($notifierChannel);
+        }
+
+        return $this;
+    }
+
+    public function removeNotifierChannel(NotifierChannel $notifierChannel): self
+    {
+        $this->notifierChannels->removeElement($notifierChannel);
+
+        return $this;
+    }
+
+    public function hasNotifierChannel(int $id): bool
+    {
+        foreach ($this->notifierChannels->getIterator() as $channel) {
+            if ($channel->getId() === $id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function toggleNotifierChannel(NotifierChannel $toggle): void
+    {
+        foreach ($this->notifierChannels->getIterator() as $channel) {
+            if ($channel->getId() === $toggle->getId()) {
+                $this->notifierChannels->removeElement($channel);
+                return;
+            }
+        }
+
+        $this->notifierChannels->add($toggle);
     }
 }

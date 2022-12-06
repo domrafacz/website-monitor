@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Service;
 
 use App\Entity\Website;
+use App\Service\Notifier\Notifier;
 use App\Service\RequestsRunner;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -17,6 +18,7 @@ class RequestsRunnerTest extends KernelTestCase
         $client = new MockHttpClient();
         $client2 = new NoPrivateNetworkHttpClient($client);
         $entityManager = $this->createMock(EntityManagerInterface::class);
+        $notifier = $this->createMock(Notifier::class);
 
 
         $website = new Website();
@@ -43,6 +45,7 @@ class RequestsRunnerTest extends KernelTestCase
             $client,
             $client2,
             $entityManager,
+            $notifier,
             true,
         );
 

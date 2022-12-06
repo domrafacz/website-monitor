@@ -37,15 +37,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, options: ['default' => 'en'])]
     private string $language = 'en';
 
-    /**
-     * @var Collection<int, Website> $websites
-     */
+    /** @var Collection<int, Website> $websites */
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Website::class, fetch: 'LAZY', orphanRemoval: true)]
     private Collection $websites;
+
+    /** @var Collection<int, NotifierChannel> $notifierChannels  */
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: NotifierChannel::class, cascade: ['all'], orphanRemoval: true)]
+    private Collection $notifierChannels;
 
     public function __construct()
     {
         $this->websites = new ArrayCollection();
+        $this->notifierChannels = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -166,6 +169,47 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         foreach ($this->getWebsites()->getIterator() as $website) {
             if ($website->getId() == $id) {
                 return $website;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Collection<int, NotifierChannel>
+     */
+    public function getNotifierChannels(): Collection
+    {
+        return $this->notifierChannels;
+    }
+
+    public function addNotifierChannel(NotifierChannel $notifierChannel): self
+    {
+        if (!$this->notifierChannels->contains($notifierChannel)) {
+            $this->notifierChannels->add($notifierChannel);
+            $notifierChannel->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotifierChannel(NotifierChannel $notifierChannel): self
+    {
+        if ($this->notifierChannels->removeElement($notifierChannel)) {
+            // set the owning side to null (unless already changed)
+            if ($notifierChannel->getOwner() === $this) {
+                $notifierChannel->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function findNotifierChannel(int $id): ?NotifierChannel
+    {
+        foreach ($this->getNotifierChannels()->getIterator() as $channel) {
+            if ($channel->getId() == $id) {
+                return $channel;
             }
         }
 
