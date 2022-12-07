@@ -27,7 +27,7 @@ class Telegram implements ChannelInterface
         }
     }
 
-    public function send(string $subject = '', string $message = '', array $options = []): void
+    public function send(string $subject = '', string $message = '', array $options = []): bool
     {
         $this->validateOptions($options);
 
@@ -41,13 +41,16 @@ class Telegram implements ChannelInterface
                     $options['chatId'],
                     urlencode($message)
                 ),
+                ['timeout' => 10.0],
             );
 
             if ($response->getStatusCode() !== 200) {
                 throw new UnrecoverableMessageHandlingException();
             }
         } catch (TransportExceptionInterface $e) {
+            throw new UnrecoverableMessageHandlingException();
         }
-    }
 
+        return true;
+    }
 }

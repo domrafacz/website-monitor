@@ -12,10 +12,17 @@ class HomepageControllerTest extends WebTestCase
     private KernelBrowser $client;
     private UserRepository $userRepository;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->client = static::createClient();
         $this->userRepository = static::getContainer()->get(UserRepository::class);
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->userRepository);
+        unset($this->client);
+        parent::tearDown();
     }
 
     public function testAuthenticatedRedirect(): void

@@ -18,11 +18,26 @@ class DashboardControllerTest extends WebTestCase
         $this->userRepository = static::getContainer()->get(UserRepository::class);
     }
 
+    protected function tearDown(): void
+    {
+        unset($this->userRepository);
+        unset($this->client);
+        parent::tearDown();
+    }
+
     public function testDashboardWebsites(): void
     {
         $testUser = $this->userRepository->findOneByUsername('test1@test.com');
         $this->client->loginUser($testUser);
         $this->client->request('GET', '/websites');
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testDashboardNotifierChannels(): void
+    {
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $this->client->loginUser($testUser);
+        $this->client->request('GET', '/notifier-channels');
         $this->assertResponseIsSuccessful();
     }
 }

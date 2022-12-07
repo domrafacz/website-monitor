@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\NotifierChannel;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -37,6 +38,17 @@ class UserFixture extends Fixture
         );
         $manager->persist($user2);
 
+        $manager->flush();
+
+        $notifierChannel = new NotifierChannel(
+            $user,
+            0,
+            'telegram_test',
+            ['apiToken' => '123', 'chatId' => '456'],
+        );
+
+        $user->addNotifierChannel($notifierChannel);
+        $manager->persist($notifierChannel);
         $manager->flush();
     }
 }

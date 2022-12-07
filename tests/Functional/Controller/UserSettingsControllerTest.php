@@ -10,10 +10,19 @@ use \Symfony\Bundle\FrameworkBundle\KernelBrowser;
 class UserSettingsControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
+    private UserRepository $userRepository;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->client = static::createClient();
+        $this->userRepository = static::getContainer()->get(UserRepository::class);
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->client);
+        unset($this->userRepository);
+        parent::tearDown();
     }
 
     public function testAccessSettingsUnauthorized(): void
@@ -25,10 +34,7 @@ class UserSettingsControllerTest extends WebTestCase
 
     public function testUpdateUserSettings(): void
     {
-        $container = static::getContainer();
-
-        $userRepository = $container->get(UserRepository::class);
-        $testUser = $userRepository->findOneByUsername('test1@test.com');
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
 
         $this->client->loginUser($testUser);
         $crawler = $this->client->request('GET', '/user-settings');
@@ -47,10 +53,7 @@ class UserSettingsControllerTest extends WebTestCase
 
     public function testDeleteUser(): void
     {
-        $container = static::getContainer();
-
-        $userRepository = $container->get(UserRepository::class);
-        $testUser = $userRepository->findOneByUsername('test1@test.com');
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
 
         $this->client->loginUser($testUser);
 
@@ -69,10 +72,7 @@ class UserSettingsControllerTest extends WebTestCase
 
     public function testDeleteUserInvalidPassword(): void
     {
-        $container = static::getContainer();
-
-        $userRepository = $container->get(UserRepository::class);
-        $testUser = $userRepository->findOneByUsername('test1@test.com');
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
 
         $this->client->loginUser($testUser);
 
@@ -92,10 +92,7 @@ class UserSettingsControllerTest extends WebTestCase
 
     public function testChangePassword(): void
     {
-        $container = static::getContainer();
-
-        $userRepository = $container->get(UserRepository::class);
-        $testUser = $userRepository->findOneByUsername('test1@test.com');
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
 
         $this->client->loginUser($testUser);
 
@@ -110,7 +107,7 @@ class UserSettingsControllerTest extends WebTestCase
 
         $this->client->submit($form);
 
-        $updatedUser = $userRepository->findOneByUsername('test1@test.com');
+        $updatedUser = $this->userRepository->findOneByUsername('test1@test.com');
         $this->assertNotEquals($testUser->getPassword(),$updatedUser->getPassword());
     }
 }

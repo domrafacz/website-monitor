@@ -11,6 +11,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 class CreateUserCommandTest extends KernelTestCase
 {
     private Command $command;
+
     public function setUp(): void
     {
         $application = new Application(self::bootKernel());

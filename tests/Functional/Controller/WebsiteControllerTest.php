@@ -7,7 +7,6 @@ use App\Repository\UserRepository;
 use App\Repository\WebsiteRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class WebsiteControllerTest extends WebTestCase
 {
@@ -15,11 +14,19 @@ class WebsiteControllerTest extends WebTestCase
     private UserRepository $userRepository;
     private WebsiteRepository $websiteRepository;
 
-    public function setUp(): void
+   protected function setUp(): void
     {
         $this->client = static::createClient();
         $this->userRepository = static::getContainer()->get(UserRepository::class);
         $this->websiteRepository = static::getContainer()->get(WebsiteRepository::class);
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->userRepository);
+        unset($this->websiteRepository);
+        unset($this->client);
+        parent::tearDown();
     }
 
     public function testAddWebsite(): void
@@ -113,5 +120,66 @@ class WebsiteControllerTest extends WebTestCase
         $this->client->request('GET', '/website/incidents/'.$secondUser->getWebsites()->first()->getId());
 
         $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testWebsiteNotifierChannelToggle(): void
+    {
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $this->client->loginUser($testUser);
+
+        $website = $testUser->getWebsites()->first();
+        $channelId = $testUser->getNotifierChannels()->first()->getId();
+
+        $this->assertEquals(0, $website->getNotifierChannels()->count());
+
+        $crawler = $this->client->request('GET', '/website/details/'.$website->getId());
+        $link = $crawler->filter(sprintf('#channel_toggle_%d', $channelId))->attr('href');
+
+        $this->client->request('GET', $link);
+
+        $updatedWebsite = $this->websiteRepository->find($website->getId());
+
+        $this->assertEquals(1, $updatedWebsite->getNotifierChannels()->count());
+    }
+
+    public function testWebsiteNotifierChannelToggleInvalidWebsiteId(): void
+    {
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $this->client->loginUser($testUser);
+
+        $this->client->request('GET', 'website/toggle-notifier-channel/931382135/4/none');
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testWebsiteNotifierChannelToggleInvalidChannelId(): void
+    {
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $this->client->loginUser($testUser);
+
+        $website = $testUser->getWebsites()->first();
+        $this->client->request('GET', sprintf('website/toggle-notifier-channel/%d/46813854/none', $website->getId()));
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testWebsiteNotifierChannelToggleInvalidCsrfToken(): void
+    {
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $this->client->loginUser($testUser);
+
+        $website = $testUser->getWebsites()->first();
+        $channelId = $testUser->getNotifierChannels()->first()->getId();
+
+        $this->assertEquals(0, $website->getNotifierChannels()->count());
+
+        $crawler = $this->client->request('GET', '/website/details/'.$website->getId());
+        $link = $crawler->filter(sprintf('#channel_toggle_%d', $channelId))->attr('href');
+
+        $this->client->request('GET', mb_substr($link, 0, -5));
+
+        $updatedWebsite = $this->websiteRepository->find($website->getId());
+
+        $this->assertEquals(0, $updatedWebsite->getNotifierChannels()->count());
     }
 }

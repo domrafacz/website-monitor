@@ -6,5 +6,5 @@ namespace App\Service\Notifier\Channels\Contracts;
 interface ChannelInterface
 {
     /** @param array<string, string> $options */
-    public function send(string $subject = '', string $message = '', array $options = []): void;
+    public function send(string $subject = '', string $message = '', array $options = []): bool;
 }

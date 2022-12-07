@@ -18,6 +18,13 @@ class LoginControllerTest extends WebTestCase
         $this->userRepository = static::getContainer()->get(UserRepository::class);
     }
 
+    protected function tearDown(): void
+    {
+        unset($this->userRepository);
+        unset($this->client);
+        parent::tearDown();
+    }
+
     public function testUnauthenticatedRedirect(): void
     {
         $this->client->request('GET', '/login');
