@@ -14,9 +14,14 @@ class Notifier
     ) {}
 
     /** @param null|array<string, string> $options */
-    public function sendNotification(int $type, string $subject, string $message, ?array $options = null): void
+    public function sendNotification(int $type, string $subject, string $message, ?array $options = null): bool
     {
-        $notifierMessage = $this->messageFactory->create(0, $subject, $message, $options ?? []);
-        $this->bus->dispatch($notifierMessage);
+        try {
+            $notifierMessage = $this->messageFactory->create(0, $subject, $message, $options ?? []);
+            $this->bus->dispatch($notifierMessage);
+            return true;
+        } catch (\Throwable) {
+            return false;
+        }
     }
 }

@@ -1,4 +1,5 @@
-<td style="min-width:185px">
+<td style="min-width:285px">
+    <a class="btn btn-success" style="width:100px" href="{{ path('app_notifier_test_channel', {id: channel.getId}) }}">{% trans %}test_message{% endtrans %} <i class="far fa-envelope"></i></a>
     <a class="btn btn-primary" style="width:80px" href="{{ path('app_notifier_edit_channel', {id: channel.getId}) }}">{% trans %}edit{% endtrans %}</a>
     <a class="btn btn-danger" style="width:80px" href="{{ path('app_notifier_delete_channel', {id: channel.getId}) }}">{% trans %}delete{% endtrans %}</a>
 </td>

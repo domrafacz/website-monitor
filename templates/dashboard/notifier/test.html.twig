@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}notifier_test_channel_title{% endtrans %} - {{ channel.name }}{% endblock %}
+
+{% block body %}
+    {% include('dashboard/_sidebar.html.twig') %}
+    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+        {% include('dashboard/_navbar.html.twig') %}
+        {% if result is not null %}
+            {% if result == true %}
+                <div class="alert alert-success">{% trans %}test_notification_success{% endtrans %}</div>
+            {% else %}
+                <div class="alert alert-danger">{% trans %}test_notification_error{% endtrans %}</div>
+            {% endif %}
+        {% endif %}
+        <div class="p-4">
+            <h3>{% trans %}notifier_test_channel_title{% endtrans %} - {{ channel.name }}</h3>
+            <div class="pt-3">
+                <div class="md-12 bg-white p-3 shadow-sm">
+                    <div class="mb-3">
+                        <label for="disabledId" class="form-label">Id</label>
+                        <input type="text" id="disabledId" class="form-control" value="{{ channel.id }}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="disabledType" class="form-label">{%trans %}type{% endtrans %}</label>
+                        <input type="text" id="disabledType" class="form-control" value="{{ constant('CHANNELS', channel)[channel.type].name }}" disabled>
+                    </div>
+                    {{ form(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -6,13 +6,16 @@ namespace App\Controller;
 use App\Entity\NotifierChannel;
 use App\Factory\Notifier\ChannelFactory;
 use App\Form\NotifierDeleteChannelType;
+use App\Form\NotifierTestChannelType;
 use App\Repository\UserRepository;
 use App\Service\Notifier\ChannelManager;
+use App\Service\Notifier\Notifier;
 use App\Service\UserManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -47,11 +50,9 @@ class NotifierController extends AbstractController
 
     #[Route('/notifier/edit-channel/{id}', name: 'app_notifier_edit_channel')]
     #[IsGranted('ROLE_USER')]
-    public function editChannel(Request $request, UserManager $userManager, ChannelManager $channelsManager, NotifierChannel $channel, ChannelFactory $channelFactory): Response
+    public function editChannel(Request $request, UserManager $userManager, ChannelManager $channelManager, ChannelFactory $channelFactory, int $id): Response
     {
-        if ($channel->getOwner() !== $userManager->getCurrentUser()) {
-            throw $this->createNotFoundException(sprintf('Channel not found, id: %s', $channel->getId()));
-        }
+        $channel = $userManager->getNotifierChannel($userManager->getCurrentUser(), $id);
 
         $form = $this->createForm(NotifierChannel::CHANNELS[$channel->getType()]['form']);
         $form->handleRequest($request);
@@ -59,16 +60,16 @@ class NotifierController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             if (is_array($form->getData())) {
                 $dto = $channelFactory->createDtoFromFormData($form->getData());
-                $channelsManager->update($channel, $dto->name, $dto->options);
+                $channelManager->update($channel, $dto->name, $dto->options);
             }
         }
 
         if (!$form->isSubmitted()) {
-            if ($channel->getOptions() === null) {
-                $form->setData(['name' => $channel->getName()]);
-            } else {
-                $form->setData(array_merge($channel->getOptions(), ['name' => $channel->getName()]));
+            $options = ['name' => $channel->getName()];
+            if ($channel->getOptions() !== null) {
+                $options = array_merge($channel->getOptions(), $options);
             }
+            $form->setData($options);
         }
 
         return $this->render('dashboard/notifier/edit.html.twig', [
@@ -79,11 +80,9 @@ class NotifierController extends AbstractController
 
     #[Route('/notifier/delete-channel/{id}', name: 'app_notifier_delete_channel')]
     #[IsGranted('ROLE_USER')]
-    public function deleteChannel(Request $request, UserManager $userManager, ChannelManager $channelsManager, NotifierChannel $channel, UserRepository $userRepository): Response
+    public function deleteChannel(Request $request, UserManager $userManager, ChannelManager $channelsManager, UserRepository $userRepository, int $id): Response
     {
-        if ($channel->getOwner() !== $userManager->getCurrentUser()) {
-            throw $this->createNotFoundException(sprintf('Channel not found, id: %s', $channel->getId()));
-        }
+        $channel = $userManager->getNotifierChannel($userManager->getCurrentUser(), $id);
 
         $form = $this->createForm(NotifierDeleteChannelType::class);
         $form->handleRequest($request);
@@ -98,6 +97,27 @@ class NotifierController extends AbstractController
         return $this->render('dashboard/notifier/delete.html.twig', [
             'form' => $form->createView(),
             'channel' => $channel,
+        ]);
+    }
+
+    #[Route('/notifier/test-channel/{id}', name: 'app_notifier_test_channel')]
+    #[IsGranted('ROLE_USER')]
+    public function testChannel(Request $request, UserManager $userManager, Notifier $notifier, TranslatorInterface $translator, int $id): Response
+    {
+        $channel = $userManager->getNotifierChannel($userManager->getCurrentUser(), $id);
+
+        $form = $this->createForm(NotifierTestChannelType::class);
+        $form->handleRequest($request);
+        $result = null;
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $result = $notifier->sendNotification($channel->getType(), 'test_subject', 'test_message', $channel->getOptions());
+        }
+
+        return $this->render('dashboard/notifier/test.html.twig', [
+            'form' => $form->createView(),
+            'channel' => $channel,
+            'result' => $result,
         ]);
     }
 }

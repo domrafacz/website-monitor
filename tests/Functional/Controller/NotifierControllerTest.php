@@ -86,10 +86,27 @@ class NotifierControllerTest extends WebTestCase
         $crawler = $this->client->request('GET', '/notifier/delete-channel/' . $testUser->getNotifierChannels()->first()->getId());
         $form = $crawler->filter('#notifier_delete_channel_submit')->form();
 
-        $this->client->submit($form, [
-        ]);
+        $this->client->submit($form);
 
         $this->assertEquals(0, $this->userRepository->findOneByUsername('test1@test.com')->getNotifierChannels()->count());
         $this->assertResponseStatusCodeSame(302);
+    }
+
+    public function testTestTelegramChannel(): void
+    {
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $this->client->loginUser($testUser);
+
+        $crawler = $this->client->request('GET', '/notifier/test-channel/' . $testUser->getNotifierChannels()->first()->getId());
+        $form = $crawler->filter('#notifier_test_channel_submit')->form();
+
+        $crawler = $this->client->submit($form);
+
+        $alert = $crawler->filter('div.alert-success');
+
+        $this->assertNotNull($alert);
+        $this->assertEquals(1, $alert->count());
+        $this->assertEquals('Notification has been sent', $alert->text());
+        $this->assertResponseIsSuccessful();
     }
 }

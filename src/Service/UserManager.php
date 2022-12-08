@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\NotifierChannel;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\Security;
@@ -44,5 +46,16 @@ class UserManager
         }
 
         return $user;
+    }
+
+    public function getNotifierChannel(User $user, int $id): NotifierChannel
+    {
+        $channel = $user->findNotifierChannel($id);
+
+        if (!$channel) {
+            throw new NotFoundHttpException(sprintf('Channel not found, id: %s', $id));
+        }
+
+        return $channel;
     }
 }
