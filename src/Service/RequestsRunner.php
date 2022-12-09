@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Dto\RequestRunnerResponseDto;
 use App\Entity\DowntimeLog;
 use App\Entity\ResponseLog;
 use App\Entity\Website;
 use App\Service\Notifier\Notifier;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -17,17 +17,16 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 class RequestsRunner
 {
     public function __construct(
-        private readonly HttpClientInterface $client,
-        private readonly NoPrivateNetworkHttpClient $privateNetworkHttpClient,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly Notifier $notifier,
-        private readonly bool $allowPrivateNetworks,
+        private readonly HttpClientInterface        $client,
+        private readonly NoPrivateNetworkHttpClient $noPrivateNetworkHttpClient,
+        private readonly EntityManagerInterface     $entityManager,
+        private readonly Notifier                   $notifier,
+        private readonly bool                       $allowPrivateNetworks,
         /** @var array<ResponseInterface> $responses */
-        private array $responses = [],
-        /** @var array<array<string, int|string>> $errors */
-        private array $errors = [],
-        /** @var array<int, int> $responsesTime */
-        private array $responsesTime = [],
+        private array                               $responses = [],
+        /** @var array<int, RequestRunnerResponseDto> $responseData */
+        private array $responseData = [],
+        private int $batchFlushSize = 50,
     ) {}
 
     private function getClient(): HttpClientInterface
@@ -35,7 +34,7 @@ class RequestsRunner
         if ($this->allowPrivateNetworks === true) {
             return $this->client;
         } else {
-            return $this->privateNetworkHttpClient;
+            return $this->noPrivateNetworkHttpClient;
         }
     }
 
@@ -48,42 +47,59 @@ class RequestsRunner
                     'timeout' => $website->getTimeout(),
                     'max_redirects' => $website->getMaxRedirects(),
                     'capture_peer_cert_chain' => true,
-                    'user_data' => [
-                        'website' => $website,
-                    ]
+                    'user_data' => $website->getId()
                 ]);
 
+                $this->updateResponseDto($website->getId(), $website);
+
             } catch (TransportExceptionInterface $e) {
-                $this->addError($website->getId(), $e->getMessage());
-                $this->addResponseTime($website->getId(), -1);
+                $this->updateResponseDto($website->getId(), $website, ['Transport exception'], microtime(true));
             }
         }
 
         foreach ($this->getClient()->stream($this->responses) as $response => $chunk) {
             try {
                 if ($chunk->isTimeout()) {
-                    $this->addError($this->getWebsite($response)->getId(), 'timeout');
-                    $this->addResponseTime($this->getWebsite($response)->getId(), floatval($response->getInfo('start_time')));
+                    $this->updateResponseDto(
+                        $this->getWebsiteIdFromResponse($response),
+                        null,
+                        ['Timeout'],
+                        floatval($response->getInfo('start_time')),
+                        $this->calculateResponseTime(floatval($response->getInfo('start_time'))),
+                    );
+
                     $response->cancel();
                 } elseif ($chunk->isFirst()) {
                     //prevent exception
                     $response->getStatusCode();
                 } elseif ($chunk->isLast()) {
-                    //request finished
-                    $this->addResponseTime($this->getWebsite($response)->getId(), floatval($response->getInfo('start_time')));
+                    //response completed
+                    $this->updateResponseDto(
+                        $this->getWebsiteIdFromResponse($response),
+                        null,
+                        [],
+                        floatval($response->getInfo('start_time')),
+                        intval(round($response->getInfo('total_time') * 1000)),
+                        $response->getStatusCode(),
+                        $this->getCertExpireDate($response),
+                    );
                 }
             } catch (TransportExceptionInterface $e) {
-                $this->addError($this->getWebsite($response)->getId(), $e->getMessage());
-                $this->addResponseTime($this->getWebsite($response)->getId(), -1);
+                $this->updateResponseDto(
+                    $this->getWebsiteIdFromResponse($response),
+                    null,
+                    ['Stream transport exception'],
+                    floatval($response->getInfo('start_time')),
+                );
             }
         }
 
         $currentResponse = 1;
-        foreach ($this->responses as $response) {
-            $this->responseLog($response);
+        foreach ($this->responseData as $websiteId => $dto) {
+            $this->responseLog($dto);
 
             //flush in batches for better performance
-            if ($currentResponse % 50 === 0) {
+            if ($currentResponse % $this->batchFlushSize === 0) {
                 $this->entityManager->flush();
             }
             $currentResponse++;
@@ -92,98 +108,69 @@ class RequestsRunner
         $this->entityManager->flush();
     }
 
-    private function responseLog(ResponseInterface $response): void
+    private function responseLog(RequestRunnerResponseDto $dto): void
     {
         $status = Website::STATUS_OK;
-        $website = $this->getWebsite($response);
-        $errors = $this->getErrors($website->getId());
         $datetime = new \DateTimeImmutable();
-        $datetime = $datetime->setTimestamp(intval($response->getInfo('start_time')));
-        $certExpireTime = $this->getCertExpireDate($response);
+        $datetime = $datetime->setTimestamp(intval($dto->startTime));
 
-        //checking if cert has been changed
-        if ($website->getCertExpiryTime() !== null && $certExpireTime !== null && $website->getCertExpiryTime() != $certExpireTime){
-            $message = sprintf("Previous expire date: %s\nNew expire date: %s",
-                $website->getCertExpiryTime()->format('Y-m-d H:i:s'),
-                $certExpireTime->format('Y-m-d H:i:s'),
-            );
-            $this->sendNotification($website, 'Website certificate changed', $message);
-            $website->setCertExpiryTime($certExpireTime);
-        } elseif ($website->getCertExpiryTime() === null && $certExpireTime !== null) {
-            $website->setCertExpiryTime($certExpireTime);
-        }
-
-        //checking status code
-        try {
-            if ($response->getStatusCode() != $website->getExpectedStatusCode()) {
-                $status = Website::STATUS_ERROR;
-                // TODO add translation
-                $errors[] = sprintf('Unexpected HTTP status code: %d, expected: %d',
-                    $response->getStatusCode(),
-                    $website->getExpectedStatusCode()
+        //check status code if there are no errors
+        if (empty($dto->errors)) {
+            if ($dto->website && $dto->statusCode != $dto->website->getExpectedStatusCode()) {
+                $dto->errors[] = sprintf('Unexpected HTTP status code: %d, expected: %d',
+                    $dto->statusCode,
+                    $dto->website->getExpectedStatusCode()
                 );
             }
-        } catch (TransportExceptionInterface $e) {
         }
 
-        //errors handling
-        if (!empty($errors)) {
+        //check certificate info if status code is ok
+        if (empty($dto->errors) && $dto->website) {
+            $dto->website = $this->updateWebsiteCertExpireTime($dto->website, $dto->certExpireTime);
+        }
+
+        if (!empty($dto->errors)) {
             $status = Website::STATUS_ERROR;
         }
 
-        //executes when website goes down
-        if (($website->getLastStatus() != Website::STATUS_OK) && $status == Website::STATUS_OK) {
-            $downtimeLog = $this->getRecentDowntimeLog($website);
-
-            if ($downtimeLog && $downtimeLog->getEndTime() == null) {
-                $downtimeLog->setEndTime($datetime);
-                $this->entityManager->persist($downtimeLog);
-                $message = sprintf("Url: %s \nIncident start: %s \nIncident end: %s",
-                    $website->getUrl(),
-                    $downtimeLog->getStartTime()->format('Y-m-d H:i:s'),
-                    $datetime->format('Y-m-d H:i:s'),
-                );
-                $this->sendNotification($website, 'Website is back online', $message);
-            }
-        }
-
         //executes when site goes back up
-        if (($website->getLastStatus() == Website::STATUS_OK) && $status == Website::STATUS_ERROR) {
-            $this->createDowntimeLog($website, $errors);
-            $message = sprintf("Url: %s \nErrors: %s",
-                $website->getUrl(),
-                implode("\n", $errors)
-            );
-            $this->sendNotification($website, 'Website is down', $message);
+        if (($dto->website?->getLastStatus() != Website::STATUS_OK) && $status == Website::STATUS_OK) {
+            $this->endDowntime($dto);
         }
 
-        $website->setLastCheck($datetime);
-        $website->setLastStatus($status);
+        //executes when website goes down
+        if (($dto->website?->getLastStatus() == Website::STATUS_OK) && $status == Website::STATUS_ERROR) {
+            $this->createDowntime($dto);
+        }
 
-        $responseLog = new ResponseLog(
-            $website,
-            $status,
-            $datetime,
-            $this->getResponseTime($website->getId())
-        );
+        $dto->website?->setLastCheck($datetime);
+        $dto->website?->setLastStatus($status);
 
-        $this->entityManager->persist($website);
-        $this->entityManager->persist($responseLog);
+        if ($dto->website) {
+            if ($status == Website::STATUS_OK) {
+                $responseLog = new ResponseLog(
+                    $dto->website,
+                    $status,
+                    $datetime,
+                    intval($dto->totalTime),
+                );
+
+                $this->entityManager->persist($responseLog);
+            }
+
+            $this->entityManager->persist($dto->website);
+        }
     }
 
-    private function getWebsite(ResponseInterface $response): Website
+    private function getWebsiteIdFromResponse(ResponseInterface $response): int
     {
-        /** @var array<string, Website> $userData */
-        $userData = $response->getInfo('user_data');
-
-        return $userData['website'];
+        return intval($response->getInfo('user_data'));
     }
 
     private function getCertExpireDate(ResponseInterface $response): ?\DateTimeInterface
     {
         /** @var array<int, array<string>>|null $certInfo */
         $certInfo = $response->getInfo('certinfo');
-
 
         if ($certInfo && isset($certInfo[0]['Expire date'])) {
             $time = strtotime($certInfo[0]['Expire date']);
@@ -197,80 +184,48 @@ class RequestsRunner
         return null;
     }
 
-    /** @return array{}|array<int, string> */
-    private function getErrors(?int $websiteId): array
+    private function calculateResponseTime(float $startTime): float
     {
-        $errors = [];
-
-        if (!$websiteId) {
-            return $errors;
-        }
-
-        foreach ($this->errors as $key => $error) {
-            if ($error['website_id'] == $websiteId) {
-                if (is_string($error['error'])) {
-                    $errors[] = $error['error'];
-                }
-            }
-        }
-
-        return $errors;
+        return intval(round((microtime(true) - $startTime) * 1000));
     }
 
-    private function addError(?int $websiteId, string $message): void
+    private function createDowntime(RequestRunnerResponseDto $dto): void
     {
-        if (!$websiteId) {
-            return;
-        }
+        if ($dto->website) {
+            $downtimeLog = new DowntimeLog();
+            $downtimeLog->setWebsite($dto->website);
+            $downtimeLog->setStartTime(new \DateTimeImmutable());
+            $downtimeLog->setInitialError($dto->errors);
+            $this->entityManager->persist($downtimeLog);
 
-        $this->errors[] = ['website_id' => $websiteId, 'error' => $message];
-    }
+            $message = sprintf("Url: %s \nErrors: %s",
+                $dto->website->getUrl(),
+                implode("\n", $dto->errors)
+            );
 
-    private function addResponseTime(?int $websiteId, float $startTime): void
-    {
-        if (!$websiteId) {
-            return;
-        }
-
-        //$startTime = -1 when something went wrong during request, like dns error
-        if ($startTime == -1) {
-            $this->responsesTime[$websiteId] = intval($startTime);
-        } else {
-            $this->responsesTime[$websiteId] = intval(round((microtime(true) - $startTime) * 1000));
+            $this->sendNotification($dto->website, 'Website is down', $message);
         }
     }
 
-    private function getResponseTime(?int $websiteId): int
+    private function endDowntime(RequestRunnerResponseDto $dto): void
     {
-        if (!$websiteId) {
-            return 0;
-        }
+        $downtimeLog = $dto->website?->getRecentDowntimeLog();
 
-        return $this->responsesTime[$websiteId] ?? 0;
-    }
+        if ($downtimeLog && $dto->website && $downtimeLog->getEndTime() == null) {
+            $datetime = new \DateTimeImmutable();
+            $datetime = $datetime->setTimestamp(intval($dto->startTime));
 
-    /** @param array<int, string> $errors */
-    private function createDowntimeLog(Website $website, array $errors): void
-    {
-        $downtimeLog = new DowntimeLog();
-        $downtimeLog->setWebsite($website);
-        $downtimeLog->setStartTime(new \DateTimeImmutable());
-        $downtimeLog->setInitialError($errors);
+            $downtimeLog->setEndTime($datetime);
+            $this->entityManager->persist($downtimeLog);
 
-        $this->entityManager->persist($downtimeLog);
-    }
+            $message = sprintf("Url: %s \nIncident start: %s \nIncident end: %s",
+                $dto->website->getUrl(),
+                $downtimeLog->getStartTime()->format('Y-m-d H:i:s'),
+                $datetime->format('Y-m-d H:i:s'),
+            );
 
-    private function getRecentDowntimeLog(Website $website): ?DowntimeLog
-    {
-        $criteria = Criteria::create()
-            ->orderBy(array('id' => Criteria::DESC));
-
-        $downtimeLog = $website->getDowntimeLogs()->matching($criteria)->first();
-
-        if ($downtimeLog instanceof DowntimeLog) {
-            return $downtimeLog;
-        } else {
-            return null;
+            // TODO add translation
+            $this->sendNotification($dto->website, 'Website is back online', $message);
         }
     }
 
@@ -280,5 +235,63 @@ class RequestsRunner
             // TODO add translation
             $this->notifier->sendNotification($channel->getType(), $subject, $message, $channel->getOptions());
         }
+    }
+
+    private function getResponseDto(int $websiteId): RequestRunnerResponseDto
+    {
+        if (!isset($this->responseData[$websiteId])){
+            $this->responseData[$websiteId] = new RequestRunnerResponseDto();
+        }
+
+        return $this->responseData[$websiteId];
+    }
+
+    /** @param array<int, string> $errors */
+    private function updateResponseDto(
+        ?int $websiteId,
+        ?Website $website = null,
+        array $errors = [],
+        ?float $startTime = null,
+        ?float $totalTime = null,
+        ?int $statusCode = null,
+        ?\DateTimeInterface $certExpireTime = null,
+    ): void
+    {
+        if ($websiteId) {
+            $dto = $this->getResponseDto($websiteId);
+
+            $dto->website = $website ?? $dto->website;
+            $dto->errors = array_merge($dto->errors, $errors);
+            $dto->startTime = $startTime ?? $dto->startTime;
+            $dto->totalTime = $totalTime ?? $dto->totalTime;
+            $dto->statusCode = $statusCode ?? $dto->statusCode;
+            $dto->certExpireTime = $certExpireTime ?? $dto->certExpireTime;
+
+            $this->responseData[$websiteId] = $dto;
+        }
+    }
+
+    private function updateWebsiteCertExpireTime(Website $website, ?\DateTimeInterface $certExpireTime = null): Website
+    {
+        if ($website->getCertExpiryTime() === null) {
+            if ($certExpireTime !== null) {
+                $website->setCertExpiryTime($certExpireTime);
+            }
+        } elseif ($certExpireTime !== null && $website->getCertExpiryTime() != $certExpireTime) {
+            $message = sprintf("Previous expire date: %s\nNew expire date: %s",
+                $website->getCertExpiryTime()->format('Y-m-d H:i:s'),
+                $certExpireTime->format('Y-m-d H:i:s'),
+            );
+            $this->sendNotification($website, 'Website certificate changed', $message);
+            $website->setCertExpiryTime($certExpireTime);
+        }
+
+        return $website;
+    }
+
+    /** @return array<int, RequestRunnerResponseDto> */
+    public function getResponseData(): array
+    {
+        return $this->responseData;
     }
 }

@@ -6,6 +6,7 @@ namespace App\Entity;
 use App\Repository\WebsiteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -316,5 +317,19 @@ class Website
         }
 
         $this->notifierChannels->add($toggle);
+    }
+
+    public function getRecentDowntimeLog(): ?DowntimeLog
+    {
+        $criteria = Criteria::create()
+            ->orderBy(array('id' => Criteria::DESC));
+
+        $downtimeLog = $this->getDowntimeLogs()->matching($criteria)->first();
+
+        if ($downtimeLog instanceof DowntimeLog) {
+            return $downtimeLog;
+        } else {
+            return null;
+        }
     }
 }
