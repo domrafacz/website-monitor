@@ -3,7 +3,7 @@
 {% block title %}{% trans %}website_details_title{% endtrans %} - {{ website.getUrl }}{% endblock %}
 
 {% block body %}
-    {% set channel_icons = ['fa-brands fa-telegram'] %}
+    {% set channel_icons = ['fa-brands fa-telegram', 'fa-brands fa-discord'] %}
     {% set channel_toggle_token = csrf_token('website-toggle-notifier-channel') %}
     {% include('dashboard/_sidebar.html.twig') %}
     <div class="wrapper d-flex flex-column min-vh-100 bg-light">
@@ -85,7 +85,7 @@
                                     {% if website.hasNotifierChannel(channel.id) %}
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
                                             <span>
-                                                <i class="text-success {{ channel_icons[channel.type] }}"></i>
+                                                <i class="text-success {{ (channel_icons[channel.type] is defined) ? channel_icons[channel.type] : '' }}"></i>
                                                 {{ channel.name }}
                                             </span>
                                             <a href="{{ path('app_website_toggle_notifier_channel', {'websiteId': website.id, 'channelId': channel.id, 'token': channel_toggle_token|url_encode }) }}" id="channel_toggle_{{ channel.id }}" class="btn btn-secondary" style="width: 80px;">disable</a>
@@ -93,7 +93,7 @@
                                     {% else %}
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
                                             <span class="opacity-50">
-                                                <i class="text-secondary {{ channel_icons[channel.type] }}"></i>
+                                                <i class="text-secondary {{ (channel_icons[channel.type] is defined) ? channel_icons[channel.type] : '' }}"></i>
                                                 {{ channel.name }}
                                             </span>
                                             <a href="{{ path('app_website_toggle_notifier_channel', {'websiteId': website.id, 'channelId': channel.id, 'token': channel_toggle_token|url_encode }) }}" id="channel_toggle_{{ channel.id }}" class="btn btn-success" style="width: 80px;">enable</a>

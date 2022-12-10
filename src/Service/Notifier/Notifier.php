@@ -17,7 +17,7 @@ class Notifier
     public function sendNotification(int $type, string $subject, string $message, ?array $options = null): bool
     {
         try {
-            $notifierMessage = $this->messageFactory->create(0, $subject, $message, $options ?? []);
+            $notifierMessage = $this->messageFactory->create($type, $subject, $message, $options ?? []);
             $this->bus->dispatch($notifierMessage);
             return true;
         } catch (\Throwable) {

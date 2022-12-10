@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class NotifierControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
-    private UserRepository $userRepository;
+    private ?UserRepository $userRepository;
 
     protected function setUp(): void
     {
@@ -40,6 +40,7 @@ class NotifierControllerTest extends WebTestCase
     {
         $testUser = $this->userRepository->findOneByUsername('test1@test.com');
         $this->client->loginUser($testUser);
+        $channelCount = $testUser->getNotifierChannels()->count();
 
         $crawler = $this->client->request('GET', '/notifier/add-channel/0');
         $form = $crawler->filter('#notifier_telegram_channel_submit')->form();
@@ -50,7 +51,9 @@ class NotifierControllerTest extends WebTestCase
             'notifier_telegram_channel[chatId]' => '321',
         ]);
 
-        $this->assertEquals(2, $testUser->getNotifierChannels()->count());
+        $updatedUser = $this->userRepository->findOneByUsername('test1@test.com');
+
+        $this->assertEquals($channelCount + 1, $updatedUser->getNotifierChannels()->count());
         $this->assertResponseStatusCodeSame(302);
     }
 
@@ -108,5 +111,25 @@ class NotifierControllerTest extends WebTestCase
         $this->assertEquals(1, $alert->count());
         $this->assertEquals('Notification has been sent', $alert->text());
         $this->assertResponseIsSuccessful();
+    }
+
+    public function testAddDiscordChannel(): void
+    {
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $this->client->loginUser($testUser);
+        $channelCount = $testUser->getNotifierChannels()->count();
+
+        $crawler = $this->client->request('GET', '/notifier/add-channel/1');
+        $form = $crawler->filter('#notifier_discord_channel_submit')->form();
+
+        $this->client->submit($form, [
+            'notifier_discord_channel[name]' => 'discord_test',
+            'notifier_discord_channel[webhook]' => 'https://discord.com/api/webhooks/105/8w8',
+        ]);
+
+        $updatedUser = $this->userRepository->findOneByUsername('test1@test.com');
+
+        $this->assertEquals($channelCount + 1, $updatedUser->getNotifierChannels()->count());
+        $this->assertResponseStatusCodeSame(302);
     }
 }

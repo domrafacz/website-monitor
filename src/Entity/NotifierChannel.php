@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Form\NotifierDiscordChannelType;
 use App\Form\NotifierTelegramChannelType;
+use App\Message\Notifier\DiscordMessage;
 use App\Message\Notifier\TelegramMessage;
 use App\Repository\NotifierChannelRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -20,6 +22,11 @@ class NotifierChannel
             'message' => TelegramMessage::class,
             'form' => NotifierTelegramChannelType::class,
         ],
+        1 => [
+            'name' => 'Discord',
+            'message' => DiscordMessage::class,
+            'form' => NotifierDiscordChannelType::class,
+        ]
     ];
 
     #[ORM\Id]
