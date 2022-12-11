@@ -6,7 +6,7 @@ namespace App\Entity;
 use App\Repository\DowntimeLogRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: DowntimeLogRepository::class)]
+#[ORM\Entity]
 class DowntimeLog
 {
     #[ORM\Id]

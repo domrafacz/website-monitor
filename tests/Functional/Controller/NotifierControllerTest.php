@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Controller;
 
 use App\Repository\UserRepository;
-use App\Repository\WebsiteRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

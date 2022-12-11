@@ -23,24 +23,6 @@ class ResponseLogRepository extends ServiceEntityRepository
         parent::__construct($registry, ResponseLog::class);
     }
 
-    public function save(ResponseLog $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(ResponseLog $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
     public function getAverageResponseTimeFilterByPeriod(Website $website, \DateTimeImmutable $startTime, \DateTimeImmutable $endTime): int
     {
         $query = $this->getEntityManager()->createQuery(

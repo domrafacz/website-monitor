@@ -31,15 +31,6 @@ class NotifierChannelRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(NotifierChannel $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
 //    /**
 //     * @return NotifierChannel[] Returns an array of NotifierChannel objects
 //     */

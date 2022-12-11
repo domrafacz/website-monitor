@@ -1,8 +1,8 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Tests\Unit\MessageHandler\Notifier;
 
-use App\Factory\Notifier\MessageFactory;
 use App\Message\Notifier\TelegramMessage;
 use App\Service\Notifier\Channels\Telegram;
 use App\MessageHandler\Notifier\TelegramMessageHandler;
