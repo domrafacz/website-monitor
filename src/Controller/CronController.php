@@ -15,10 +15,10 @@ class CronController extends AbstractController
     #[Route('/run-requests', name: 'run_requests')]
     public function runRequests(WebsiteRepository $websiteRepository, RequestsRunner $requestsRunner): Response
     {
-        if ($websites = $websiteRepository->findAllEnabled()) {
+        if ($websites = $websiteRepository->findAllReadyToUpdate()) {
             $requestsRunner->run($websites);
         }
-
+        dd($requestsRunner);
         return new Response('OK');
     }
 }

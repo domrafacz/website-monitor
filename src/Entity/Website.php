@@ -73,6 +73,7 @@ class Website
         $this->responseLogs = new ArrayCollection();
         $this->downtimeLogs = new ArrayCollection();
         $this->notifierChannels = new ArrayCollection();
+        $this->lastCheck = new \DateTimeImmutable();
     }
 
     public function getId(): ?int

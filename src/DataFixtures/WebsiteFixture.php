@@ -26,6 +26,10 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
             throw new UserNotFoundException('test1@test.com');
         }
 
+        $pastTime = new \DateTimeImmutable();
+        //subtract 10 minutes
+        $pastTime = $pastTime->sub(new \DateInterval("PT10M"));
+
         $website = new Website();
         $website->setUrl('https://google.com');
         $website->setRequestMethod('GET');
@@ -35,6 +39,7 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         $website->setFrequency(1);
         $website->setEnabled(true);
         $website->setOwner($user);
+        $website->setLastCheck($pastTime);
 
         $manager->persist($website);
 
@@ -48,6 +53,7 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         $website2->setEnabled(true);
         $website2->setExpectedStatusCode(404);
         $website2->setOwner($user);
+        $website2->setLastCheck($pastTime);
 
         $manager->persist($website2);
 
@@ -60,6 +66,7 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         $website3->setEnabled(true);
         $website3->setExpectedStatusCode(200);
         $website3->setOwner($user);
+        $website3->setLastCheck($pastTime);
 
         $manager->persist($website3);
 
@@ -78,6 +85,7 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
         $website4->setEnabled(true);
         $website4->setExpectedStatusCode(200);
         $website4->setOwner($user2);
+        $website4->setLastCheck($pastTime);
 
         $manager->persist($website4);
 

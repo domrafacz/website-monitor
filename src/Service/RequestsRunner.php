@@ -26,8 +26,13 @@ class RequestsRunner
         private array                               $responses = [],
         /** @var array<int, RequestRunnerResponseDto> $responseData */
         private array $responseData = [],
-        private int $batchFlushSize = 50,
-    ) {}
+        private readonly int $batchFlushSize = 50,
+        private \DateTimeInterface $cronTime = new \DateTimeImmutable(),
+    )
+    {
+        //set seconds to zero due to cron inconsistent startup delay
+        $this->cronTime = new \DateTimeImmutable($this->cronTime->format('Y-m-d H:i:00'));
+    }
 
     private function getClient(): HttpClientInterface
     {
@@ -111,8 +116,6 @@ class RequestsRunner
     private function responseLog(RequestRunnerResponseDto $dto): void
     {
         $status = Website::STATUS_OK;
-        $datetime = new \DateTimeImmutable();
-        $datetime = $datetime->setTimestamp(intval($dto->startTime));
 
         //check status code if there are no errors
         if (empty($dto->errors)) {
@@ -143,15 +146,15 @@ class RequestsRunner
             $this->createDowntime($dto);
         }
 
-        $dto->website?->setLastCheck($datetime);
+        $dto->website?->setLastCheck($this->cronTime);
         $dto->website?->setLastStatus($status);
-
+        dump($dto->errors);
         if ($dto->website) {
             if ($status == Website::STATUS_OK) {
                 $responseLog = new ResponseLog(
                     $dto->website,
                     $status,
-                    $datetime,
+                    $this->cronTime,
                     intval($dto->totalTime),
                 );
 

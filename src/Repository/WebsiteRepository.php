@@ -41,9 +41,19 @@ class WebsiteRepository extends ServiceEntityRepository
     }
 
     /** @return array<int, Website>|null */
-    public function findAllEnabled(): ?array
+    public function findAllReadyToUpdate(): ?array
     {
-        return $this->findBy(['enabled' => 1]);
+        $date = new \DateTimeImmutable();
+        //set seconds to zero due to cron inconsistent startup delay
+        $date = new \DateTimeImmutable($date->format('Y-m-d H:i:00'));
+
+        return $this->createQueryBuilder('w')
+            ->andWhere("DATE_ADD(w.lastCheck,w.frequency,'minute') <= :val")
+            ->andWhere("w.enabled = true")
+            ->setParameter('val', $date)
+            ->getQuery()
+            ->getResult()
+        ;
     }
 
 //    /**
