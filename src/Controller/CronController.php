@@ -18,7 +18,7 @@ class CronController extends AbstractController
         if ($websites = $websiteRepository->findAllReadyToUpdate()) {
             $requestsRunner->run($websites);
         }
-        dd($requestsRunner);
+        
         return new Response('OK');
     }
 }
