@@ -16,9 +16,9 @@ class DiscordTest extends TestCase
     {
         $mockResponse = new MockResponse('', ['http_code' => 204]);
         $client = new MockHttpClient($mockResponse);
-        $telegramChannel = new Discord($client);
+        $discordChannel = new Discord($client);
 
-        $this->assertTrue($telegramChannel->send(
+        $this->assertTrue($discordChannel->send(
             'test_subject',
             'test_message',
             ['webhook' => 'https://discord.com/api/webhooks/xxx/xxx'],
@@ -34,11 +34,11 @@ class DiscordTest extends TestCase
     {
         $mockResponse = new MockResponse('', ['http_code' => 403]);
         $client = new MockHttpClient($mockResponse);
-        $telegramChannel = new Discord($client);
+        $discordChannel = new Discord($client);
 
         $this->expectException(UnrecoverableMessageHandlingException::class);
 
-        $telegramChannel->send(
+        $discordChannel->send(
             'test_subject',
             'test_message',
             ['webhook' => 'https://discord.com/api/webhooks/xxx/xxx'],
@@ -50,11 +50,11 @@ class DiscordTest extends TestCase
         $mockResponse = new MockResponse('', ['http_code' => 403, 'timeout' => 15.0]);
         $mockResponse->cancel();
         $client = new MockHttpClient($mockResponse);
-        $telegramChannel = new Discord($client);
+        $discordChannel = new Discord($client);
 
         $this->expectException(UnrecoverableMessageHandlingException::class);
 
-        $telegramChannel->send(
+        $discordChannel->send(
             'test_subject',
             'test_message',
             ['webhook' => 'https://discord.com/api/webhooks/xxx/xxx'],
@@ -64,12 +64,12 @@ class DiscordTest extends TestCase
     public function testLackOfWebhook(): void
     {
         $client = new MockHttpClient();
-        $telegramChannel = new Discord($client);
+        $discordChannel = new Discord($client);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Webhook is not set');
 
-        $telegramChannel->send(
+        $discordChannel->send(
             'test_subject',
             'test_message',
         );
@@ -78,12 +78,12 @@ class DiscordTest extends TestCase
     public function testInvalidWebhook(): void
     {
         $client = new MockHttpClient();
-        $telegramChannel = new Discord($client);
+        $discordChannel = new Discord($client);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Webhook url is invalid');
 
-        $telegramChannel->send(
+        $discordChannel->send(
             'test_subject',
             'test_message',
             ['webhook' => 'https://test.com'],
