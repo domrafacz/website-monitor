@@ -13,6 +13,7 @@ use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RequestsRunner
 {
@@ -21,6 +22,7 @@ class RequestsRunner
         private readonly NoPrivateNetworkHttpClient $noPrivateNetworkHttpClient,
         private readonly EntityManagerInterface     $entityManager,
         private readonly Notifier                   $notifier,
+        private readonly TranslatorInterface        $translator,
         private readonly bool                       $allowPrivateNetworks,
         /** @var array<ResponseInterface> $responses */
         private array                               $responses = [],
@@ -58,7 +60,7 @@ class RequestsRunner
                 $this->updateResponseDto($website->getId(), $website);
 
             } catch (TransportExceptionInterface $e) {
-                $this->updateResponseDto($website->getId(), $website, ['Transport exception'], microtime(true));
+                $this->updateResponseDto($website->getId(), $website, ['request_runner_transport_exception'], microtime(true));
             }
         }
 
@@ -68,7 +70,7 @@ class RequestsRunner
                     $this->updateResponseDto(
                         $this->getWebsiteIdFromResponse($response),
                         null,
-                        ['Timeout'],
+                        ['request_runner_timeout'],
                         floatval($response->getInfo('start_time')),
                         $this->calculateResponseTime(floatval($response->getInfo('start_time'))),
                     );
@@ -93,7 +95,7 @@ class RequestsRunner
                 $this->updateResponseDto(
                     $this->getWebsiteIdFromResponse($response),
                     null,
-                    ['Stream transport exception'],
+                    ['request_runner_transport_exception'],
                     floatval($response->getInfo('start_time')),
                 );
             }
@@ -120,7 +122,8 @@ class RequestsRunner
         //check status code if there are no errors
         if (empty($dto->errors)) {
             if ($dto->website && $dto->statusCode != $dto->website->getExpectedStatusCode()) {
-                $dto->errors[] = sprintf('Unexpected HTTP status code: %d, expected: %d',
+                $dto->errors[] = sprintf(
+                    $this->translator->trans('request_unexpected_http_code', [], 'messages', $dto->website->getOwner()->getLanguage()),
                     $dto->statusCode,
                     $dto->website->getExpectedStatusCode()
                 );
@@ -138,17 +141,17 @@ class RequestsRunner
 
         //executes when site goes back up
         if (($dto->website?->getLastStatus() != Website::STATUS_OK) && $status == Website::STATUS_OK) {
-            $this->endDowntime($dto);
+            $this->endDowntime($this->translateErrors($dto));
         }
 
         //executes when website goes down
         if (($dto->website?->getLastStatus() == Website::STATUS_OK) && $status == Website::STATUS_ERROR) {
-            $this->createDowntime($dto);
+            $this->createDowntime($this->translateErrors($dto));
         }
 
         $dto->website?->setLastCheck($this->cronTime);
         $dto->website?->setLastStatus($status);
-        dump($dto->errors);
+
         if ($dto->website) {
             if ($status == Website::STATUS_OK) {
                 $responseLog = new ResponseLog(
@@ -198,15 +201,21 @@ class RequestsRunner
             $downtimeLog = new DowntimeLog();
             $downtimeLog->setWebsite($dto->website);
             $downtimeLog->setStartTime(new \DateTimeImmutable());
+            //TODO refactor initial error due to translation problem
             $downtimeLog->setInitialError($dto->errors);
             $this->entityManager->persist($downtimeLog);
 
-            $message = sprintf("Url: %s \nErrors: %s",
+            $message = sprintf(
+                $this->translator->trans('request_runner_downtime', [], 'messages', $dto->website->getOwner()->getLanguage()),
                 $dto->website->getUrl(),
                 implode("\n", $dto->errors)
             );
 
-            $this->sendNotification($dto->website, 'Website is down', $message);
+            $this->sendNotification(
+                $dto->website,
+                $this->translator->trans('request_runner_downtime_subject', [], 'messages', $dto->website->getOwner()->getLanguage()),
+                $message
+            );
         }
     }
 
@@ -221,21 +230,25 @@ class RequestsRunner
             $downtimeLog->setEndTime($datetime);
             $this->entityManager->persist($downtimeLog);
 
-            $message = sprintf("Url: %s \nIncident start: %s \nIncident end: %s",
+            $message = sprintf(
+                $this->translator->trans('request_runner_downtime_end', [], 'messages', $dto->website->getOwner()->getLanguage()),
                 $dto->website->getUrl(),
                 $downtimeLog->getStartTime()->format('Y-m-d H:i:s'),
                 $datetime->format('Y-m-d H:i:s'),
             );
 
             // TODO add translation
-            $this->sendNotification($dto->website, 'Website is back online', $message);
+            $this->sendNotification(
+                $dto->website,
+                $this->translator->trans('request_runner_downtime_end_subject', [], 'messages', $dto->website->getOwner()->getLanguage()),
+                $message
+            );
         }
     }
 
     private function sendNotification(Website $website, string $subject, string $message): void
     {
         foreach ($website->getNotifierChannels()->getIterator() as $channel) {
-            // TODO add translation
             $this->notifier->sendNotification($channel->getType(), $subject, $message, $channel->getOptions());
         }
     }
@@ -281,15 +294,38 @@ class RequestsRunner
                 $website->setCertExpiryTime($certExpireTime);
             }
         } elseif ($certExpireTime !== null && $website->getCertExpiryTime() != $certExpireTime) {
-            $message = sprintf("Previous expire date: %s\nNew expire date: %s",
+            $message = sprintf(
+                $this->translator->trans('request_runner_cert_changed', [], 'messages', $website->getOwner()->getLanguage()),
                 $website->getCertExpiryTime()->format('Y-m-d H:i:s'),
                 $certExpireTime->format('Y-m-d H:i:s'),
             );
-            $this->sendNotification($website, 'Website certificate changed', $message);
+
+            $this->sendNotification(
+                $website,
+                $this->translator->trans('request_runner_cert_changed_subject', [], 'messages', $website->getOwner()->getLanguage()),
+                $message
+            );
+
             $website->setCertExpiryTime($certExpireTime);
         }
 
         return $website;
+    }
+
+    private function translateErrors(RequestRunnerResponseDto $dto): RequestRunnerResponseDto
+    {
+        foreach ($dto->errors as $key => $error) {
+            if (str_starts_with($error, 'request_runner')) {
+                $dto->errors[$key] = $this->translator->trans(
+                    $error,
+                    [],
+                    'messages',
+                    $dto->website->getOwner()->getLanguage()
+                );
+            }
+        }
+
+        return $dto;
     }
 
     /** @return array<int, RequestRunnerResponseDto> */

@@ -85,3 +85,11 @@ test_notification_success: 'Notification has been sent'
 test_notification_error: 'Failure'
 error: 'Error'
 unavailable: 'Unavailable'
+request_runner_unexpected_http_code: 'Unexpected HTTP status code: %d, expected: %d'
+request_runner_transport_exception: 'Transport exception'
+request_runner_downtime: "Url: %s \nErrors: %s"
+request_runner_downtime_subject: 'Website is down'
+request_runner_downtime_end: "Url: %s \nIncident start: %s \nIncident end: %s"
+request_runner_downtime_end_subject: 'Website is back online'
+request_runner_cert_changed: "Previous expire date: %s\nNew expire date: %s"
+request_runner_cert_changed_subject: 'Website certificate changed'

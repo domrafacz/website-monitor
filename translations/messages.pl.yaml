@@ -85,3 +85,11 @@ test_notification_success: 'Powiadomienie zostało wysłane'
 test_notification_error: 'Niepowodzenie'
 error: 'Błąd'
 unavailable: 'Niedostępny'
+request_runner_unexpected_http_code: 'Nieoczekiwany kod HTTP: %d, oczekiwano: %d'
+request_runner_transport_exception: 'Wyjątek transportu'
+request_runner_downtime: "Adres url: %s \nBłędy: %s"
+request_runner_downtime_subject: 'Strona nie działa'
+request_runner_downtime_end: "Adres url: %s \nData rozpoczęcia incydentu: %s \nData zakończenia incydentu: %s"
+request_runner_downtime_end_subject: 'Strona jest ponownie dostępna'
+request_runner_cert_changed: "Poprzednia data wygaśnięcia: %s\nNowa data wygaśnięcia: %s"
+request_runner_cert_changed_subject: 'Certyfikat strony uległ zmianie'

@@ -5,6 +5,7 @@ namespace App\Tests\Unit\Service;
 
 use App\Entity\DowntimeLog;
 use App\Entity\NotifierChannel;
+use App\Entity\User;
 use App\Entity\Website;
 use App\Service\Notifier\Notifier;
 use App\Service\RequestsRunner;
@@ -13,6 +14,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Contracts\HttpClient\ResponseInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RequestsRunnerTest extends KernelTestCase
 {
@@ -28,6 +31,12 @@ class RequestsRunnerTest extends KernelTestCase
         int $statusCode = 200
     ): Website
     {
+        $user = new class extends User {
+            public function getId(): int {
+                return 1;
+            }
+        };
+
         $website = new class($id) extends Website {
             public function __construct(int $id)
             {
@@ -48,26 +57,64 @@ class RequestsRunnerTest extends KernelTestCase
         $website->setEnabled($enabled);
         $website->setLastStatus($lastStatus);
         $website->setExpectedStatusCode($statusCode);
+        $website->setOwner($user);
 
         $notifierChannel = $this->createMock(NotifierChannel::class);
         $website->addNotifierChannel($notifierChannel);
 
         return $website;
     }
-    public function testNoPrivateNetworkHttpclient(): void
-    {
-        $client = new MockHttpClient();
-        $client2 = new NoPrivateNetworkHttpClient($client);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $notifier = $this->createMock(Notifier::class);
 
-        $requestRunner = new RequestsRunner(
+    private function createRequestRunner(
+        callable|iterable|ResponseInterface $responseFactory = null,
+        bool $privateNetwork = false,
+        int $batchFlushSize = 50,
+        string $translatorMessage = '',
+    ): RequestsRunner
+    {
+        if ($responseFactory != null) {
+            $client = new MockHttpClient($responseFactory);
+        } else {
+            $client = new MockHttpClient();
+        }
+
+        $client2 = new NoPrivateNetworkHttpClient($client);
+
+        return  new RequestsRunner(
             $client,
             $client2,
-            $entityManager,
-            $notifier,
-            false,
+            $this->createMock(EntityManagerInterface::class),
+            $this->createMock(Notifier::class),
+            $this->createTranslator($translatorMessage),
+            allowPrivateNetworks: $privateNetwork,
+            batchFlushSize: $batchFlushSize,
         );
+    }
+
+    private function createTranslator(string $translatorMessage): TranslatorInterface
+    {
+        return new class($translatorMessage) implements TranslatorInterface {
+            private string $translatorMessage;
+
+            public function __construct($translatorMessage)
+            {
+                $this->translatorMessage = $translatorMessage;
+            }
+            public function getLocale(): string
+            {
+                return 'en';
+            }
+
+            public function trans(string $id, array $parameters = [], string $domain = null, string $locale = null): string
+            {
+                return $this->translatorMessage;
+            }
+        };
+    }
+
+    public function testNoPrivateNetworkHttpclient(): void
+    {
+        $requestRunner = $this->createRequestRunner();
 
         $requestRunner->run([]);
 
@@ -76,92 +123,71 @@ class RequestsRunnerTest extends KernelTestCase
 
     public function testTransportExceptionOnRequestCreation(): void
     {
-        $client = new MockHttpClient(function(){ });
-        $client2 = new NoPrivateNetworkHttpClient($client);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $notifier = $this->createMock(Notifier::class);
+        $errorMessage = 'Transport exception';
+        $requestRunner = $this->createRequestRunner(
+            responseFactory: function(){ },
+            privateNetwork: true,
+            translatorMessage: $errorMessage
+        );
 
         $website = $this->createWebsite(10, 'https://google.com', 'GET');
 
-        $requestRunner = new RequestsRunner(
-            $client,
-            $client2,
-            $entityManager,
-            $notifier,
-            true,
-        );
-
         $requestRunner->run([$website]);
 
-        $this->assertEquals('Transport exception', $requestRunner->getResponseData()[$website->getId()]->errors[0]);
+        $this->assertEquals($errorMessage, $requestRunner->getResponseData()[$website->getId()]->errors[0]);
     }
 
     public function testRequestTimeout(): void
     {
         $mockResponse = new MockResponse(['','']);
-        $client = new MockHttpClient([$mockResponse]);
-        $client2 = new NoPrivateNetworkHttpClient($client);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $notifier = $this->createMock(Notifier::class);
+        $errorMessage = 'Timeout';
 
-        $requestRunner = new RequestsRunner(
-            $client,
-            $client2,
-            $entityManager,
-            $notifier,
-            true,
+        $requestRunner = $this->createRequestRunner(
+            responseFactory: [$mockResponse],
+            privateNetwork: true,
+            translatorMessage: $errorMessage
         );
 
         $website = $this->createWebsite(10, 'https://google.com', 'GET');
 
         $requestRunner->run([$website]);
 
-        $this->assertEquals('Timeout', $requestRunner->getResponseData()[$website->getId()]->errors[0]);
+        $this->assertEquals($errorMessage, $requestRunner->getResponseData()[$website->getId()]->errors[0]);
     }
 
     public function testResponseStreamTransportException()
     {
         $mockResponse = new MockResponse('...', ['error' => 'test_stream_exception']);
-        $client = new MockHttpClient([$mockResponse]);
-        $client2 = new NoPrivateNetworkHttpClient($client);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $notifier = $this->createMock(Notifier::class);
+        $errorMessage = 'Stream transport exception';
 
-        $requestRunner = new RequestsRunner(
-            $client,
-            $client2,
-            $entityManager,
-            $notifier,
-            true,
+        $requestRunner = $this->createRequestRunner(
+            responseFactory: [$mockResponse],
+            privateNetwork: true,
+            translatorMessage: $errorMessage
         );
 
         $website = $this->createWebsite(10, 'https://google.com', 'GET');
 
         $requestRunner->run([$website]);
 
-        $this->assertEquals('Stream transport exception', $requestRunner->getResponseData()[$website->getId()]->errors[0]);
+        $this->assertEquals($errorMessage, $requestRunner->getResponseData()[$website->getId()]->errors[0]);
     }
 
     public function testResponseUnexpectedStatusCode(): void
     {
         $mockResponse = new MockResponse('...', ['http_code' => '404']);
-        $client = new MockHttpClient([$mockResponse]);
-        $client2 = new NoPrivateNetworkHttpClient($client);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $notifier = $this->createMock(Notifier::class);
+        $errorMessage = 'Unexpected HTTP status code: 404, expected: 200';
 
-        $requestRunner = new RequestsRunner(
-            $client,
-            $client2,
-            $entityManager,
-            $notifier,
-            true,
+        $requestRunner = $this->createRequestRunner(
+            responseFactory: [$mockResponse],
+            privateNetwork: true,
+            translatorMessage: $errorMessage
         );
 
         $website = $this->createWebsite(10, 'https://google.com', 'GET');
         $requestRunner->run([$website]);
 
-        $this->assertEquals('Unexpected HTTP status code: 404, expected: 200', $requestRunner->getResponseData()[$website->getId()]->errors[0]);
+        $this->assertEquals($errorMessage, $requestRunner->getResponseData()[$website->getId()]->errors[0]);
     }
 
     public function testSetCertExpireTime(): void
@@ -170,17 +196,10 @@ class RequestsRunnerTest extends KernelTestCase
         $datetime = $datetime->setTimestamp($datetime->getTimestamp() + 2592000);
 
         $mockResponse = new MockResponse('...', ['certinfo' => [0 => ['Expire date' => $datetime->format('M j H:i:s Y').' GMT']]]);
-        $client = new MockHttpClient([$mockResponse]);
-        $client2 = new NoPrivateNetworkHttpClient($client);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $notifier = $this->createMock(Notifier::class);
 
-        $requestRunner = new RequestsRunner(
-            $client,
-            $client2,
-            $entityManager,
-            $notifier,
-            true,
+        $requestRunner = $this->createRequestRunner(
+            responseFactory: [$mockResponse],
+            privateNetwork: true,
         );
 
         $website = $this->createWebsite(10, 'https://google.com', 'GET');
@@ -195,17 +214,10 @@ class RequestsRunnerTest extends KernelTestCase
         $datetime = $datetime->setTimestamp($datetime->getTimestamp() + 2592000);
 
         $mockResponse = new MockResponse('...', ['certinfo' => [0 => ['Expire date' => $datetime->format('M j H:i:s Y').' GMT']]]);
-        $client = new MockHttpClient([$mockResponse]);
-        $client2 = new NoPrivateNetworkHttpClient($client);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $notifier = $this->createMock(Notifier::class);
 
-        $requestRunner = new RequestsRunner(
-            $client,
-            $client2,
-            $entityManager,
-            $notifier,
-            true,
+        $requestRunner = $this->createRequestRunner(
+            responseFactory: [$mockResponse],
+            privateNetwork: true,
         );
 
         $website = $this->createWebsite(10, 'https://google.com', 'GET');
@@ -218,17 +230,9 @@ class RequestsRunnerTest extends KernelTestCase
     public function testEndDowntime(): void
     {
         $datetime = new \DateTimeImmutable();
-        $client = new MockHttpClient();
-        $client2 = new NoPrivateNetworkHttpClient($client);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $notifier = $this->createMock(Notifier::class);
 
-        $requestRunner = new RequestsRunner(
-            $client,
-            $client2,
-            $entityManager,
-            $notifier,
-            true,
+        $requestRunner = $this->createRequestRunner(
+            privateNetwork: true,
         );
 
         $downtimeLog = new DowntimeLog();
@@ -245,17 +249,8 @@ class RequestsRunnerTest extends KernelTestCase
 
     public function testFlushBatch(): void
     {
-        $client = new MockHttpClient();
-        $client2 = new NoPrivateNetworkHttpClient($client);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $notifier = $this->createMock(Notifier::class);
-
-        $requestRunner = new RequestsRunner(
-            $client,
-            $client2,
-            $entityManager,
-            $notifier,
-            true,
+        $requestRunner = $this->createRequestRunner(
+            privateNetwork: true,
             batchFlushSize: 2,
         );
 
