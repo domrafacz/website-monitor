@@ -1,5 +1,5 @@
 # https://help.github.com/en/actions
-name: Symfony 6 app tests
+name: tests
 on:
   push:
     branches:
