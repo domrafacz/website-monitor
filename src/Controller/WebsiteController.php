@@ -68,7 +68,7 @@ class WebsiteController extends AbstractController
 
     #[Route('/website/details/{id}', name: 'app_website_details')]
     #[IsGranted('ROLE_USER')]
-    public function details(int $id, Request $request, UserManager $userManager, WebsiteManager $websiteManager, TranslatorInterface $translator, WebsiteStatisticsProvider $statisticsProvider, NotifierChannelRepository $channelRepository, WebsiteRepository $websiteRepository): Response
+    public function details(int $id, Request $request, UserManager $userManager, WebsiteManager $websiteManager, TranslatorInterface $translator, WebsiteStatisticsProvider $statisticsProvider): Response
     {
         if (!$website = $userManager->getCurrentUser()->findWebsite($id)) {
             throw $this->createNotFoundException(sprintf('Website not found, id: %s', $id));

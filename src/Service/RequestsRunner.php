@@ -122,7 +122,7 @@ class RequestsRunner
         if (empty($dto->errors)) {
             if ($dto->website && $dto->statusCode != $dto->website->getExpectedStatusCode()) {
                 $dto->errors[] = sprintf(
-                    $this->translator->trans('request_unexpected_http_code', [], 'messages', $dto->website->getOwner()->getLanguage()),
+                    $this->translator->trans('request_runner_unexpected_http_code', [], 'messages', $dto->website->getOwner()->getLanguage()),
                     $dto->statusCode,
                     $dto->website->getExpectedStatusCode()
                 );
@@ -199,7 +199,7 @@ class RequestsRunner
         if ($dto->website) {
             $downtimeLog = new DowntimeLog();
             $downtimeLog->setWebsite($dto->website);
-            $downtimeLog->setStartTime(new \DateTimeImmutable());
+            $downtimeLog->setStartTime($this->cronTime);
             //TODO refactor initial error due to translation problem
             $downtimeLog->setInitialError($dto->errors);
             $this->entityManager->persist($downtimeLog);

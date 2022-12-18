@@ -61,7 +61,7 @@ services:
     image: postgres:${POSTGRES_VERSION:-14}-alpine
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-app}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
       POSTGRES_USER: ${POSTGRES_USER:-app}
     volumes:
       - db-data:/var/lib/postgresql/data:rw
