@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\MessageHandler\Notifier;
@@ -11,7 +12,8 @@ final class TelegramMessageHandler implements MessageHandlerInterface
 {
     public function __construct(
         private readonly Telegram $telegramChannel,
-    ) {}
+    ) {
+    }
 
     public function __invoke(TelegramMessage $message): void
     {

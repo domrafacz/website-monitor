@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service\Notifier\Channels;
@@ -13,7 +14,8 @@ class Telegram implements ChannelInterface
 {
     public function __construct(
         private readonly HttpClientInterface $client,
-    ) {}
+    ) {
+    }
 
     /** @param array<string, string> $options */
     private function validateOptions(array $options): void
@@ -36,7 +38,8 @@ class Telegram implements ChannelInterface
         try {
             $response = $this->client->request(
                 'GET',
-                sprintf('https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s',
+                sprintf(
+                    'https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s',
                     $options['apiToken'],
                     $options['chatId'],
                     urlencode($message)

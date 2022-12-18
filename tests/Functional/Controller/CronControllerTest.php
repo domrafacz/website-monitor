@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
@@ -26,5 +27,4 @@ class CronControllerTest extends WebTestCase
         $client->request('GET', '/cron/run-requests');
         $this->assertResponseIsSuccessful();
     }
-
 }

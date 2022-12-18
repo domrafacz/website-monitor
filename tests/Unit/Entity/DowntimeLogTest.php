@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
@@ -11,16 +12,16 @@ class DowntimeLogTest extends TestCase
 {
     public function testSetterAndGetter(): void
     {
-        $website = new class extends Website {
-
-            public function getId(): int {
+        $website = new class () extends Website {
+            public function getId(): int
+            {
                 return 1;
             }
         };
 
-        $downtimeLog = new class extends DowntimeLog {
-
-            public function getId(): int {
+        $downtimeLog = new class () extends DowntimeLog {
+            public function getId(): int
+            {
                 return 1;
             }
         };

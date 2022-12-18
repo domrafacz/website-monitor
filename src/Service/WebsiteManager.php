@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service;
@@ -12,7 +13,8 @@ class WebsiteManager
 {
     public function __construct(
         private readonly WebsiteRepository $websiteRepository,
-    ) {}
+    ) {
+    }
 
     public function edit(Website $website, WebsiteDto $dto): void
     {

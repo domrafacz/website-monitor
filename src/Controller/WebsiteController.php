@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -45,8 +46,7 @@ class WebsiteController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function edit(int $id, Request $request, WebsiteFactory $websiteFactory, WebsiteManager $websiteManager, TranslatorInterface $translator, UserManager $userManager): Response
     {
-        if (!$website = $userManager->getCurrentUser()->findWebsite($id))
-        {
+        if (!$website = $userManager->getCurrentUser()->findWebsite($id)) {
             throw $this->createNotFoundException(sprintf('Website not found, id: %s', $id));
         }
 
@@ -70,8 +70,7 @@ class WebsiteController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function details(int $id, Request $request, UserManager $userManager, WebsiteManager $websiteManager, TranslatorInterface $translator, WebsiteStatisticsProvider $statisticsProvider, NotifierChannelRepository $channelRepository, WebsiteRepository $websiteRepository): Response
     {
-        if (!$website = $userManager->getCurrentUser()->findWebsite($id))
-        {
+        if (!$website = $userManager->getCurrentUser()->findWebsite($id)) {
             throw $this->createNotFoundException(sprintf('Website not found, id: %s', $id));
         }
 
@@ -97,8 +96,7 @@ class WebsiteController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function incidents(int $id, UserManager $userManager): Response
     {
-        if (!$website = $userManager->getCurrentUser()->findWebsite($id))
-        {
+        if (!$website = $userManager->getCurrentUser()->findWebsite($id)) {
             throw $this->createNotFoundException(sprintf('Website not found, id: %s', $id));
         }
 
@@ -116,13 +114,11 @@ class WebsiteController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function toggleNotifierChannel(int $websiteId, int $channelId, string $token, UserManager $userManager, WebsiteRepository $websiteRepository): Response
     {
-        if (!$website = $userManager->getCurrentUser()->findWebsite($websiteId))
-        {
+        if (!$website = $userManager->getCurrentUser()->findWebsite($websiteId)) {
             throw $this->createNotFoundException(sprintf('Website not found, id: %s', $websiteId));
         }
 
-        if (!$channel = $userManager->getCurrentUser()->findNotifierChannel($channelId))
-        {
+        if (!$channel = $userManager->getCurrentUser()->findNotifierChannel($channelId)) {
             throw $this->createNotFoundException(sprintf('Notifier channel not found, id: %s', $channelId));
         }
 

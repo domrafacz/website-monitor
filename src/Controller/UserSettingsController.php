@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -45,10 +46,10 @@ class UserSettingsController extends AbstractController
         }
 
         if ($formDeleteUser->isSubmitted() && $formDeleteUser->isValid()) {
-                $request->getSession()->invalidate();
-                $tokenStorage->setToken(null);
-                $userManager->delete($user);
-                return $this->redirectToRoute('app_logout');
+            $request->getSession()->invalidate();
+            $tokenStorage->setToken(null);
+            $userManager->delete($user);
+            return $this->redirectToRoute('app_logout');
         }
 
         if ($formChangePassword->isSubmitted() && $formChangePassword->isValid()) {

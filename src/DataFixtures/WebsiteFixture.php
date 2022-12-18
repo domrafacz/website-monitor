@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\DataFixtures;
@@ -16,7 +17,8 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
 {
     public function __construct(
         private readonly UserRepository $userRepository,
-    ) {}
+    ) {
+    }
 
     public function load(ObjectManager $manager): void
     {

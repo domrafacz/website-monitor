@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\EventSubscriber;
@@ -15,7 +16,8 @@ class UserLocaleSubscriber implements EventSubscriberInterface
     public function __construct(
         private readonly RequestStack $requestStack,
         private readonly LocaleSwitcher $localeSwitcher
-    ) {}
+    ) {
+    }
 
     public function onInteractiveLogin(InteractiveLoginEvent $event): void
     {

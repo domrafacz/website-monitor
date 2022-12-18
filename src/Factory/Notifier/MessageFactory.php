@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Factory\Notifier;
@@ -13,5 +14,4 @@ class MessageFactory
     {
         return new (NotifierChannel::CHANNELS[$channel]['message'])($subject, $message, $options);
     }
-
 }

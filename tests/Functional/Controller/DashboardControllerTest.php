@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
@@ -41,4 +42,3 @@ class DashboardControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
     }
 }
-

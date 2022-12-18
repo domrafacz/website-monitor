@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -18,7 +19,7 @@ class CronController extends AbstractController
         if ($websites = $websiteRepository->findAllReadyToUpdate()) {
             $requestsRunner->run($websites);
         }
-        
+
         return new Response('OK');
     }
 }

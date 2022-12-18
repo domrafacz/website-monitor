@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service;
@@ -18,7 +19,8 @@ class UserManager
         private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly Security $security,
-    ) {}
+    ) {
+    }
 
     public function delete(User $user): void
     {

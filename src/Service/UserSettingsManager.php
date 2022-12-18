@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service;
@@ -15,7 +16,8 @@ class UserSettingsManager
         private readonly UserRepository $userRepository,
         private readonly RequestStack $requestStack,
         private readonly UserSettingsFactory $userSettingsFactory,
-    ) {}
+    ) {
+    }
 
     public function update(User $user, UserSettingsDto $userSettingsDto): void
     {

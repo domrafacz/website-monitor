@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\MessageHandler\Notifier;
@@ -11,7 +12,8 @@ final class DiscordMessageHandler implements MessageHandlerInterface
 {
     public function __construct(
         private readonly Discord $discordChannel,
-    ) {}
+    ) {
+    }
 
     public function __invoke(DiscordMessage $message): void
     {

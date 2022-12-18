@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Dto;
@@ -48,5 +49,4 @@ class WebsiteDto
         max: 599,
     )]
     public int $expectedStatusCode = 200;
-
 }

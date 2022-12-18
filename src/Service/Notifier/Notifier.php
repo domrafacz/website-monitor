@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service\Notifier;
@@ -11,7 +12,8 @@ class Notifier
     public function __construct(
         private readonly MessageFactory $messageFactory,
         private readonly MessageBusInterface $bus,
-    ) {}
+    ) {
+    }
 
     /** @param null|array<string, string> $options */
     public function sendNotification(int $type, string $subject, string $message, ?array $options = null): bool

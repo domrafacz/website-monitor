@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Message\Notifier;
@@ -12,5 +13,6 @@ final class DiscordMessage implements NotifierMessageInterface
         public string $message,
         /** @var array<string, string> $options */
         public array $options,
-    ) {}
+    ) {
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Integration\Service\Notifier;
@@ -7,7 +8,7 @@ use App\Service\Notifier\Notifier;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class NotifierTest  extends KernelTestCase
+class NotifierTest extends KernelTestCase
 {
     public function testSendNotification(): void
     {

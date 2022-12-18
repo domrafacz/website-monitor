@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
@@ -51,14 +52,16 @@ class UserManagerTest extends KernelTestCase
         $security = $this->createMock(Security::class);
         $userManager = new UserManager($userRepository, $passwordHasher, $security);
 
-        $user = new class extends User {
-            public function getId(): int {
+        $user = new class () extends User {
+            public function getId(): int
+            {
                 return 10;
             }
         };
 
-        $channel = new class($user, 0, 'test') extends NotifierChannel {
-            public function getId(): int {
+        $channel = new class ($user, 0, 'test') extends NotifierChannel {
+            public function getId(): int
+            {
                 return 20;
             }
         };
@@ -75,14 +78,16 @@ class UserManagerTest extends KernelTestCase
         $security = $this->createMock(Security::class);
         $userManager = new UserManager($userRepository, $passwordHasher, $security);
 
-        $user = new class extends User {
-            public function getId(): int {
+        $user = new class () extends User {
+            public function getId(): int
+            {
                 return 10;
             }
         };
 
-        $channel = new class($user, 0, 'test') extends NotifierChannel {
-            public function getId(): int {
+        $channel = new class ($user, 0, 'test') extends NotifierChannel {
+            public function getId(): int
+            {
                 return 20;
             }
         };

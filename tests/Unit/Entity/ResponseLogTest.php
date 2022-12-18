@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
@@ -11,22 +12,21 @@ class ResponseLogTest extends TestCase
 {
     public function testSetterAndGetter(): void
     {
-        $website = new class extends Website {
-
-            public function getId(): int {
+        $website = new class () extends Website {
+            public function getId(): int
+            {
                 return 1;
             }
         };
 
-        $responseLog = new class(
+        $responseLog = new class (
             $website,
             ResponseLog::STATUS_OK,
             new \DateTimeImmutable(),
             500,
-
         ) extends ResponseLog {
-
-            public function getId(): int {
+            public function getId(): int
+            {
                 return 1;
             }
         };
@@ -38,7 +38,7 @@ class ResponseLogTest extends TestCase
             $website,
             ResponseLog::STATUS_OK,
             new \DateTimeImmutable(),
-        600
+            600
         ))->getId());
 
         $this->assertInstanceOf(ResponseLog::class, $responseLog->setStatus(ResponseLog::STATUS_ERROR));

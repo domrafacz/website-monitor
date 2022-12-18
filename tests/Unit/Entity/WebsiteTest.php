@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
@@ -14,43 +15,42 @@ class WebsiteTest extends TestCase
 {
     public function testSetterAndGetter(): void
     {
-        $user = new class extends User {
-
-            public function getId(): int {
+        $user = new class () extends User {
+            public function getId(): int
+            {
                 return 1;
             }
         };
 
-        $website = new class extends Website {
-
-            public function getId(): int {
+        $website = new class () extends Website {
+            public function getId(): int
+            {
                 return 1;
             }
         };
 
-        $responseLog = new class(
+        $responseLog = new class (
             $website,
             ResponseLog::STATUS_OK,
             new \DateTimeImmutable(),
             500,
-
         ) extends ResponseLog {
-
-            public function getId(): int {
+            public function getId(): int
+            {
                 return 1;
             }
         };
 
-        $downtimeLog = new class extends DowntimeLog {
-
-            public function getId(): int {
+        $downtimeLog = new class () extends DowntimeLog {
+            public function getId(): int
+            {
                 return 1;
             }
         };
 
-        $notifierChannel = new class($user, 0, 'test') extends NotifierChannel {
-
-            public function getId(): int {
+        $notifierChannel = new class ($user, 0, 'test') extends NotifierChannel {
+            public function getId(): int
+            {
                 return 1;
             }
         };

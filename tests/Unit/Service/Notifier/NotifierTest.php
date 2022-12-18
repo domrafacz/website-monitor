@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\Notifier;
@@ -14,8 +15,9 @@ class NotifierTest extends TestCase
 {
     public function testSendNotificationSuccess(): void
     {
-        $bus = new class extends MessageBus {
-            public function dispatch(object $message, array $stamps = []):  Envelope {
+        $bus = new class () extends MessageBus {
+            public function dispatch(object $message, array $stamps = []): Envelope
+            {
                 return new Envelope($message);
             }
         };
@@ -30,8 +32,9 @@ class NotifierTest extends TestCase
 
     public function testSendNotificationFailure(): void
     {
-        $bus = new class extends MessageBus {
-            public function dispatch(object $message, array $stamps = []):  Envelope {
+        $bus = new class () extends MessageBus {
+            public function dispatch(object $message, array $stamps = []): Envelope
+            {
                 throw new UnrecoverableMessageHandlingException();
             }
         };

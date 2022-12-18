@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
 
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use \Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 class UserSettingsControllerTest extends WebTestCase
 {
@@ -108,6 +109,6 @@ class UserSettingsControllerTest extends WebTestCase
         $this->client->submit($form);
 
         $updatedUser = $this->userRepository->findOneByUsername('test1@test.com');
-        $this->assertNotEquals($testUser->getPassword(),$updatedUser->getPassword());
+        $this->assertNotEquals($testUser->getPassword(), $updatedUser->getPassword());
     }
 }

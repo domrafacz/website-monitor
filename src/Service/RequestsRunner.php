@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service;
@@ -30,8 +31,7 @@ class RequestsRunner
         private array $responseData = [],
         private readonly int $batchFlushSize = 50,
         private \DateTimeInterface $cronTime = new \DateTimeImmutable(),
-    )
-    {
+    ) {
         //set seconds to zero due to cron inconsistent startup delay
         $this->cronTime = new \DateTimeImmutable($this->cronTime->format('Y-m-d H:i:00'));
     }
@@ -58,7 +58,6 @@ class RequestsRunner
                 ]);
 
                 $this->updateResponseDto($website->getId(), $website);
-
             } catch (TransportExceptionInterface $e) {
                 $this->updateResponseDto($website->getId(), $website, ['request_runner_transport_exception'], microtime(true));
             }
@@ -255,7 +254,7 @@ class RequestsRunner
 
     private function getResponseDto(int $websiteId): RequestRunnerResponseDto
     {
-        if (!isset($this->responseData[$websiteId])){
+        if (!isset($this->responseData[$websiteId])) {
             $this->responseData[$websiteId] = new RequestRunnerResponseDto();
         }
 
@@ -271,8 +270,7 @@ class RequestsRunner
         ?float $totalTime = null,
         ?int $statusCode = null,
         ?\DateTimeInterface $certExpireTime = null,
-    ): void
-    {
+    ): void {
         if ($websiteId) {
             $dto = $this->getResponseDto($websiteId);
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
@@ -13,16 +14,16 @@ class NotifierChannelTest extends TestCase
 {
     public function testDefaults(): void
     {
-        $user = new class extends User {
-
-            public function getId(): int {
+        $user = new class () extends User {
+            public function getId(): int
+            {
                 return 1;
             }
         };
 
-        $website = new class extends Website {
-
-            public function getId(): int {
+        $website = new class () extends Website {
+            public function getId(): int
+            {
                 return 1;
             }
         };
@@ -41,28 +42,27 @@ class NotifierChannelTest extends TestCase
         $this->assertSame(['test' => 1], $notifierChannel->getOptions());
         $this->assertEquals(new ArrayCollection([$website]), $notifierChannel->getWebsites());
         $this->assertSame('test', $notifierChannel->getName());
-
     }
 
     public function testSetterAndGetter(): void
     {
-        $user = new class extends User {
-
-            public function getId(): int {
+        $user = new class () extends User {
+            public function getId(): int
+            {
                 return 1;
             }
         };
 
-        $notifierChannel = new class($user, 0, 'test') extends NotifierChannel {
-
-            public function getId(): int {
+        $notifierChannel = new class ($user, 0, 'test') extends NotifierChannel {
+            public function getId(): int
+            {
                 return 1;
             }
         };
 
-        $website = new class extends Website {
-
-            public function getId(): int {
+        $website = new class () extends Website {
+            public function getId(): int
+            {
                 return 1;
             }
         };
@@ -88,6 +88,5 @@ class NotifierChannelTest extends TestCase
 
         $this->assertInstanceOf(NotifierChannel::class, $notifierChannel->setName('new_name'));
         $this->assertSame('new_name', $notifierChannel->getName());
-
     }
 }

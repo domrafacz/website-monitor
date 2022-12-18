@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Functional\Repository;
@@ -34,7 +35,7 @@ class UserRepositoryTest extends KernelTestCase
     {
         $userRepository = $this->entityManager->getRepository(User::class);
 
-        $user = new class implements PasswordAuthenticatedUserInterface {
+        $user = new class () implements PasswordAuthenticatedUserInterface {
             public function getPassword(): ?string
             {
                 return 'hashedpassword';

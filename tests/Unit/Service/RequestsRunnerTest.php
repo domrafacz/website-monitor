@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
@@ -29,22 +30,23 @@ class RequestsRunnerTest extends KernelTestCase
         bool $enabled = true,
         int $lastStatus = Website::STATUS_OK,
         int $statusCode = 200
-    ): Website
-    {
-        $user = new class extends User {
-            public function getId(): int {
+    ): Website {
+        $user = new class () extends User {
+            public function getId(): int
+            {
                 return 1;
             }
         };
 
-        $website = new class($id) extends Website {
+        $website = new class ($id) extends Website {
             public function __construct(int $id)
             {
                 parent::__construct();
                 $this->id = $id;
             }
 
-            public function getId(): int {
+            public function getId(): int
+            {
                 return $this->id;
             }
         };
@@ -70,8 +72,7 @@ class RequestsRunnerTest extends KernelTestCase
         bool $privateNetwork = false,
         int $batchFlushSize = 50,
         string $translatorMessage = '',
-    ): RequestsRunner
-    {
+    ): RequestsRunner {
         if ($responseFactory != null) {
             $client = new MockHttpClient($responseFactory);
         } else {
@@ -93,7 +94,7 @@ class RequestsRunnerTest extends KernelTestCase
 
     private function createTranslator(string $translatorMessage): TranslatorInterface
     {
-        return new class($translatorMessage) implements TranslatorInterface {
+        return new class ($translatorMessage) implements TranslatorInterface {
             private string $translatorMessage;
 
             public function __construct($translatorMessage)
@@ -125,7 +126,8 @@ class RequestsRunnerTest extends KernelTestCase
     {
         $errorMessage = 'Transport exception';
         $requestRunner = $this->createRequestRunner(
-            responseFactory: function(){ },
+            responseFactory: function () {
+            },
             privateNetwork: true,
             translatorMessage: $errorMessage
         );

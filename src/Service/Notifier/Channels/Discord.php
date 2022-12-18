@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service\Notifier\Channels;
@@ -13,7 +14,8 @@ class Discord implements ChannelInterface
 {
     public function __construct(
         private readonly HttpClientInterface $client,
-    ) {}
+    ) {
+    }
 
     /** @param array<string, string> $options */
     private function validateOptions(array $options): void

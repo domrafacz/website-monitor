@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service\Notifier;
@@ -13,7 +14,8 @@ class ChannelManager
 {
     public function __construct(
         private readonly NotifierChannelRepository $channelsRepository,
-    ) {}
+    ) {
+    }
 
     /**
      * @param null|array<string, string> $options
