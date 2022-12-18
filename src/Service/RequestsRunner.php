@@ -30,7 +30,7 @@ class RequestsRunner
         /** @var array<int, RequestRunnerResponseDto> $responseData */
         private array $responseData = [],
         private readonly int $batchFlushSize = 50,
-        private \DateTimeInterface $cronTime = new \DateTimeImmutable(),
+        private \DateTimeImmutable $cronTime = new \DateTimeImmutable(),
     ) {
         //set seconds to zero due to cron inconsistent startup delay
         $this->cronTime = new \DateTimeImmutable($this->cronTime->format('Y-m-d H:i:00'));
@@ -122,7 +122,7 @@ class RequestsRunner
         if (empty($dto->errors)) {
             if ($dto->website && $dto->statusCode != $dto->website->getExpectedStatusCode()) {
                 $dto->errors[] = sprintf(
-                    $this->translator->trans('request_runner_unexpected_http_code', [], 'messages', $dto->website->getOwner()->getLanguage()),
+                    $this->translator->trans('request_runner_unexpected_http_code', [], 'messages', $dto->website->getOwner()?->getLanguage()),
                     $dto->statusCode,
                     $dto->website->getExpectedStatusCode()
                 );
@@ -205,14 +205,14 @@ class RequestsRunner
             $this->entityManager->persist($downtimeLog);
 
             $message = sprintf(
-                $this->translator->trans('request_runner_downtime', [], 'messages', $dto->website->getOwner()->getLanguage()),
+                $this->translator->trans('request_runner_downtime', [], 'messages', $dto->website->getOwner()?->getLanguage()),
                 $dto->website->getUrl(),
                 implode("\n", $dto->errors)
             );
 
             $this->sendNotification(
                 $dto->website,
-                $this->translator->trans('request_runner_downtime_subject', [], 'messages', $dto->website->getOwner()->getLanguage()),
+                $this->translator->trans('request_runner_downtime_subject', [], 'messages', $dto->website->getOwner()?->getLanguage()),
                 $message
             );
         }
@@ -230,7 +230,7 @@ class RequestsRunner
             $this->entityManager->persist($downtimeLog);
 
             $message = sprintf(
-                $this->translator->trans('request_runner_downtime_end', [], 'messages', $dto->website->getOwner()->getLanguage()),
+                $this->translator->trans('request_runner_downtime_end', [], 'messages', $dto->website->getOwner()?->getLanguage()),
                 $dto->website->getUrl(),
                 $downtimeLog->getStartTime()->format('Y-m-d H:i:s'),
                 $datetime->format('Y-m-d H:i:s'),
@@ -239,7 +239,7 @@ class RequestsRunner
             // TODO add translation
             $this->sendNotification(
                 $dto->website,
-                $this->translator->trans('request_runner_downtime_end_subject', [], 'messages', $dto->website->getOwner()->getLanguage()),
+                $this->translator->trans('request_runner_downtime_end_subject', [], 'messages', $dto->website->getOwner()?->getLanguage()),
                 $message
             );
         }
@@ -293,14 +293,14 @@ class RequestsRunner
             }
         } elseif ($certExpireTime !== null && $website->getCertExpiryTime() != $certExpireTime) {
             $message = sprintf(
-                $this->translator->trans('request_runner_cert_changed', [], 'messages', $website->getOwner()->getLanguage()),
+                $this->translator->trans('request_runner_cert_changed', [], 'messages', $website->getOwner()?->getLanguage()),
                 $website->getCertExpiryTime()->format('Y-m-d H:i:s'),
                 $certExpireTime->format('Y-m-d H:i:s'),
             );
 
             $this->sendNotification(
                 $website,
-                $this->translator->trans('request_runner_cert_changed_subject', [], 'messages', $website->getOwner()->getLanguage()),
+                $this->translator->trans('request_runner_cert_changed_subject', [], 'messages', $website->getOwner()?->getLanguage()),
                 $message
             );
 
@@ -318,7 +318,7 @@ class RequestsRunner
                     $error,
                     [],
                     'messages',
-                    $dto->website->getOwner()->getLanguage()
+                    $dto->website?->getOwner()?->getLanguage()
                 );
             }
         }
