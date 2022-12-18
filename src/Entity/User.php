@@ -39,11 +39,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $language = 'en';
 
     /** @var Collection<int, Website> $websites */
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Website::class, fetch: 'LAZY', orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Website::class, fetch: 'EXTRA_LAZY', orphanRemoval: true)]
     private Collection $websites;
 
     /** @var Collection<int, NotifierChannel> $notifierChannels  */
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: NotifierChannel::class, cascade: ['all'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: NotifierChannel::class, cascade: ['all'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
     private Collection $notifierChannels;
 
     public function __construct()

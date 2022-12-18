@@ -93,3 +93,5 @@ request_runner_downtime_end: "Adres url: %s \nData rozpoczęcia incydentu: %s \n
 request_runner_downtime_end_subject: 'Strona jest ponownie dostępna'
 request_runner_cert_changed: "Poprzednia data wygaśnięcia: %s\nNowa data wygaśnięcia: %s"
 request_runner_cert_changed_subject: 'Certyfikat strony uległ zmianie'
+website_count: 'Strony internetowe'
+notification_channels_count: 'Kanały notyfikacji'

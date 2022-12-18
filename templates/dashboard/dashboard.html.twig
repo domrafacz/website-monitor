@@ -8,47 +8,31 @@
         {% include('dashboard/_navbar.html.twig') %}
         <div class="p-4">
             <h3>{% trans %}dashboard_title{% endtrans %}</h3>
-            <div class="row row-cols-md-2 row-cols-xxl-4 row-cols-xl-2">
-                <div class="col-md">
-                    <div class="card text-bg-primary mb-3">
-                        <div class="card-header">Header</div>
-                        <div class="card-body">
-                            <h5 class="card-title">Primary card title</h5>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <div class="pt-3">
+                <div class="row row-cols-md-2 row-cols-xxl-4 row-cols-xl-2">
+                    <div class="col-md">
+                        <div class="card bg-white border-0 mb-3 shadow-sm">
+                            <div class="card-body ps-4">
+                                <h6 class="card-title">{% trans %}website_count{% endtrans %}</h6>
+                                <p class="card-text uptime">
+                                    <i class="far fa-file"></i>
+                                    <span class="uptime-number ps-3">{{ app.user.websites.count() }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="card bg-white border-0 mb-3 shadow-sm">
+                            <div class="card-body ps-4">
+                                <h6 class="card-title">{% trans %}notification_channels_count{% endtrans %}</h6>
+                                <p class="card-text uptime">
+                                    <i class="fas fa-bell"></i>
+                                    <span class="uptime-number ps-3">{{ app.user.notifierChannels.count() }}</span>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="col-md">
-                    <div class="card text-bg-primary mb-3">
-                        <div class="card-header">Header</div>
-                        <div class="card-body">
-                            <h5 class="card-title">Primary card title</h5>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md">
-                    <div class="card text-bg-primary mb-3">
-                        <div class="card-header">Header</div>
-                        <div class="card-body">
-                            <h5 class="card-title">Primary card title</h5>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md">
-                    <div class="card text-bg-primary mb-3">
-                        <div class="card-header">Header</div>
-                        <div class="card-body">
-                            <h5 class="card-title">Primary card title</h5>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
         {% include('dashboard/_flash_messages.html.twig') %}
     </div>

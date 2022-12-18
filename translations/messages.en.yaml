@@ -93,3 +93,5 @@ request_runner_downtime_end: "Url: %s \nIncident start: %s \nIncident end: %s"
 request_runner_downtime_end_subject: 'Website is back online'
 request_runner_cert_changed: "Previous expire date: %s\nNew expire date: %s"
 request_runner_cert_changed_subject: 'Website certificate changed'
+website_count: 'Websites'
+notification_channels_count: 'Notification channels'
