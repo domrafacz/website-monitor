@@ -13,7 +13,7 @@ cd website-monitor/
 
 composer install
 ```
-After you need to rename `.env.example` to `.env` and setup database credentials in `DATABASE_URL` env variable
+After this, you have to rename `.env.example` to `.env` and setup database credentials in `DATABASE_URL` env variable
 
 ## Docker installation
 
@@ -37,7 +37,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ## Running cron
 Website-monitor is using cron to check websites uptime, you need to add cron server ip to `TRUSTED_IPS` env variable in order to run checks
 
-Below example cronjob running every minute
+Below is an example cronjob running every minute
 ```
 */1 * * * * root        wget -O /dev/null       https://your-domain.com/cron/run-requests
 ```
