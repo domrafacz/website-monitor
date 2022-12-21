@@ -10,7 +10,6 @@ use App\Entity\ResponseLog;
 use App\Entity\Website;
 use App\Service\Notifier\Notifier;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -20,11 +19,9 @@ class RequestsRunner
 {
     public function __construct(
         private readonly HttpClientInterface        $client,
-        private readonly NoPrivateNetworkHttpClient $noPrivateNetworkHttpClient,
         private readonly EntityManagerInterface     $entityManager,
         private readonly Notifier                   $notifier,
         private readonly TranslatorInterface        $translator,
-        private readonly bool                       $allowPrivateNetworks,
         /** @var array<ResponseInterface> $responses */
         private array                               $responses = [],
         /** @var array<int, RequestRunnerResponseDto> $responseData */
@@ -36,21 +33,12 @@ class RequestsRunner
         $this->cronTime = new \DateTimeImmutable($this->cronTime->format('Y-m-d H:i:00'));
     }
 
-    private function getClient(): HttpClientInterface
-    {
-        if ($this->allowPrivateNetworks === true) {
-            return $this->client;
-        } else {
-            return $this->noPrivateNetworkHttpClient;
-        }
-    }
-
     /** @param array<Website> $websites  */
     public function run(array $websites): void
     {
         foreach ($websites as $website) {
             try {
-                $this->responses[] = $this->getClient()->request($website->getRequestMethod(), $website->getUrl(), [
+                $this->responses[] = $this->client->request($website->getRequestMethod(), $website->getUrl(), [
                     'timeout' => $website->getTimeout(),
                     'max_redirects' => $website->getMaxRedirects(),
                     'capture_peer_cert_chain' => true,
@@ -63,7 +51,7 @@ class RequestsRunner
             }
         }
 
-        foreach ($this->getClient()->stream($this->responses) as $response => $chunk) {
+        foreach ($this->client->stream($this->responses) as $response => $chunk) {
             try {
                 if ($chunk->isTimeout()) {
                     $this->updateResponseDto(

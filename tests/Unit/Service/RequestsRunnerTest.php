@@ -69,7 +69,7 @@ class RequestsRunnerTest extends KernelTestCase
 
     private function createRequestRunner(
         callable|iterable|ResponseInterface $responseFactory = null,
-        bool $privateNetwork = false,
+        bool $allowPrivateNetworks = false,
         int $batchFlushSize = 50,
         string $translatorMessage = '',
     ): RequestsRunner {
@@ -79,15 +79,16 @@ class RequestsRunnerTest extends KernelTestCase
             $client = new MockHttpClient();
         }
 
-        $client2 = new NoPrivateNetworkHttpClient($client);
+        if ($allowPrivateNetworks === false) {
+            $client = new NoPrivateNetworkHttpClient($client);
+        }
+
 
         return  new RequestsRunner(
             $client,
-            $client2,
             $this->createMock(EntityManagerInterface::class),
             $this->createMock(Notifier::class),
             $this->createTranslator($translatorMessage),
-            allowPrivateNetworks: $privateNetwork,
             batchFlushSize: $batchFlushSize,
         );
     }
@@ -128,7 +129,7 @@ class RequestsRunnerTest extends KernelTestCase
         $requestRunner = $this->createRequestRunner(
             responseFactory: function () {
             },
-            privateNetwork: true,
+            allowPrivateNetworks: true,
             translatorMessage: $errorMessage
         );
 
@@ -146,7 +147,7 @@ class RequestsRunnerTest extends KernelTestCase
 
         $requestRunner = $this->createRequestRunner(
             responseFactory: [$mockResponse],
-            privateNetwork: true,
+            allowPrivateNetworks: true,
             translatorMessage: $errorMessage
         );
 
@@ -164,7 +165,7 @@ class RequestsRunnerTest extends KernelTestCase
 
         $requestRunner = $this->createRequestRunner(
             responseFactory: [$mockResponse],
-            privateNetwork: true,
+            allowPrivateNetworks: true,
             translatorMessage: $errorMessage
         );
 
@@ -182,7 +183,7 @@ class RequestsRunnerTest extends KernelTestCase
 
         $requestRunner = $this->createRequestRunner(
             responseFactory: [$mockResponse],
-            privateNetwork: true,
+            allowPrivateNetworks: true,
             translatorMessage: $errorMessage
         );
 
@@ -201,7 +202,7 @@ class RequestsRunnerTest extends KernelTestCase
 
         $requestRunner = $this->createRequestRunner(
             responseFactory: [$mockResponse],
-            privateNetwork: true,
+            allowPrivateNetworks: true,
         );
 
         $website = $this->createWebsite(10, 'https://google.com', 'GET');
@@ -219,7 +220,7 @@ class RequestsRunnerTest extends KernelTestCase
 
         $requestRunner = $this->createRequestRunner(
             responseFactory: [$mockResponse],
-            privateNetwork: true,
+            allowPrivateNetworks: true,
         );
 
         $website = $this->createWebsite(10, 'https://google.com', 'GET');
@@ -234,7 +235,7 @@ class RequestsRunnerTest extends KernelTestCase
         $datetime = new \DateTimeImmutable();
 
         $requestRunner = $this->createRequestRunner(
-            privateNetwork: true,
+            allowPrivateNetworks: true,
         );
 
         $downtimeLog = new DowntimeLog();
@@ -252,7 +253,7 @@ class RequestsRunnerTest extends KernelTestCase
     public function testFlushBatch(): void
     {
         $requestRunner = $this->createRequestRunner(
-            privateNetwork: true,
+            allowPrivateNetworks: true,
             batchFlushSize: 2,
         );
 

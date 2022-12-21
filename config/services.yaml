@@ -30,13 +30,10 @@ services:
         arguments:
             $defaultLocale: '%kernel.default_locale%'
 
-    Symfony\Component\HttpClient\NoPrivateNetworkHttpClient:
-        arguments:
-            - '@http_client'
+    Symfony\Contracts\HttpClient\HttpClientInterface:
+        factory: ['App\Factory\HttpClientStaticFactory', 'create']
+        arguments: ['%env(ALLOW_PRIVATE_NETWORKS)%']
 
     App\Service\RequestsRunner:
         bind:
-            $allowPrivateNetworks: '%env(ALLOW_PRIVATE_NETWORKS)%'
-
-
-    #Symfony\Contracts\HttpClient\HttpClientInterface:
+            $client: '@Symfony\Contracts\HttpClient\HttpClientInterface'
