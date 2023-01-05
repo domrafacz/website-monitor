@@ -8,7 +8,7 @@ use App\Entity\NotifierChannel;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\UserManager;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
@@ -16,7 +16,7 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
-class UserManagerTest extends KernelTestCase
+class UserManagerTest extends TestCase
 {
     public function testGetCurrentUserReturnNull(): void
     {

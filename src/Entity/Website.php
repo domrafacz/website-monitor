@@ -55,14 +55,14 @@ class Website
     private bool $enabled;
 
     /** @var Collection<int, ResponseLog> $responseLogs */
-    #[ORM\OneToMany(mappedBy: 'website', targetEntity: ResponseLog::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'website', targetEntity: ResponseLog::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $responseLogs;
 
     #[ORM\Column(type: Types::SMALLINT, options: ['default' => 200])]
     private int $expectedStatusCode;
 
     /** @var Collection<int, DowntimeLog> $downtimeLogs */
-    #[ORM\OneToMany(mappedBy: 'website', targetEntity: DowntimeLog::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'website', targetEntity: DowntimeLog::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $downtimeLogs;
 
     /** @var Collection<int, NotifierChannel> $notifierChannels */

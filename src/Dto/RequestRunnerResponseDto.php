@@ -19,4 +19,6 @@ class RequestRunnerResponseDto
     public ?int $statusCode = null;
 
     public ?\DateTimeInterface $certExpireTime = null;
+
+    public int $status = Website::STATUS_OK;
 }
