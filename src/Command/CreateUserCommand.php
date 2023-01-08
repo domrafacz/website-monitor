@@ -37,7 +37,8 @@ class CreateUserCommand extends Command
     {
         $this
             ->addArgument('email', InputArgument::REQUIRED, 'User email')
-            ->addArgument('password', InputArgument::REQUIRED, 'User password');
+            ->addArgument('password', InputArgument::REQUIRED, 'User password')
+            ->addArgument('admin', InputArgument::OPTIONAL, 'Admin role');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -66,6 +67,10 @@ class CreateUserCommand extends Command
             )
         );
         $user->setLanguage('en');
+
+        if ($input->hasArgument('admin') && $input->getArgument('admin') === 'admin') {
+            $user->setRoles(array_merge($user->getRoles(), ['ROLE_ADMIN']));
+        }
 
         $this->userRepository->save($user, true);
 
