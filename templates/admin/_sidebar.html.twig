@@ -1,0 +1,14 @@
+<div id="sidebar" class="sidebar">
+    <div class="sidebar-logo p-3">
+        Website monitor
+    </div>
+    <ul class="nav flex-column mb-auto mt-4">
+        <li class="nav-item">
+            <a href="{{ path('app_admin_dashboard') }}" class="nav-link sidebar-link" aria-current="page">
+                <i class="fa-solid fa-sliders"></i>
+                {% trans %}dashboard_link{% endtrans %}
+            </a>
+        </li>
+    </ul>
+</div>
+<div id="sidebar-screen-hover" onclick="dashboardSidebarToggle()"></div>

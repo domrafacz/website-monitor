@@ -7,6 +7,14 @@
                     {{ app.user.userIdentifier }}
                 </a>
                 <ul class="dropdown-menu position-absolute dropdown-menu-end dropdown-user-nav">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <li>
+                        <a class="dropdown-item text-danger" href="{{ path('app_admin_dashboard') }}">
+                            <i class="fa-solid fa-lock"></i>
+                            {% trans %}admin_dashboard_title{% endtrans %}
+                        </a>
+                    </li>
+                {% endif %}
                     <li>
                         <a class="dropdown-item" href="{{ path('app_user_settings') }}">
                             <i class="fa-solid fa-user-pen"></i>
