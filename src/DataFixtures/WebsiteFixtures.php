@@ -13,7 +13,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 
-class WebsiteFixture extends Fixture implements DependentFixtureInterface
+class WebsiteFixtures extends Fixture implements DependentFixtureInterface
 {
     public function __construct(
         private readonly UserRepository $userRepository,
@@ -129,7 +129,7 @@ class WebsiteFixture extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
-            UserFixture::class,
+            UserFixtures::class,
         ];
     }
 }
