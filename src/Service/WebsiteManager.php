@@ -47,6 +47,7 @@ class WebsiteManager
         $this->websiteRepository->remove($website, $flush);
     }
 
+    /** @param array<int, string> $errors */
     public function addDowntimeLog(Website $website, \DateTimeImmutable $startTime, array $errors): void
     {
         $downtimeLog = new DowntimeLog();

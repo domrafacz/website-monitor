@@ -40,7 +40,8 @@ class NotifierChannelFixtures extends Fixture implements DependentFixtureInterfa
         $manager->flush();
     }
 
-    private function createNotifierChannel(User $user, int $type, string $name, array $options = []): NotifierChannel
+    /** @param array<string, string>|null $options */
+    private function createNotifierChannel(User $user, int $type, string $name, array $options = null): NotifierChannel
     {
         return new NotifierChannel(
             $user,

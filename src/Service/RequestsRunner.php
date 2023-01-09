@@ -23,7 +23,7 @@ class RequestsRunner
         /** @var array<int, RequestRunnerResponseDto> $responseData */
         private array $responseData = [],
         private readonly int $batchFlushSize = 50,
-        private \DateTimeInterface $cronTime = new \DateTimeImmutable(),
+        private \DateTimeImmutable $cronTime = new \DateTimeImmutable(),
     ) {
         //set seconds to zero due to cron inconsistent startup delay
         $this->cronTime = new \DateTimeImmutable($this->cronTime->format('Y-m-d H:i:00'));
