@@ -66,6 +66,7 @@ notifier_channels_link: 'Notification channels'
 notifier_add_channel_title: 'Add new notification channel'
 notifier_add_channel_title %name%: 'Add channel - %name%'
 empty_notification_channel_list_message: "You don't have any notification channels"
+empty_website_list_message: "You don't have any websites"
 telegram_api_token: 'Api token'
 telegram_chat_id: 'Chat id'
 flash_notifier_channel_added: 'Notification channel added successfully'

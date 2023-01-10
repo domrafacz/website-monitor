@@ -11,7 +11,9 @@
             {% include('dashboard/_flash_messages.html.twig') %}
             <div class="pt-3">
                 <a href="{{ path('app_notifier_add_channel') }}" class="btn btn-success mb-3" style="width: 6rem;">{% trans %}add{% endtrans %}</a>
-                {% if notifier_channels.count > 0 %}
+                {% if notifier_channels.count == 0 %}
+                    <div class="alert alert-warning border border-warning">{% trans %}empty_notification_channel_list_message{% endtrans %}</div>
+                {% else %}
                     <div class="md-12 bg-white p-3 shadow-sm">
                         <div class="table-responsive">
                             <table class="table table-hover align-middle">
@@ -35,8 +37,6 @@
                             </table>
                         </div>
                     </div>
-                {% else %}
-                    <div class="alert alert-warning border border-warning">{% trans %}empty_notification_channel_list_message{% endtrans %}</div>
                 {% endif %}
             </div>
         </div>
