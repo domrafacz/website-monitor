@@ -50,7 +50,7 @@
                                         <i class="fa-solid fa-circle-check icon-green"></i>
                                     {% endif %}
                                     <span class="uptime-number ps-3">{{ website.getDowntimeLogs.count() }}</span>
-                                    {% if website.getDowntimeLogs.count() > 0 %}
+                                    {% if website.getDowntimeLogs.count() %}
                                         <a class="text-dark text-decoration-none" href="{{ path('app_website_incidents', {id: website.getId}) }}">({% trans %}show_details{% endtrans %})</a>
                                     {% endif %}
                                 </p>
@@ -81,6 +81,11 @@
                                 <h6 class="pt-1">{% trans %}website_channels_list{% endtrans %}</h6>
                             </div>
                             <ul class="list-group website-channel-list">
+                                {% if app.user.notifierChannels.count == 0 %}
+                                <li class="list-group-item bg-warning text-center text-white">
+                                    {% trans %}empty_notification_channel_list_message{% endtrans %}
+                                </li>
+                                {% endif %}
                                 {% for channel in app.user.notifierChannels.getIterator %}
                                     {% if website.hasNotifierChannel(channel.id) %}
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
