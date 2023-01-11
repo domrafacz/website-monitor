@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Dto\WebsiteDto;
+use App\Entity\NotifierChannel;
+use App\Entity\Website;
 use App\Factory\WebsiteFactory;
 use App\Form\AddWebsiteType;
 use App\Form\DeleteWebsiteType;
-use App\Repository\NotifierChannelRepository;
 use App\Repository\WebsiteRepository;
 use App\Service\UserManager;
 use App\Service\WebsiteManager;
 use App\Service\WebsiteStatisticsProvider;
 use Doctrine\Common\Collections\Criteria;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,12 +46,9 @@ class WebsiteController extends AbstractController
 
     #[Route('/website/edit/{id}', name: 'app_website_edit')]
     #[IsGranted('ROLE_USER')]
-    public function edit(int $id, Request $request, WebsiteFactory $websiteFactory, WebsiteManager $websiteManager, TranslatorInterface $translator, UserManager $userManager): Response
+    #[IsGranted('view', subject: 'website', statusCode: 404)]
+    public function edit(Website $website, Request $request, WebsiteFactory $websiteFactory, WebsiteManager $websiteManager, TranslatorInterface $translator): Response
     {
-        if (!$website = $userManager->getCurrentUser()->findWebsite($id)) {
-            throw $this->createNotFoundException(sprintf('Website not found, id: %s', $id));
-        }
-
         $websiteDto = $websiteFactory->createDto($website);
         $form = $this->createForm(AddWebsiteType::class, $websiteDto);
 
@@ -68,15 +67,11 @@ class WebsiteController extends AbstractController
 
     #[Route('/website/details/{id}', name: 'app_website_details')]
     #[IsGranted('ROLE_USER')]
-    public function details(int $id, Request $request, UserManager $userManager, WebsiteManager $websiteManager, TranslatorInterface $translator, WebsiteStatisticsProvider $statisticsProvider): Response
+    #[IsGranted('view', subject: 'website', statusCode: 404)]
+    public function details(Website $website, Request $request, WebsiteManager $websiteManager, TranslatorInterface $translator, WebsiteStatisticsProvider $statisticsProvider): Response
     {
-        if (!$website = $userManager->getCurrentUser()->findWebsite($id)) {
-            throw $this->createNotFoundException(sprintf('Website not found, id: %s', $id));
-        }
-
         $deleteForm = $this->createForm(DeleteWebsiteType::class);
         $deleteForm->handleRequest($request);
-
 
         if ($deleteForm->isSubmitted() && $deleteForm->isValid()) {
             $websiteManager->delete($website, true);
@@ -94,12 +89,9 @@ class WebsiteController extends AbstractController
 
     #[Route('/website/incidents/{id}', name: 'app_website_incidents')]
     #[IsGranted('ROLE_USER')]
-    public function incidents(int $id, UserManager $userManager): Response
+    #[IsGranted('view', subject: 'website', statusCode: 404)]
+    public function incidents(Website $website): Response
     {
-        if (!$website = $userManager->getCurrentUser()->findWebsite($id)) {
-            throw $this->createNotFoundException(sprintf('Website not found, id: %s', $id));
-        }
-
         $criteria = Criteria::create()
             ->orderBy(array('id' => Criteria::DESC));
 
@@ -110,23 +102,19 @@ class WebsiteController extends AbstractController
         ]);
     }
 
-    #[Route('/website/toggle-notifier-channel/{websiteId}/{channelId}/{token}', name: 'app_website_toggle_notifier_channel')]
+    #[Route('/website/toggle-notifier-channel/{website_id}/{channel_id}/{token}', name: 'app_website_toggle_notifier_channel')]
+    #[Entity('website', options: ['id' => 'website_id'])]
+    #[Entity('notifierChannel', options: ['id' => 'channel_id'])]
     #[IsGranted('ROLE_USER')]
-    public function toggleNotifierChannel(int $websiteId, int $channelId, string $token, UserManager $userManager, WebsiteRepository $websiteRepository): Response
+    #[IsGranted('view', subject: 'website', statusCode: 404)]
+    #[IsGranted('view', subject: 'notifierChannel', statusCode: 404)]
+    public function toggleNotifierChannel(Website $website, NotifierChannel $notifierChannel, string $token, WebsiteRepository $websiteRepository): Response
     {
-        if (!$website = $userManager->getCurrentUser()->findWebsite($websiteId)) {
-            throw $this->createNotFoundException(sprintf('Website not found, id: %s', $websiteId));
-        }
-
-        if (!$channel = $userManager->getCurrentUser()->findNotifierChannel($channelId)) {
-            throw $this->createNotFoundException(sprintf('Notifier channel not found, id: %s', $channelId));
-        }
-
         if ($this->isCsrfTokenValid('website-toggle-notifier-channel', $token)) {
-            $website->toggleNotifierChannel($channel);
+            $website->toggleNotifierChannel($notifierChannel);
             $websiteRepository->save($website, true);
         }
 
-        return $this->redirectToRoute('app_website_details', ['id' => $websiteId]);
+        return $this->redirectToRoute('app_website_details', ['id' => $website->getId()]);
     }
 }
