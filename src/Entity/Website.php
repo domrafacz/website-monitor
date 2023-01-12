@@ -69,12 +69,21 @@ class Website
     #[ORM\ManyToMany(targetEntity: NotifierChannel::class, inversedBy: 'websites')]
     private Collection $notifierChannels;
 
+    /** @var Collection<int, ResponseLogArchive> $responseLogArchives */
+    #[ORM\OneToMany(mappedBy: 'website', targetEntity: ResponseLogArchive::class, cascade: ['persist'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
+    private Collection $responseLogArchives;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, options: ['default' => '1970-01-01 00:00:00'])]
+    private \DateTimeInterface $nextArchiveTime;
+
     public function __construct()
     {
         $this->responseLogs = new ArrayCollection();
         $this->downtimeLogs = new ArrayCollection();
         $this->notifierChannels = new ArrayCollection();
         $this->lastCheck = new \DateTimeImmutable();
+        $this->responseLogArchives = new ArrayCollection();
+        $this->nextArchiveTime = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -332,6 +341,57 @@ class Website
             return $downtimeLog;
         } else {
             return null;
+        }
+    }
+
+    /**
+     * @return Collection<int, ResponseLogArchive>
+     */
+    public function getResponseLogArchives(): Collection
+    {
+        return $this->responseLogArchives;
+    }
+
+    public function addResponseLogArchive(ResponseLogArchive $responseLogArchive): self
+    {
+        if (!$this->responseLogArchives->contains($responseLogArchive)) {
+            $this->responseLogArchives->add($responseLogArchive);
+            $responseLogArchive->setWebsite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResponseLogArchive(ResponseLogArchive $responseLogArchive): self
+    {
+        if ($this->responseLogArchives->removeElement($responseLogArchive)) {
+            // set the owning side to null (unless already changed)
+            if ($responseLogArchive->getWebsite() === $this) {
+                $responseLogArchive->setWebsite(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getNextArchiveTime(): \DateTimeInterface
+    {
+        return $this->nextArchiveTime;
+    }
+
+    public function setNextArchiveTime(\DateTimeInterface $nextArchiveTime): self
+    {
+        $this->nextArchiveTime = $nextArchiveTime;
+
+        return $this;
+    }
+
+    public function canArchiveResponseLog(): bool
+    {
+        if (new \DateTimeImmutable() > $this->getNextArchiveTime()) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

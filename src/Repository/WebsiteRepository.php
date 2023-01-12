@@ -32,6 +32,18 @@ class WebsiteRepository extends ServiceEntityRepository
         }
     }
 
+    /** @param array<int, Website> $entities */
+    public function saveMultiple(array $entities, bool $flush = false): void
+    {
+        foreach ($entities as $entity) {
+            $this->getEntityManager()->persist($entity);
+        }
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
     public function remove(Website $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);

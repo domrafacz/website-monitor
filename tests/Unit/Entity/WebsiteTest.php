@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Entity;
 use App\Entity\DowntimeLog;
 use App\Entity\NotifierChannel;
 use App\Entity\ResponseLog;
+use App\Entity\ResponseLogArchive;
 use App\Entity\User;
 use App\Entity\Website;
 use PHPUnit\Framework\TestCase;
@@ -49,6 +50,17 @@ class WebsiteTest extends TestCase
         };
 
         $notifierChannel = new class ($user, 0, 'test') extends NotifierChannel {
+            public function getId(): int
+            {
+                return 1;
+            }
+        };
+
+        $responseLogArchive = new class (
+            $website,
+            new \DateTimeImmutable(),
+            100
+        ) extends ResponseLogArchive {
             public function getId(): int
             {
                 return 1;
@@ -122,5 +134,18 @@ class WebsiteTest extends TestCase
 
         $this->assertInstanceOf(Website::class, $website->removeNotifierChannel($notifierChannel));
         $this->assertSame(0, $website->getNotifierChannels()->count());
+
+        $this->assertInstanceOf(Website::class, $website->addResponseLogArchive($responseLogArchive));
+        $this->assertSame(1, $website->getResponseLogArchives()->count());
+
+        $this->assertInstanceOf(Website::class, $website->removeResponseLogArchive($responseLogArchive));
+        $this->assertSame(0, $website->getResponseLogArchives()->count());
+
+        $this->assertTrue($website->canArchiveResponseLog());
+
+        $this->assertInstanceOf(Website::class, $website->setNextArchiveTime($lastCheck->modify('+4 hour')));
+        $this->assertEquals($lastCheck->modify('+4 hour'), $website->getNextArchiveTime());
+
+        $this->assertFalse($website->canArchiveResponseLog());
     }
 }

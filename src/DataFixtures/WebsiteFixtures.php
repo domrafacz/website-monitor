@@ -8,6 +8,7 @@ use App\Entity\DowntimeLog;
 use App\Entity\ResponseLog;
 use App\Entity\Website;
 use App\Repository\UserRepository;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -28,20 +29,23 @@ class WebsiteFixtures extends Fixture implements DependentFixtureInterface
             throw new UserNotFoundException('test1@test.com');
         }
 
-        $pastTime = new \DateTimeImmutable();
+        $time = new \DateTimeImmutable();
         //subtract 10 minutes
-        $pastTime = $pastTime->sub(new \DateInterval("PT10M"));
+        // $time->sub(new \DateInterval("PT10M")
 
-        $website = new Website();
-        $website->setUrl('https://google.com');
-        $website->setRequestMethod('GET');
-        $website->setExpectedStatusCode(302);
-        $website->setMaxRedirects(0);
-        $website->setTimeout(10);
-        $website->setFrequency(1);
-        $website->setEnabled(true);
-        $website->setOwner($user);
-        $website->setLastCheck($pastTime);
+        $past = $time->modify('-50 day');
+
+        $website = $this->createWebsite(
+            $user,
+            'https://google.com',
+            'GET',
+            302,
+            0,
+            10,
+            1,
+            true,
+            $time->sub(new \DateInterval("PT10M"))
+        );
 
         $manager->persist($website);
 
@@ -55,7 +59,7 @@ class WebsiteFixtures extends Fixture implements DependentFixtureInterface
         $website2->setEnabled(true);
         $website2->setExpectedStatusCode(404);
         $website2->setOwner($user);
-        $website2->setLastCheck($pastTime);
+        $website2->setLastCheck($time->sub(new \DateInterval("PT10M")));
 
         $manager->persist($website2);
 
@@ -68,7 +72,7 @@ class WebsiteFixtures extends Fixture implements DependentFixtureInterface
         $website3->setEnabled(true);
         $website3->setExpectedStatusCode(200);
         $website3->setOwner($user);
-        $website3->setLastCheck($pastTime);
+        $website3->setLastCheck($time->sub(new \DateInterval("PT10M")));
 
         $manager->persist($website3);
 
@@ -87,16 +91,16 @@ class WebsiteFixtures extends Fixture implements DependentFixtureInterface
         $website4->setEnabled(true);
         $website4->setExpectedStatusCode(200);
         $website4->setOwner($user2);
-        $website4->setLastCheck($pastTime);
+        $website4->setLastCheck($time->sub(new \DateInterval("PT10M")));
 
         $manager->persist($website4);
 
         $manager->flush();
 
         $responseLog = new ResponseLog(
-            $website,
+            $website2,
             Website::STATUS_OK,
-            new \DateTimeImmutable(),
+            $time->modify('-50 day'),
             1500,
         );
 
@@ -124,6 +128,31 @@ class WebsiteFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($downtimeLog2);
         $manager->persist($downtimeLog3);
         $manager->flush();
+    }
+
+    private function createWebsite(
+        User $owner,
+        string $url = 'https://nonexistent.nonexistent',
+        string $method = 'GET',
+        int $statusCode = 200,
+        int $redirects = 0,
+        int $timeout = 10,
+        int $frequency = 1,
+        bool $enabled = true,
+        \DateTimeInterface $lastCheck = null,
+    ): Website {
+        $website = new Website();
+        $website->setUrl($url);
+        $website->setRequestMethod($method);
+        $website->setExpectedStatusCode($statusCode);
+        $website->setMaxRedirects($redirects);
+        $website->setTimeout($timeout);
+        $website->setFrequency($frequency);
+        $website->setEnabled($enabled);
+        $website->setOwner($owner);
+        $website->setLastCheck($lastCheck);
+
+        return $website;
     }
 
     public function getDependencies(): array

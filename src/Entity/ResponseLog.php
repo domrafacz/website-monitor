@@ -15,6 +15,8 @@ class ResponseLog
     public const STATUS_OK = 1;
     public const STATUS_ERROR = 2;
 
+    public const RETENTION_PERIOD_IN_DAYS = 7;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

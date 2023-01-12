@@ -41,6 +41,52 @@ class ResponseLogRepository extends ServiceEntityRepository
         return intval($result[0]['average']);
     }
 
+    public function getAverageResponseTimeForOlderThan(Website $website, \DateTimeImmutable $endTime): int
+    {
+        $query = $this->getEntityManager()->createQuery(
+            'SELECT AVG(r.responseTime) AS average
+            FROM App\Entity\ResponseLog r
+            WHERE r.website = :website
+            AND r.time <= :endTime'
+        )->setParameter('website', $website)
+            ->setParameter('endTime', $endTime);
+
+        $result = $query->getResult();
+
+        return intval($result[0]['average']);
+    }
+
+
+    public function getOldest(Website $website): ?ResponseLog
+    {
+        $result = $this->createQueryBuilder('r')
+            ->andWhere('r.website = :website')
+            ->setParameter('website', $website)
+            ->orderBy('r.id', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+
+        if ($result instanceof ResponseLog) {
+            return $result;
+        } else {
+            return null;
+        }
+    }
+
+    public function deleteOlderThan(Website $website, \DateTimeImmutable $endTime): void
+    {
+        $query = $this->getEntityManager()->createQuery(
+            'DELETE FROM App\Entity\ResponseLog r
+            WHERE r.website = :website
+            AND r.time <= :endTime'
+        )
+            ->setParameter('website', $website)
+            ->setParameter('endTime', $endTime)
+            ->execute();
+    }
+
 //    /**
 //     * @return ResponseLog[] Returns an array of ResponseLog objects
 //     */

@@ -12,7 +12,7 @@ class WebsiteVoter extends Voter
     public const VIEW = 'view';
     public const EDIT = 'edit';
 
-    protected function supports(string $attribute, $subject): bool
+    protected function supports(string $attribute, mixed $subject): bool
     {
         if (!in_array($attribute, [self::VIEW, self::EDIT])) {
             return false;
@@ -25,7 +25,7 @@ class WebsiteVoter extends Voter
         return true;
     }
 
-    protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 
