@@ -64,9 +64,10 @@ class RequestsRunnerTest extends TestCase
 
         $website = $this->createWebsite(10, 'https://google.com', 'GET');
 
-        $requestRunner->run([$website]);
+        $requestRunner->run([$website], true);
 
         $this->assertEquals($errorMessage, $requestRunner->getResponseData()[$website->getId()]->errors[0]);
+        $this->assertEquals(1, $requestRunner->getStatistics()['failed']);
     }
 
     public function testRequestTimeout(): void

@@ -13,6 +13,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class RequestsRunner
 {
+    private array $retryWebsites = [];
     public function __construct(
         private readonly HttpClientInterface        $client,
         private readonly EntityManagerInterface     $entityManager,
@@ -30,7 +31,7 @@ class RequestsRunner
     }
 
     /** @param array<Website> $websites  */
-    public function run(array $websites): void
+    public function run(array $websites, bool $retry = false): void
     {
         foreach ($websites as $website) {
             try {
@@ -43,12 +44,19 @@ class RequestsRunner
 
                 $this->updateResponseDto($website->getId(), $website);
             } catch (TransportExceptionInterface $e) {
+                if ($retry) {
+                    $this->retryWebsites[] = $website;
+                }
                 $this->updateResponseDto($website->getId(), $website, ['request_runner_transport_exception'], microtime(true));
             }
         }
 
         $this->streamResponses();
         $this->parseResponses();
+
+        if ($retry) {
+            $this->retryTransportException();
+        }
     }
 
     private function getResponseDto(int $websiteId): RequestRunnerResponseDto
@@ -158,5 +166,14 @@ class RequestsRunner
         }
 
         return ['successful' => $successfulCount, 'failed' => $failedCount];
+    }
+
+    private function retryTransportException(): void
+    {
+        foreach ($this->retryWebsites as $website) {
+            unset($this->responseData[$website->getId()]);
+        }
+
+        $this->run($this->retryWebsites);
     }
 }

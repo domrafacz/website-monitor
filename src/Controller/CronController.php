@@ -21,7 +21,7 @@ class CronController extends AbstractController
     public function runRequests(WebsiteRepository $websiteRepository, RequestsRunner $requestsRunner, ResponseLogArchiver $archiver, LoggerInterface $logger, #[Autowire('%app.archiveLimit%')]int $archiveLimit): Response
     {
         if ($websites = $websiteRepository->findAllReadyToUpdate()) {
-            $requestsRunner->run($websites);
+            $requestsRunner->run($websites, true);
         }
 
         $statistics = $requestsRunner->getStatistics();
