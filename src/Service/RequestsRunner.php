@@ -146,4 +146,17 @@ class RequestsRunner
 
         $this->entityManager->flush();
     }
+
+    /** @return array<string, int> */
+    public function getStatistics(): array
+    {
+        $successfulCount = 0;
+        $failedCount = 0;
+
+        foreach ($this->responseData as $dto) {
+            empty($dto->errors) ? $successfulCount++ : $failedCount++;
+        }
+
+        return ['successful' => $successfulCount, 'failed' => $failedCount];
+    }
 }

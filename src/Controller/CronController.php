@@ -8,6 +8,7 @@ use App\Entity\ResponseLog;
 use App\Repository\WebsiteRepository;
 use App\Service\RequestsRunner;
 use App\Service\ResponseLogArchiver;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,10 +18,16 @@ use Symfony\Component\Routing\Annotation\Route;
 class CronController extends AbstractController
 {
     #[Route('/run-requests', name: 'run_requests')]
-    public function runRequests(WebsiteRepository $websiteRepository, RequestsRunner $requestsRunner, ResponseLogArchiver $archiver, #[Autowire('%app.archiveLimit%')]int $archiveLimit): Response
+    public function runRequests(WebsiteRepository $websiteRepository, RequestsRunner $requestsRunner, ResponseLogArchiver $archiver, LoggerInterface $logger, #[Autowire('%app.archiveLimit%')]int $archiveLimit): Response
     {
         if ($websites = $websiteRepository->findAllReadyToUpdate()) {
             $requestsRunner->run($websites);
+        }
+
+        $statistics = $requestsRunner->getStatistics();
+
+        if (isset($statistics['successful'], $statistics['failed'])) {
+            $logger->info(sprintf('Cron request runner results, successful: %d, failed: %d', $statistics['successful'], $statistics['failed']));
         }
 
         $currentTime = new \DateTimeImmutable();
