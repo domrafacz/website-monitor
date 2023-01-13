@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Notifier\Channels;
 
+use App\Form\NotifierTelegramChannelType;
+use App\Message\Notifier\TelegramMessage;
 use App\Service\Notifier\Channels\Contracts\ChannelInterface;
 use InvalidArgumentException;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
@@ -12,6 +14,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class Telegram implements ChannelInterface
 {
+    public const ID = 0;
+    public const NAME = 'Telegram';
+    public const MESSAGE_CLASS = TelegramMessage::class;
+    public const FORM_TYPE_CLASS = NotifierTelegramChannelType::class;
+
     public function __construct(
         private readonly HttpClientInterface $client,
     ) {

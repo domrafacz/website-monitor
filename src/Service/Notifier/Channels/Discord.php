@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Notifier\Channels;
 
+use App\Form\NotifierDiscordChannelType;
+use App\Message\Notifier\DiscordMessage;
 use App\Service\Notifier\Channels\Contracts\ChannelInterface;
 use InvalidArgumentException;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
@@ -12,6 +14,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class Discord implements ChannelInterface
 {
+    public const ID = 1;
+    public const NAME = 'Discord';
+    public const MESSAGE_CLASS = DiscordMessage::class;
+    public const FORM_TYPE_CLASS = NotifierDiscordChannelType::class;
+
     public function __construct(
         private readonly HttpClientInterface $client,
     ) {

@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Form\NotifierDiscordChannelType;
-use App\Form\NotifierTelegramChannelType;
-use App\Message\Notifier\DiscordMessage;
-use App\Message\Notifier\TelegramMessage;
 use App\Repository\NotifierChannelRepository;
+use App\Service\Notifier\Channels\Discord;
+use App\Service\Notifier\Channels\Telegram;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -18,15 +16,15 @@ use Doctrine\ORM\Mapping as ORM;
 class NotifierChannel
 {
     public const CHANNELS = [
-        0 => [
-            'name' => 'Telegram',
-            'message' => TelegramMessage::class,
-            'form' => NotifierTelegramChannelType::class,
+        Telegram::ID => [
+            'name' => Telegram::NAME,
+            'message' => Telegram::MESSAGE_CLASS,
+            'form' => Telegram::FORM_TYPE_CLASS,
         ],
-        1 => [
-            'name' => 'Discord',
-            'message' => DiscordMessage::class,
-            'form' => NotifierDiscordChannelType::class,
+        Discord::ID => [
+            'name' => Discord::NAME,
+            'message' => Discord::MESSAGE_CLASS,
+            'form' => Discord::FORM_TYPE_CLASS,
         ]
     ];
 
