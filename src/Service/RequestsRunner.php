@@ -13,6 +13,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class RequestsRunner
 {
+    /** @var array<int, Website> $retryWebsites */
     private array $retryWebsites = [];
     public function __construct(
         private readonly HttpClientInterface        $client,
