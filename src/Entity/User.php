@@ -46,6 +46,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: NotifierChannel::class, cascade: ['all'], fetch: 'EXTRA_LAZY', orphanRemoval: true)]
     private Collection $notifierChannels;
 
+    #[ORM\Column(options: ['default' => 10])]
+    private int $quota = 10;
+
     public function __construct()
     {
         $this->websites = new ArrayCollection();
@@ -215,5 +218,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return null;
+    }
+
+    public function getQuota(): int
+    {
+        return $this->quota;
+    }
+
+    public function setQuota(int $quota): self
+    {
+        $this->quota = $quota;
+
+        return $this;
     }
 }

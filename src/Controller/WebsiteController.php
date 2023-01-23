@@ -29,6 +29,10 @@ class WebsiteController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function add(Request $request, WebsiteFactory $websiteFactory, WebsiteManager $websiteManager, UserManager $userManager): Response
     {
+        if ($userManager->exceedsQuota($userManager->getCurrentUser())) {
+            return $this->redirectToRoute('app_websites');
+        }
+
         $websiteDto = new WebsiteDto();
         $form = $this->createForm(AddWebsiteType::class, $websiteDto);
 

@@ -60,4 +60,9 @@ class UserManager
 
         return $channel;
     }
+
+    public function exceedsQuota(User $user): bool
+    {
+        return $user->getWebsites()->count() >= $user->getQuota();
+    }
 }
