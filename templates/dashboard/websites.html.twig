@@ -9,7 +9,12 @@
         <div class="p-4">
             <h3>{% trans %}websites_title{% endtrans %}</h3>
             {% include('dashboard/_flash_messages.html.twig') %}
-            <a href="{{ path('app_website_add') }}" class="btn btn-success mb-3" style="width: 6rem;">{% trans %}add{% endtrans %}</a>
+            {% if websites.count >= app.user.quota %}
+                <button class="btn btn-secondary mb-3" style="width: 6rem;" disabled>{% trans %}add{% endtrans %}</button>
+                <div class="alert alert-warning">{% trans %}exceeded_quota_message{% endtrans %}</div>
+            {% else %}
+                <a href="{{ path('app_website_add') }}" class="btn btn-success mb-3" style="width: 6rem;">{% trans %}add{% endtrans %}</a>
+            {% endif %}
             {% if websites.count == 0 %}
                 <div class="alert alert-warning border border-warning">{% trans %}empty_website_list_message{% endtrans %}</div>
             {% else %}
