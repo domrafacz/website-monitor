@@ -30,21 +30,32 @@ class WebsiteControllerTest extends WebTestCase
          parent::tearDown();
      }
 
-     public function testAddWebsite(): void
-     {
-         $testUser = $this->userRepository->findOneByUsername('test1@test.com');
-         $this->client->loginUser($testUser);
-         $originalCount = $testUser->getWebsites()->count();
+    public function testAddWebsite(): void
+    {
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $this->client->loginUser($testUser);
+        $originalCount = $testUser->getWebsites()->count();
 
-         $crawler = $this->client->request('GET', '/website/add');
-         $form = $crawler->filter('#add_website_add')->form();
-         $this->client->submit($form, [
-             'add_website[url]' => 'https://google.com',
-         ]);
+        $crawler = $this->client->request('GET', '/website/add');
+        $form = $crawler->filter('#add_website_add')->form();
+        $this->client->submit($form, [
+            'add_website[url]' => 'https://google.com',
+        ]);
 
-         $testUser = $this->userRepository->findOneByUsername('test1@test.com');
-         $this->assertEquals($originalCount+1, $testUser->getWebsites()->count());
-     }
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $this->assertEquals($originalCount+1, $testUser->getWebsites()->count());
+    }
+
+    public function testAddWebsiteExceededQuota(): void
+    {
+        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $testUser->setQuota(0);
+
+        $this->client->loginUser($testUser);
+        $this->client->request('GET', '/website/add');
+
+        $this->assertResponseRedirects('/websites');
+    }
 
      public function testEditWebsite(): void
      {

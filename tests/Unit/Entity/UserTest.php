@@ -67,5 +67,8 @@ class UserTest extends TestCase
 
         $this->assertInstanceOf(User::class, $user->removeNotifierChannel($notifierChannel));
         $this->assertSame(0, $user->getNotifierChannels()->count());
+
+        $this->assertInstanceOf(User::class, $user->setQuota(20));
+        $this->assertSame(20, $user->getQuota());
     }
 }
