@@ -31,7 +31,11 @@ class PasswordStrengthValidator extends ConstraintValidator
             $violation = true;
         }
 
-        //@ TODO add regex for letter number and special character
+        $pattern = '/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s])(?=.*\p{L}).{'.$constraint->minLength.',}$/u';
+
+        if (!preg_match($pattern, $value)) {
+            $violation = true;
+        }
 
         if ($violation === true) {
             $this->context->buildViolation($constraint->message)
