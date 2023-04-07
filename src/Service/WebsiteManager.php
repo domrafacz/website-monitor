@@ -12,6 +12,7 @@ use App\Entity\User;
 use App\Entity\Website;
 use App\Repository\WebsiteRepository;
 use App\Service\Notifier\Notifier;
+use App\Enum\CertExpirationNotification;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class WebsiteManager
@@ -176,6 +177,25 @@ class WebsiteManager
             );
 
             $website->setCertExpiryTime($certExpireTime);
+        }
+
+        $readyNotification = CertExpirationNotification::getReadyToSend($website->getCertExpiryTime());
+
+        // check if notification has been already send
+        if (!in_array($readyNotification->value, $website->getCertExpirationNotifications())) {
+            $message = sprintf(
+                $this->translator->trans('request_runner_cert_expires', [], 'messages', $website->getOwner()?->getLanguage()),
+                $website->getUrl(),
+                $website->getCertExpiryTime()->format('Y-m-d H:i:s'),
+            );
+
+            $this->sendNotification(
+                $website,
+                $this->translator->trans('request_runner_cert_expires_soon', [], 'messages', $website->getOwner()?->getLanguage()),
+                $message
+            );
+
+            $website->addCertExpirationNotification($readyNotification);
         }
 
         return $website;

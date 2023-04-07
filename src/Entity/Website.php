@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\CertExpirationNotification;
 use App\Repository\WebsiteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -75,6 +76,9 @@ class Website
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, options: ['default' => '1970-01-01 00:00:00'])]
     private \DateTimeInterface $nextArchiveTime;
+
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    private array $certExpirationNotifications = [];
 
     public function __construct()
     {
@@ -393,5 +397,22 @@ class Website
         } else {
             return false;
         }
+    }
+
+    public function getCertExpirationNotifications(): array
+    {
+        return $this->certExpirationNotifications;
+    }
+
+    public function setCertExpirationNotifications(?array $certExpirationNotifications): self
+    {
+        $this->certExpirationNotifications = $certExpirationNotifications;
+
+        return $this;
+    }
+
+    public function addCertExpirationNotification(CertExpirationNotification $enum): self
+    {
+        $this->setCertExpirationNotifications(array_merge($this->getCertExpirationNotifications(), [$enum->value]));
     }
 }

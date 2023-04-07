@@ -15,23 +15,28 @@ class RequestsRunner
 {
     /** @var array<int, Website> $retryWebsites */
     private array $retryWebsites = [];
+
     public function __construct(
-        private readonly HttpClientInterface        $client,
-        private readonly EntityManagerInterface     $entityManager,
-        private readonly WebsiteManager $websiteManager,
+        private readonly HttpClientInterface          $client,
+        private readonly EntityManagerInterface       $entityManager,
+        private readonly WebsiteManager               $websiteManager,
         private readonly RequestsRunnerResponseParser $responseParser,
+
         /** @var array<ResponseInterface> $responses */
-        private array                               $responses = [],
+        private array                                 $responses = [],
+
         /** @var array<int, RequestRunnerResponseDto> $responseData */
-        private array $responseData = [],
-        private readonly int $batchFlushSize = 50,
-        private \DateTimeImmutable $cronTime = new \DateTimeImmutable(),
-    ) {
+        private array                                 $responseData = [],
+
+        private readonly int                          $batchFlushSize = 50,
+        private \DateTimeImmutable                    $cronTime = new \DateTimeImmutable(),
+    )
+    {
         //set seconds to zero due to cron inconsistent startup delay
         $this->cronTime = new \DateTimeImmutable($this->cronTime->format('Y-m-d H:i:00'));
     }
 
-    /** @param array<Website> $websites  */
+    /** @param array<Website> $websites */
     public function run(array $websites, bool $retry = false): void
     {
         foreach ($websites as $website) {
@@ -71,14 +76,15 @@ class RequestsRunner
 
     /** @param array<int, string> $errors */
     private function updateResponseDto(
-        ?int $websiteId,
-        ?Website $website = null,
-        array $errors = [],
-        ?float $startTime = null,
-        ?float $totalTime = null,
-        ?int $statusCode = null,
+        ?int                $websiteId,
+        ?Website            $website = null,
+        array               $errors = [],
+        ?float              $startTime = null,
+        ?float              $totalTime = null,
+        ?int                $statusCode = null,
         ?\DateTimeInterface $certExpireTime = null,
-    ): void {
+    ): void
+    {
         if ($websiteId) {
             $dto = $this->getResponseDto($websiteId);
 
