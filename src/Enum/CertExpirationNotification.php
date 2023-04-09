@@ -13,7 +13,7 @@ enum CertExpirationNotification: int
     case EXPIRES_IN_1_DAY = 2;
     case EXPIRES_IN_7_DAYS = 3;
 
-    public static function getReadyToSend(DateTimeInterface $certExpireTime): ?CertExpirationNotification
+    public static function getReadyToSend(?DateTimeInterface $certExpireTime): ?CertExpirationNotification
     {
         $currentTime = new DateTimeImmutable();
 

@@ -414,5 +414,7 @@ class Website
     public function addCertExpirationNotification(CertExpirationNotification $enum): self
     {
         $this->setCertExpirationNotifications(array_merge($this->getCertExpirationNotifications(), [$enum->value]));
+
+        return $this;
     }
 }
