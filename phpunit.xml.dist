@@ -24,14 +24,18 @@
         </testsuite>
     </testsuites>
 
-    <coverage>
-        <include>
-            <directory suffix=".php">src</directory>
-        </include>
+
+    <source>
         <exclude>
             <directory suffix=".php">src/DataFixtures</directory>
         </exclude>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </source>
+    <coverage>
     </coverage>
+
 
     <listeners>
         <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
