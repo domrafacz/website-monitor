@@ -23,11 +23,13 @@ enum CertExpirationNotification: int
 
         // [days, hours]
         return match ([
+            $currentTime->diff($certExpireTime)->y,
+            $currentTime->diff($certExpireTime)->m,
             $currentTime->diff($certExpireTime)->d,
             $currentTime->diff($certExpireTime)->h
         ]) {
-            [1, 0] => self::EXPIRES_IN_1_DAY,
-            [7, 0] => self::EXPIRES_IN_7_DAYS,
+            [0, 0, 1, 0] => self::EXPIRES_IN_1_DAY,
+            [0, 0, 7, 0] => self::EXPIRES_IN_7_DAYS,
             default => null,
         };
     }
