@@ -90,7 +90,7 @@ class RequestsRunnerTest extends TestCase
     public function testResponseStreamTransportException()
     {
         $mockResponse = new MockResponse('...', ['error' => 'test_stream_exception']);
-        $errorMessage = 'request_runner_transport_exception';
+        $errorMessage = 'request_runner_stream_transport_exception';
 
         $requestRunner = $this->createRequestRunner(
             responseFactory: [$mockResponse],

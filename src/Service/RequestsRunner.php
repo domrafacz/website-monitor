@@ -141,7 +141,7 @@ class RequestsRunner
                     $this->createSuccessfulResponse($response);
                 }
             } catch (TransportExceptionInterface $e) {
-                $this->createUnsuccessfulResponse($response, 'request_runner_transport_exception');
+                $this->createUnsuccessfulResponse($response, 'request_runner_stream_transport_exception');
             }
         }
     }

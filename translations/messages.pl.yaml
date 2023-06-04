@@ -89,6 +89,7 @@ unavailable: 'Niedostępny'
 request_runner_unexpected_http_code: 'Nieoczekiwany kod HTTP: %d, oczekiwano: %d'
 request_runner_unexpected_http_code_simple: 'Nieoczekiwany kod HTTP'
 request_runner_transport_exception: 'Wyjątek transportu'
+request_runner_stream_transport_exception: 'Wyjątek transportu (stream)'
 request_runner_downtime: "Adres url: %s \nBłędy: %s"
 request_runner_downtime_subject: 'Strona nie działa'
 request_runner_downtime_end: "Adres url: %s \nData rozpoczęcia incydentu: %s \nData zakończenia incydentu: %s"

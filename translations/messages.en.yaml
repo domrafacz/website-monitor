@@ -89,6 +89,7 @@ unavailable: 'Unavailable'
 request_runner_unexpected_http_code: 'Unexpected HTTP status code: %d, expected: %d'
 request_runner_unexpected_http_code_simple: 'Unexpected HTTP status code'
 request_runner_transport_exception: 'Transport exception'
+request_runner_stream_transport_exception: 'Transport stream exception'
 request_runner_downtime: "Url: %s \nErrors: %s"
 request_runner_downtime_subject: 'Website is down'
 request_runner_downtime_end: "Url: %s \nIncident start: %s \nIncident end: %s"
