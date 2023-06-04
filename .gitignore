@@ -22,3 +22,6 @@
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
+
+
+.php-cs-fixer.cache

@@ -7,7 +7,7 @@ namespace App\Controller;
 use App\Entity\NotifierChannel;
 use App\Service\UserManager;
 use Doctrine\Common\Collections\Criteria;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

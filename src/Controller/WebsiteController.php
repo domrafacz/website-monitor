@@ -15,8 +15,8 @@ use App\Service\UserManager;
 use App\Service\WebsiteManager;
 use App\Service\WebsiteStatisticsProvider;
 use Doctrine\Common\Collections\Criteria;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -107,12 +107,17 @@ class WebsiteController extends AbstractController
     }
 
     #[Route('/website/toggle-notifier-channel/{website_id}/{channel_id}/{token}', name: 'app_website_toggle_notifier_channel')]
-    #[Entity('website', options: ['id' => 'website_id'])]
-    #[Entity('notifierChannel', options: ['id' => 'channel_id'])]
     #[IsGranted('ROLE_USER')]
     #[IsGranted('view', subject: 'website', statusCode: 404)]
     #[IsGranted('view', subject: 'notifierChannel', statusCode: 404)]
-    public function toggleNotifierChannel(Website $website, NotifierChannel $notifierChannel, string $token, WebsiteRepository $websiteRepository): Response
+    public function toggleNotifierChannel(
+        #[MapEntity(id: 'website_id')]
+        Website $website,
+        #[MapEntity(id: 'channel_id')]
+        NotifierChannel $notifierChannel,
+        string $token,
+        WebsiteRepository $websiteRepository
+    ): Response
     {
         if ($this->isCsrfTokenValid('website-toggle-notifier-channel', $token)) {
             $website->toggleNotifierChannel($notifierChannel);
