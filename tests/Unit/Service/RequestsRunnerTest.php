@@ -10,6 +10,7 @@ use App\Service\WebsiteManager;
 use App\Tests\Unit\Traits\WebsiteTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -35,11 +36,12 @@ class RequestsRunnerTest extends TestCase
         }
 
 
-        return  new RequestsRunner(
+        return new RequestsRunner(
             $client,
             $this->createMock(EntityManagerInterface::class),
             $this->createMock(WebsiteManager::class),
             new RequestsRunnerResponseParser(),
+            $this->createMock(LoggerInterface::class),
             batchFlushSize: $batchFlushSize,
         );
     }
@@ -72,7 +74,7 @@ class RequestsRunnerTest extends TestCase
 
     public function testRequestTimeout(): void
     {
-        $mockResponse = new MockResponse(['','']);
+        $mockResponse = new MockResponse(['',''], ['debug' => 'dummy']);
         $errorMessage = 'request_runner_timeout';
 
         $requestRunner = $this->createRequestRunner(
@@ -89,7 +91,7 @@ class RequestsRunnerTest extends TestCase
 
     public function testResponseStreamTransportException()
     {
-        $mockResponse = new MockResponse('...', ['error' => 'test_stream_exception']);
+        $mockResponse = new MockResponse('...', ['error' => 'test_stream_exception', 'debug' => 'dummy']);
         $errorMessage = 'request_runner_stream_transport_exception';
 
         $requestRunner = $this->createRequestRunner(

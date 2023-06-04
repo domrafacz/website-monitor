@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Dto\RequestRunnerResponseDto;
 use App\Entity\Website;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -21,6 +22,7 @@ class RequestsRunner
         private readonly EntityManagerInterface       $entityManager,
         private readonly WebsiteManager               $websiteManager,
         private readonly RequestsRunnerResponseParser $responseParser,
+        private readonly LoggerInterface              $logger,
 
         /** @var array<ResponseInterface> $responses */
         private array                                 $responses = [],
@@ -118,6 +120,8 @@ class RequestsRunner
 
     private function createUnsuccessfulResponse(ResponseInterface $response, string $error): void
     {
+        $this->logger->debug($response->getInfo('debug'));
+
         $this->updateResponseDto(
             $this->responseParser->getWebsiteId($response),
             null,
