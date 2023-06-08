@@ -111,7 +111,7 @@ RUN set -eux; \
 RUN rm -f .env.local.php
 
 # Build Caddy with the Mercure and Vulcain modules
-FROM caddy:2.6-builder-alpine AS app_caddy_builder
+FROM caddy:2.7-builder-alpine AS app_caddy_builder
 
 RUN xcaddy build \
 	--with github.com/dunglas/mercure \
