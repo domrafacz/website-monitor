@@ -24,6 +24,7 @@ class AddWebsiteType extends AbstractType
             ])
             ->add('requestMethod', ChoiceType::class, [
                 'choices'  => [
+                    'HEAD' => 'HEAD',
                     'GET' => 'GET',
                     'POST' => 'POST',
                     'PUT' => 'PUT',
