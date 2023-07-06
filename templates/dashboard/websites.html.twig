@@ -64,7 +64,11 @@
                                             {% if website.getCertExpiryTime is null %}
                                                 <span class="badge text-bg-secondary">{% trans %}unavailable{% endtrans %}</span>
                                             {% else %}
-                                                {{ website.getCertExpiryTime|ago }}
+                                                {% if date('now') > website.getCertExpiryTime %}
+                                                    <span class="badge text-bg-danger">{{ website.getCertExpiryTime|ago }}</span>
+                                                {% else %}
+                                                    {{ website.getCertExpiryTime|ago }}
+                                                {% endif %}
                                             {% endif %}
                                         </td>
                                     </tr>
