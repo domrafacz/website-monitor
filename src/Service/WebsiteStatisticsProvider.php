@@ -12,7 +12,8 @@ class WebsiteStatisticsProvider
 {
     public function __construct(
         private readonly ResponseLogRepository $responseLogRepository,
-    ) {
+    )
+    {
     }
 
     // TODO add unit tests
@@ -26,7 +27,7 @@ class WebsiteStatisticsProvider
         $filteredLogs = $downtimeLogs->filter(function (DowntimeLog $log) use ($startTime, $endTime): bool {
             if (
                 $log->getEndTime() == null ||
-                ($log->getEndTime() != null  && $log->getEndTime()->getTimestamp() > $startTime) && ($log->getEndTime()->getTimestamp() <= $endTime)
+                ($log->getEndTime() != null && $log->getEndTime()->getTimestamp() > $startTime) && ($log->getEndTime()->getTimestamp() <= $endTime)
             ) {
                 return true;
             } else {
@@ -50,9 +51,10 @@ class WebsiteStatisticsProvider
         $startTime = new \DateTimeImmutable();
         $startTime = $startTime->setTimestamp($startTime->getTimestamp() - 86400);
 
-        $downtimeInSeconds = $this->getDowntimeInSecondsFilterByPeriod($website, $startTime, new \DateTimeImmutable());
-
-        return round(((86400 - $downtimeInSeconds) * 100) / 86400, 2);
+        return $this->calculatePercentage(
+            $this->getDowntimeInSecondsFilterByPeriod($website, $startTime, new \DateTimeImmutable()),
+            86400
+        );
     }
 
     public function getUptime30D(Website $website): float
@@ -60,9 +62,10 @@ class WebsiteStatisticsProvider
         $startTime = new \DateTimeImmutable();
         $startTime = $startTime->setTimestamp($startTime->getTimestamp() - 2592000);
 
-        $downtimeInSeconds = $this->getDowntimeInSecondsFilterByPeriod($website, $startTime, new \DateTimeImmutable());
-
-        return round(((2592000 - $downtimeInSeconds) * 100) / 2592000, 2);
+        return $this->calculatePercentage(
+            $this->getDowntimeInSecondsFilterByPeriod($website, $startTime, new \DateTimeImmutable()),
+            2592000
+        );
     }
 
     public function getAverageResponseTime24H(Website $website): int
@@ -71,8 +74,18 @@ class WebsiteStatisticsProvider
 
         return $this->responseLogRepository->getAverageResponseTimeFilterByPeriod(
             $website,
-            $startTime->setTimestamp($startTime->getTimestamp()-86400),
+            $startTime->setTimestamp($startTime->getTimestamp() - 86400),
             new \DateTimeImmutable()
         );
+    }
+
+    /**
+     * @param int $seconds downtime in seconds
+     * @param int $period in seconds
+     * @return float
+     */
+    private function calculatePercentage(int $seconds, int $period): float
+    {
+        return max(round((($period - $seconds) * 100) / $period, 2), 0.00);
     }
 }
