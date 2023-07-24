@@ -25,7 +25,7 @@ class WebsiteStatisticsProvider
 
         $filteredLogs = $downtimeLogs->filter(function (DowntimeLog $log) use ($startTime, $endTime): bool {
             if (
-                $log->getEndTime() == null && $log->getStartTime()->getTimestamp() >= $startTime ||
+                $log->getEndTime() == null ||
                 ($log->getEndTime() != null  && $log->getEndTime()->getTimestamp() > $startTime) && ($log->getEndTime()->getTimestamp() <= $endTime)
             ) {
                 return true;
