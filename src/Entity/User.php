@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\UserStatus;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -48,6 +50,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(options: ['default' => 10])]
     private int $quota = 10;
+
+    #[ORM\Column(type: Types::SMALLINT, enumType: UserStatus::class, options: ['default' => UserStatus::ACTIVE])]
+    private UserStatus $status;
 
     public function __construct()
     {
@@ -230,5 +235,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->quota = $quota;
 
         return $this;
+    }
+
+    public function getStatus(): ?UserStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(UserStatus $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->getStatus() === UserStatus::ACTIVE;
+    }
+
+    public function isBlocked(): bool
+    {
+        return $this->getStatus() === UserStatus::BLOCKED;
     }
 }

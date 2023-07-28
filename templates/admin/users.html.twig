@@ -15,6 +15,7 @@
                             <thead>
                             <tr>
                                 <th scope="col">{% trans %}email{% endtrans %}</th>
+                                <th scope="col">{% trans %}status{% endtrans %}</th>
                                 <th scope="col">{% trans %}quota{% endtrans %}</th>
                             </tr>
                             </thead>
@@ -23,6 +24,15 @@
                                 <tr>
                                     <td>
                                         <a class="text-dark" href="{{ path('app_admin_users_edit', { id: user.id }) }}">{{ user.email }}</a>
+                                    </td>
+                                    <td>
+                                        {% if user.active %}
+                                            <span class="badge text-bg-success">{{ 'user_status_active'|trans }}</span>
+                                        {% elseif user.blocked %}
+                                            <span class="badge text-bg-danger">{{ 'user_status_blocked'|trans }}</span>
+                                        {% else %}
+                                            <span class="badge text-bg-secondary">{{ 'user_status_inactive'|trans }}</span>
+                                        {% endif %}
                                     </td>
                                     <td>
                                         {% if user.websites.count() > user.quota %}
