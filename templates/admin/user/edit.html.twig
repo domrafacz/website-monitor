@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}admin_dashboard_title{% endtrans %}{% endblock %}
+
+{% block body %}
+    {% include('admin/_sidebar.html.twig') %}
+    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+        {% include('dashboard/_navbar.html.twig') %}
+        <div class="p-4">
+            <h3>{% trans %}admin_dashboard_title{% endtrans %}</h3>
+            {% include('dashboard/_flash_messages.html.twig') %}
+            <div class="pt-3">
+                <div class="md-12 bg-white p-3 shadow-sm">
+                    {{ form(edit_form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

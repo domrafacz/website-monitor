@@ -22,10 +22,14 @@
                             {% for user in users %}
                                 <tr>
                                     <td>
-                                        {{ user.email }}
+                                        <a class="text-dark" href="{{ path('app_admin_users_edit', { id: user.id }) }}">{{ user.email }}</a>
                                     </td>
                                     <td>
-                                        {{ user.websites.count() ~ '/' ~ user.quota }}
+                                        {% if user.websites.count() > user.quota %}
+                                            <span class="badge text-bg-warning">{{ user.websites.count() ~ '/' ~ user.quota }}</span>
+                                        {% else %}
+                                            <span class="text-dark">{{ user.websites.count() ~ '/' ~ user.quota }}</span>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
