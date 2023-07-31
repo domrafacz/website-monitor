@@ -52,7 +52,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private int $quota = 10;
 
     #[ORM\Column(type: Types::SMALLINT, enumType: UserStatus::class, options: ['default' => UserStatus::ACTIVE])]
-    private UserStatus $status;
+    private UserStatus $status = UserStatus::ACTIVE;
 
     public function __construct()
     {
@@ -242,7 +242,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->status;
     }
 
-    public function setStatus(UserStatus $status): static
+    public function setStatus(UserStatus $status): self
     {
         $this->status = $status;
 
