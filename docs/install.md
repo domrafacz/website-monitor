@@ -15,6 +15,15 @@ composer install
 ```
 After this, you have to rename `.env.example` to `.env` and setup database credentials in `DATABASE_URL` env variable
 
+If you are using postgresql, you can use the following command
+```
+php bin/console doctrine:migrations:migrate
+```
+For mysql, mariadb etc use
+
+```
+php bin/console doctrine:schema:update --force
+```
 ## Docker installation
 
 Build Docker images
@@ -42,7 +51,7 @@ Below is an example cronjob running every minute
 */1 * * * * root        wget -O /dev/null       https://your-domain.com/cron/run-requests
 ```
 
-## Building assets
+## Building assets (only for development purposes)
 ```
 yarn install
 yarn build
