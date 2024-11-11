@@ -22,10 +22,17 @@ Website-monitor is website uptime monitoring software built with Symfony framewo
 - Nginx or Caddy
 - PostgreSQL 13 or greater
 
+## Supported notifications channels
+
+- Discord
+- Telegram
+- Matrix
+
 ## Docs
 
 1. [Installation](docs/install.md)
 2. [Creating users](docs/users.md)
+3. [Updating](docs/updating.md)
 
 ## Authors
 
