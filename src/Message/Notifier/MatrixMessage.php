@@ -6,7 +6,7 @@ namespace App\Message\Notifier;
 
 use App\Message\Contracts\NotifierMessageInterface;
 
-final class TelegramMessage implements NotifierMessageInterface
+final class MatrixMessage implements NotifierMessageInterface
 {
     public function __construct(
         public string $subject,

@@ -1,0 +1,8 @@
+<td>
+    {{ channels_types[channel.type].name }}
+</td>
+<td style="min-width:150px;">
+    {% trans %}matrix_server_url{% endtrans %}: {{ channel.options.serverUrl|default(null) }}<br>
+    {% trans %}matrix_access_token{% endtrans %}: {{ channel.options.accessToken|default(null) }}<br>
+    {% trans %}matrix_room_id{% endtrans %}: {{ channel.options.roomId|default(null) }}
+</td>

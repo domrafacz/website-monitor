@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use App\Repository\NotifierChannelRepository;
 use App\Service\Notifier\Channels\Discord;
+use App\Service\Notifier\Channels\Matrix;
 use App\Service\Notifier\Channels\Telegram;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,6 +26,11 @@ class NotifierChannel
             'name' => Discord::NAME,
             'message' => Discord::MESSAGE_CLASS,
             'form' => Discord::FORM_TYPE_CLASS,
+        ],
+        Matrix::ID => [
+            'name' => Matrix::NAME,
+            'message' => Matrix::MESSAGE_CLASS,
+            'form' => Matrix::FORM_TYPE_CLASS,
         ]
     ];
 
