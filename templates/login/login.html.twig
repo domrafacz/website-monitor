@@ -1,47 +1,39 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% trans %}login{% endtrans %}{% endblock %}
+{% block title %}{{ 'login'|trans }}{% endblock %}
 
 {% block body %}
-    <div class="container-fluid login-bg">
-        <div class="row justify-content-center align-items-center" style="height:100vh">
-            <div class="col-md-4 login-form-container">
-                <div class="card rounded-3 border-0 shadow">
-                    <div class="card-body">
-                        <h1 class="text-center">{% trans %}login{% endtrans %}</h1>
-                        {% if error %}
-                            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-                        {% endif %}
-                        <form action="{{ path('app_login') }}" method="post">
-                            <div class="mb-3">
-                                <div class="form-group">
-                                    <label class="form-label" for="username">{% trans %}email{% endtrans %}</label>
-                                    <input type="text" class="form-control" id="username" name="_username"
-                                           value="{{ last_username }}"/>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <div class="form-group">
-                                    <label class="form-label" for="password">{% trans %}password{% endtrans %}</label>
-                                    <input type="password" class="form-control" id="password" name="_password"/>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="_remember_me" id="rememberMeCheckbox" checked/>
-                                    <label class="form-check-label" for="rememberMeCheckbox">{% trans %}remember_me{% endtrans %}</label>
-                                </div>
-                            </div>
-                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                            <div class="d-grid gap-2">
-                                <button type="submit" id="login_submit" class="btn btn-purple-moon btn-rounded border-0">{% trans %}login_button{% endtrans %}</button>
-                            </div>
-                        </form>
+    <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+        <h2 class="text-center text-gray-900 dark:text-white mb-2">Website-monitor</h2>
+        <div class="w-full max-w-md mx-4 sm:mx-0 p-8 space-y-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+            <h1 class="text-3xl mt-4 font-bold text-center text-gray-900 dark:text-white">{{ 'login'|trans }}</h1>
+            {% if error %}
+                <div class="p-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+            <form action="{{ path('app_login') }}" method="post" class="space-y-6">
+                <div>
+                    <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ 'email'|trans }}</label>
+                    <input type="text" id="username" name="_username" value="{{ last_username }}" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                </div>
+                <div>
+                    <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ 'password'|trans }}</label>
+                    <input type="password" id="password" name="_password" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input id="rememberMeCheckbox" name="_remember_me" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800" checked>
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="rememberMeCheckbox" class="text-gray-500 dark:text-gray-300">{{ 'remember_me'|trans }}</label>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <button type="submit" id="login_submit" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ 'login_button'|trans }}</button>
+            </form>
         </div>
     </div>
-
-
 {% endblock %}

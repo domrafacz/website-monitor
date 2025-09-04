@@ -1,31 +1,31 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% trans %}notifier_delete_channel_title{% endtrans %}{% endblock %}
+{% block title %}{{ 'notifier_delete_channel_title'|trans }}{% endblock %}
 
 {% block body %}
     {% include('dashboard/_sidebar.html.twig') %}
-    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+    <div class="md:ml-64 flex flex-col min-h-screen">
         {% include('dashboard/_navbar.html.twig') %}
-        <div class="p-4">
-            <h3>{% trans %}notifier_delete_channel_title{% endtrans %}</h3>
+        <main class="flex-grow p-4 dark:bg-gray-900">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-200 mb-4">{{ 'notifier_delete_channel_title'|trans }}</h3>
             <div class="pt-3">
-                <div class="md-12 bg-white p-3 shadow-sm">
-                    <div class="mb-3">
-                        <label for="disabledId" class="form-label">Id</label>
-                        <input type="text" id="disabledId" class="form-control" value="{{ channel.id }}" disabled>
+                <div class="bg-white dark:bg-gray-800 p-4 shadow-md rounded-lg">
+                    <div class="mb-4">
+                        <label for="disabledId" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Id</label>
+                        <input type="text" id="disabledId" class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400" value="{{ channel.id }}" disabled>
                     </div>
-                    <div class="mb-3">
-                        <label for="disabledType" class="form-label">{%trans %}type{% endtrans %}</label>
-                        <input type="text" id="disabledType" class="form-control" value="{{ constant('CHANNELS', channel)[channel.type].name }}" disabled>
+                    <div class="mb-4">
+                        <label for="disabledType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ 'type'|trans }}</label>
+                        <input type="text" id="disabledType" class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400" value="{{ constant('CHANNELS', channel)[channel.type].name }}" disabled>
                     </div>
-                    <div class="mb-3">
-                        <label for="disabledName" class="form-label">{%trans %}notifier_channel_name{% endtrans %}</label>
-                        <input type="text" id="disabledName" class="form-control" value="{{ channel.name }}" disabled>
+                    <div class="mb-4">
+                        <label for="disabledName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ 'notifier_channel_name'|trans }}</label>
+                        <input type="text" id="disabledName" class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400" value="{{ channel.name }}" disabled>
                     </div>
                     {{ form(form) }}
                 </div>
             </div>
-        </div>
+        </main>
         {% include('dashboard/_flash_messages.html.twig') %}
     </div>
 {% endblock %}

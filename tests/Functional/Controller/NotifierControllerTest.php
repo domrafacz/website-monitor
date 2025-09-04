@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
 
+use App\Entity\NotifierChannel;
+use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -28,7 +30,7 @@ class NotifierControllerTest extends WebTestCase
 
     public function testAddChannelList(): void
     {
-        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $testUser = $this->getUser();
         $this->client->loginUser($testUser);
 
         $this->client->request('GET', '/notifier/add-channel');
@@ -38,7 +40,7 @@ class NotifierControllerTest extends WebTestCase
 
     public function testAddTelegramChannel(): void
     {
-        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $testUser = $this->getUser();
         $this->client->loginUser($testUser);
         $channelCount = $testUser->getNotifierChannels()->count();
 
@@ -51,7 +53,9 @@ class NotifierControllerTest extends WebTestCase
             'notifier_telegram_channel[chatId]' => '321',
         ]);
 
+        $this->assertInstanceOf(UserRepository::class, $this->userRepository);
         $updatedUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $this->assertInstanceOf(User::class, $updatedUser);
 
         $this->assertEquals($channelCount + 1, $updatedUser->getNotifierChannels()->count());
         $this->assertResponseStatusCodeSame(302);
@@ -59,10 +63,11 @@ class NotifierControllerTest extends WebTestCase
 
     public function testEditTelegramChannel(): void
     {
-        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $testUser = $this->getUser();
         $this->client->loginUser($testUser);
 
         $channel = $testUser->getNotifierChannels()->first();
+        $this->assertInstanceOf(NotifierChannel::class, $channel);
 
         $crawler = $this->client->request('GET', '/notifier/edit-channel/' . $channel->getId());
         $form = $crawler->filter('#notifier_telegram_channel_submit')->form();
@@ -73,7 +78,11 @@ class NotifierControllerTest extends WebTestCase
             'notifier_telegram_channel[chatId]' => '321',
         ]);
 
-        $updatedChannel = $this->userRepository->findOneByUsername('test1@test.com')->getNotifierChannels()->first();
+        $this->assertInstanceOf(UserRepository::class, $this->userRepository);
+        $user = $this->userRepository->findOneByUsername('test1@test.com');
+        $this->assertInstanceOf(User::class, $user);
+        $updatedChannel = $user->getNotifierChannels()->first();
+        $this->assertInstanceOf(NotifierChannel::class, $updatedChannel);
 
         $this->assertNotEquals($channel->getName(), $updatedChannel->getName());
         $this->assertNotEquals($channel->getOptions()['apiToken'], $updatedChannel->getOptions()['apiToken']);
@@ -83,39 +92,41 @@ class NotifierControllerTest extends WebTestCase
 
     public function testDeleteTelegramChannel(): void
     {
-        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $testUser = $this->getUser();
         $this->client->loginUser($testUser);
 
         $crawler = $this->client->request('GET', '/notifier/delete-channel/' . $testUser->getNotifierChannels()->first()->getId());
         $form = $crawler->filter('#notifier_delete_channel_submit')->form();
 
         $this->client->submit($form);
-
+        $this->assertInstanceOf(UserRepository::class, $this->userRepository);
         $this->assertEquals(0, $this->userRepository->findOneByUsername('test1@test.com')->getNotifierChannels()->count());
         $this->assertResponseStatusCodeSame(302);
     }
 
     public function testTestTelegramChannel(): void
     {
-        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $testUser = $this->getUser();
         $this->client->loginUser($testUser);
 
-        $crawler = $this->client->request('GET', '/notifier/test-channel/' . $testUser->getNotifierChannels()->first()->getId());
+        $crawler = $this->client->request('GET', '/notifier/test-channel/' . $testUser->getNotifierChannels()->first()?->getId());
         $form = $crawler->filter('#notifier_test_channel_submit')->form();
 
         $crawler = $this->client->submit($form);
 
-        $alert = $crawler->filter('div.alert-success');
+        $alertSuccess = $crawler->filter('div.test-channel-success');
+        $alertError = $crawler->filter('div.test-channel-error');
 
-        $this->assertNotNull($alert);
-        $this->assertEquals(1, $alert->count());
-        $this->assertEquals('Notification has been sent', $alert->text());
+        $this->assertNotNull($alertSuccess);
+        $this->assertEquals(1, $alertSuccess->count());
+        $this->assertEquals(0, $alertError->count());
+        $this->assertEquals('Notification has been sent', $alertSuccess->text());
         $this->assertResponseIsSuccessful();
     }
 
     public function testAddDiscordChannel(): void
     {
-        $testUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $testUser = $this->getUser();
         $this->client->loginUser($testUser);
         $channelCount = $testUser->getNotifierChannels()->count();
 
@@ -127,9 +138,19 @@ class NotifierControllerTest extends WebTestCase
             'notifier_discord_channel[webhook]' => 'https://discord.com/api/webhooks/105/8w8',
         ]);
 
+        $this->assertInstanceOf(UserRepository::class, $this->userRepository);
         $updatedUser = $this->userRepository->findOneByUsername('test1@test.com');
+        $this->assertInstanceOf(User::class, $updatedUser);
 
         $this->assertEquals($channelCount + 1, $updatedUser->getNotifierChannels()->count());
         $this->assertResponseStatusCodeSame(302);
+    }
+
+    private function getUser(string $username = 'test1@test.com'): User
+    {
+        $this->assertInstanceOf(UserRepository::class, $this->userRepository);
+        $testUser = $this->userRepository->findOneByUsername($username);
+        $this->assertInstanceOf(User::class, $testUser);
+        return $testUser;
     }
 }

@@ -1,33 +1,36 @@
+{% import 'dashboard/_includes/_alerts.html.twig' as alerts %}
 {% extends 'base.html.twig' %}
 
-{% block title %}{% trans %}notifier_channels_title{% endtrans %}{% endblock %}
+{% block title %}{{ 'notifier_channels_title'|trans }}{% endblock %}
 
 {% block body %}
     {% include('dashboard/_sidebar.html.twig') %}
-    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+    <div class="md:ml-64 flex flex-col min-h-screen">
         {% include('dashboard/_navbar.html.twig') %}
-        <div class="p-4">
-            <h3>{% trans %}notifier_channels_title{% endtrans %}</h3>
+        <main class="flex-grow p-4 dark:bg-gray-900">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-200 mb-4">{{ 'notifier_channels_title'|trans }}</h3>
             {% include('dashboard/_flash_messages.html.twig') %}
-            <div class="pt-3">
-                <a href="{{ path('app_notifier_add_channel') }}" class="btn btn-success mb-3" style="width: 6rem;">{% trans %}add{% endtrans %}</a>
+            <div>
+                <a href="{{ path('app_notifier_add_channel') }}" class="dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-normal py-2 px-4 rounded mb-3">{{ 'add'|trans }}</a>
                 {% if notifier_channels.count == 0 %}
-                    <div class="alert alert-warning border border-warning">{% trans %}empty_notification_channel_list_message{% endtrans %}</div>
+                    <div class="mt-4">
+                        {{ alerts.warning('', 'empty_notification_channel_list_message'|trans) }}
+                    </div>
                 {% else %}
-                    <div class="md-12 bg-white p-3 shadow-sm">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead>
-                                <tr>
-                                    <th scope="col">{% trans %}notifier_channel_name{% endtrans %}</th>
-                                    <th scope="col">{% trans %}channel_type{% endtrans %}</th>
-                                    <th scope="col">{% trans %}channel_options{% endtrans %}</th>
-                                    <th scope="col" class="text-center" style="width: 285px;">{% trans %}options{% endtrans %}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for channel in notifier_channels.getIterator %}
+                    <div class="bg-white dark:bg-gray-800 p-4 shadow-md rounded-lg mt-4 border dark:border-0">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white dark:bg-gray-800">
+                                <thead class="bg-gray-100 dark:bg-gray-700">
                                     <tr>
+                                        <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">{{ 'notifier_channel_name'|trans }}</th>
+                                        <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">{{ 'channel_type'|trans }}</th>
+                                        <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">{{ 'channel_options'|trans }}</th>
+                                        <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-right text-gray-700 uppercase dark:text-gray-400">{{ 'options'|trans }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                {% for channel in notifier_channels.getIterator %}
+                                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
                                         {% include 'dashboard/notifier/channels/_name_row.html.twig' %}
                                         {% include 'dashboard/notifier/channels/_' ~ channels_types[channel.type].name|lower ~ '_row.html.twig' %}
                                         {% include 'dashboard/notifier/channels/_options_row.html.twig' %}
@@ -39,6 +42,6 @@
                     </div>
                 {% endif %}
             </div>
-        </div>
+        </main>
     </div>
 {% endblock %}

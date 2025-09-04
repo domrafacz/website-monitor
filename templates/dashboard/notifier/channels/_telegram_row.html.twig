@@ -1,7 +1,7 @@
-<td>
+<td class="py-4 px-6 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
     {{ channels_types[channel.type].name }}
 </td>
-<td style="min-width:150px;">
-    {% trans %}telegram_api_token{% endtrans %}: {{ channel.options.apiToken|default(null) }}<br>
-    {% trans %}telegram_chat_id{% endtrans %}: {{ channel.options.chatId|default(null) }}
+<td class="py-4 px-6 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
+    <span class="font-semibold">{{ 'telegram_api_token'|trans }}:</span> {{ channel.options.apiToken|default(null) }}<br>
+    <span class="font-semibold">{{ 'telegram_chat_id'|trans }}:</span> {{ channel.options.chatId|default(null) }}
 </td>

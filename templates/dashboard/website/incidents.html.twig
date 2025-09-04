@@ -1,40 +1,40 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% trans %}website_incidents_title{% endtrans %}{% endblock %}
+{% block title %}{{ 'website_incidents_title'|trans }}{% endblock %}
 
 {% block body %}
     {% include('dashboard/_sidebar.html.twig') %}
-    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+    <div class="md:ml-64 flex flex-col min-h-screen">
         {% include('dashboard/_navbar.html.twig') %}
-        <div class="p-4">
-            <h3>{% trans %}website_incidents_title{% endtrans %}</h3>
-            <div class="pt-3">
-                <div class="md-12 bg-white p-3 shadow-sm">
-                    <table class="table table-hover websites-list">
-                        <thead>
-                        <tr>
-                            <th scope="col">{% trans %}start_time{% endtrans %}</th>
-                            <th scope="col">{% trans %}end_time{% endtrans %}</th>
-                            <th scope="col">{% trans %}initial_error{% endtrans %}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for log in downtime_logs.getIterator %}
+        <main class="flex-grow p-4 dark:bg-gray-900">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-200 mb-4">{{ 'website_incidents_title'|trans }}</h3>
+            <div class="bg-white dark:bg-gray-800 p-4 shadow-md rounded-lg mt-4 border dark:border-0">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white dark:bg-gray-800 websites-list">
+                        <thead class="bg-gray-100 dark:bg-gray-700">
                             <tr>
-                                <td>
+                                <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">{{ 'start_time'|trans }}</th>
+                                <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">{{ 'end_time'|trans }}</th>
+                                <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">{{ 'initial_error'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                        {% for log in downtime_logs.getIterator %}
+                            <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <td class="py-4 px-6 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                     {{ log.getStartTime|date }}
                                     {% if log.getEndTime is null %}
                                     ({{ log.getStartTime|ago }})
                                     {% endif %}
                                 </td>
-                                <td>
+                                <td class="py-4 px-6 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                     {% if log.getEndTime is null %}
-                                        <span class="badge text-bg-danger">{% trans %}ongoing{% endtrans %}</span>
+                                        <span class="badge text-bg-danger">{{ 'ongoing'|trans }}</span>
                                     {% else %}
                                         {{ log.getEndTime|date }}
                                     {% endif %}
                                 </td>
-                                <td>
+                                <td class="py-4 px-6 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                     {% for error in log.getInitialError %}
                                         {{ error }}<br>
                                     {% endfor %}
@@ -46,7 +46,7 @@
 
                 </div>
             </div>
-        </div>
+        </main>
         {% include('dashboard/_flash_messages.html.twig') %}
     </div>
 {% endblock %}

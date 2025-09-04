@@ -1,40 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% trans %}dashboard_title{% endtrans %}{% endblock %}
+{% block title %}{{ 'dashboard_title'|trans }}{% endblock %}
 
 {% block body %}
     {% include('dashboard/_sidebar.html.twig') %}
-    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+    <div class="md:ml-64 flex flex-col min-h-screen">
         {% include('dashboard/_navbar.html.twig') %}
-        <div class="p-4">
-            <h3>{% trans %}dashboard_title{% endtrans %}</h3>
-            <div class="pt-3">
-                <div class="row row-cols-md-2 row-cols-xxl-4 row-cols-xl-2">
-                    <div class="col-md">
-                        <div class="card bg-white border-0 mb-3 shadow-sm">
-                            <div class="card-body ps-4">
-                                <h6 class="card-title">{% trans %}website_count{% endtrans %}</h6>
-                                <p class="card-text uptime">
-                                    <i class="far fa-file"></i>
-                                    <span class="uptime-number ps-3">{{ app.user.websites.count() }}</span>
-                                </p>
+        <main class="flex-grow p-4 dark:bg-gray-900">
+            <div class="mb-6">
+                <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-200">{{ 'dashboard_title'|trans }}</h1>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                <div class="bg-white dark:bg-gray-700 rounded-lg shadow-sm border dark:border-0 border-gray-200 p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                                </svg>
                             </div>
                         </div>
+                        <div class="ml-4">
+                            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-300">{{ 'website_count'|trans }}</h3>
+                            <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ app.user.websites.count() }}</p>
+                        </div>
                     </div>
-                    <div class="col-md">
-                        <div class="card bg-white border-0 mb-3 shadow-sm">
-                            <div class="card-body ps-4">
-                                <h6 class="card-title">{% trans %}notification_channels_count{% endtrans %}</h6>
-                                <p class="card-text uptime">
-                                    <i class="fas fa-bell"></i>
-                                    <span class="uptime-number ps-3">{{ app.user.notifierChannels.count() }}</span>
-                                </p>
+                </div>
+                <div class="bg-white dark:bg-gray-700 rounded-lg shadow-sm border dark:border-0 border-gray-200 p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                </svg>
                             </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-300">{{ 'notification_channels_count'|trans }}</h3>
+                            <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ app.user.notifierChannels.count() }}</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
         {% include('dashboard/_flash_messages.html.twig') %}
     </div>
 {% endblock %}

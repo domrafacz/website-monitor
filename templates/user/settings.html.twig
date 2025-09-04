@@ -1,47 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% trans %}user_settings_title{% endtrans %}{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    {{ encore_entry_script_tags('user_settings') }}
-{% endblock %}
+{% block title %}{{ 'user_settings_title'|trans }}{% endblock %}
 
 {% block body %}
     {% include('dashboard/_sidebar.html.twig') %}
-    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+    <div class="md:ml-64 flex flex-col min-h-screen">
         {% include('dashboard/_navbar.html.twig') %}
-        <div class="p-4">
-            <h3>{% trans %}user_settings_title{% endtrans %}</h3>
+        <main class="flex-grow p-4 dark:bg-gray-900">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-200 mb-4">{{ 'user_settings_title'|trans }}</h3>
             {% include('dashboard/_flash_messages.html.twig') %}
-            <div class="row pt-3">
-                <div class="col-md-3 mb-4">
-                    <div class="list-group shadow-sm settings-list" id="user-settings-list-tab" role="tablist">
-                        <a class="list-group-item list-group-item-action active" id="list-general" data-bs-toggle="list" href="#general" role="tab" aria-controls="general">{% trans %}settings_general{% endtrans %}</a>
-                        <a class="list-group-item list-group-item-action" id="list-change-password" data-bs-toggle="list" href="#change-password" role="tab" aria-controls="change-password">{% trans %}settings_change_password{% endtrans %}</a>
-                        <a class="list-group-item list-group-item-action" id="list-delete-account" data-bs-toggle="list" href="#delete-account" role="tab" aria-controls="delete-account">{% trans %}settings_delete_account{% endtrans %}</a>
+            <div class="pt-3">
+                <div class="md:flex">
+                    <div class="md:w-1/4">
+                        <ul class="space-y-2">
+                            <li>
+                                <a href="#general" class="block px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-white rounded-md settings-tab-item active">
+                                    {{ 'settings_general'|trans }}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#change-password" class="block px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 rounded-md settings-tab-item">
+                                    {{ 'settings_change_password'|trans }}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#delete-account" class="block px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 rounded-md settings-tab-item">
+                                    {{ 'settings_delete_account'|trans }}
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-                </div>
-                <div class="col-md-9">
-                    <div class="tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="list-general">
-                            <div class="bg-white p-3 shadow-sm">
-                                {{ form(form_general_settings) }}
-                            </div>
+                    <div class="md:w-3/4 md:ml-4 mt-4 md:mt-0">
+                        <div id="general" class="p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg settings-tab-pane">
+                            {{ form(form_general_settings) }}
                         </div>
-                        <div class="tab-pane fade" id="change-password" role="tabpanel" aria-labelledby="list-change-password">
-                            <div class="bg-white p-3 shadow-sm">
-                                {{ form(form_change_password) }}
-                            </div>
+                        <div id="change-password" class="hidden p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg settings-tab-pane">
+                            {{ form(form_change_password) }}
                         </div>
-                        <div class="tab-pane fade" id="delete-account" role="tabpanel" aria-labelledby="list-delete-account">
-                            <div class="bg-white p-3 shadow-sm">
-                                {{ form(form_delete_user) }}
-                            </div>
+                        <div id="delete-account" class="hidden p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg settings-tab-pane">
+                            {{ form(form_delete_user) }}
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 {% endblock %}

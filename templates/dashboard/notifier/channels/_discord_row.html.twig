@@ -1,6 +1,6 @@
-<td>
+<td class="py-4 px-6 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
     {{ channels_types[channel.type].name }}
 </td>
-<td style="min-width:150px;">
-    {% trans %}discord_webhook{% endtrans %}: {{ channel.options.webhook|default(null) }}<br>
+<td class="py-4 px-6 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
+    <span class="font-semibold">{{ 'discord_webhook'|trans }}:</span> {{ channel.options.webhook|default(null) }}
 </td>

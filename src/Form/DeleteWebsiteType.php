@@ -17,7 +17,7 @@ class DeleteWebsiteType extends AbstractType
         $builder
             ->add('config', CheckboxType::class, [
                 'label' => 'website_delete_checkbox_label',
-                'label_attr' => ['class' => 'text-danger'],
+                'label_attr' => ['class' => 'text-red-500'],
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'delete',

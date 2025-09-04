@@ -1,0 +1,169 @@
+{# Form theme with Tailwind CSS styling #}
+{% use "form_div_layout.html.twig" %}
+
+{# Form widget styling #}
+{% block form_widget_simple %}
+    {% set attr = attr|merge({
+        class: (attr.class|default('') ~ ' bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white')|trim
+    }) %}
+    {{ parent() }}
+{% endblock %}
+
+{# Textarea styling #}
+{% block textarea_widget %}
+    {% set attr = attr|merge({
+        class: (attr.class|default('') ~ ' bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white')|trim
+    }) %}
+    {{ parent() }}
+{% endblock %}
+
+{# Select/Choice styling #}
+{% block choice_widget_collapsed %}
+    {% set attr = attr|merge({
+        class: (attr.class|default('') ~ ' bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white')|trim
+    }) %}
+    {{ parent() }}
+{% endblock %}
+
+{# Checkbox styling #}
+{% block checkbox_widget %}
+    {% set attr = attr|merge({
+        class: (attr.class|default('') ~ ' w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800')|trim
+    }) %}
+    {{ parent() }}
+{% endblock %}
+
+{# Form row styling #}
+{% block form_row %}
+    <div class="mb-4">
+        {{ form_label(form) }}
+        {{ form_widget(form) }}
+        {{ form_errors(form) }}
+    </div>
+{% endblock %}
+
+{# Label styling #}
+{% block form_label %}
+    {% if label is not same as(false) %}
+        {# Only add default classes if no custom classes are provided #}
+        {% if not label_attr.class is defined %}
+            {% set label_attr = label_attr|merge({
+                class: 'block mb-2 text-sm font-medium text-gray-900 dark:text-white'
+            }) %}
+        {% else %}
+            {# Preserve custom classes and add minimal default styling #}
+            {% set label_attr = label_attr|merge({
+                class: (label_attr.class ~ ' block mb-2 text-sm font-medium')|trim
+            }) %}
+        {% endif %}
+    {% endif %}
+    {{ parent() }}
+{% endblock %}
+
+{# Error styling #}
+{% block form_errors %}
+    {% if errors|length > 0 %}
+        <div class="mt-1">
+            {% for error in errors %}
+                <p class="text-sm text-red-600 dark:text-red-400">{{ error.message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{# Button styling #}
+{% block button_widget %}
+    {# Only apply default styling if no custom classes are specified #}
+    {% if not (attr.class is defined and ('btn-danger' in attr.class or 'btn-primary' in attr.class or 'btn-secondary' in attr.class or 'bg-' in attr.class)) %}
+        {% set attr = attr|merge({
+            class: (attr.class|default('') ~ ' text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800')|trim
+        }) %}
+    {% endif %}
+    {{ parent() }}
+{% endblock %}
+
+{# Submit button styling #}
+{% block submit_widget %}
+    {# Only apply default styling if no custom classes are specified #}
+    {% if not (attr.class is defined and ('btn-danger' in attr.class or 'btn-primary' in attr.class or 'btn-secondary' in attr.class or 'bg-' in attr.class)) %}
+        {% set attr = attr|merge({
+            class: (attr.class|default('') ~ ' text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800')|trim
+        }) %}
+    {% else %}
+        {# Ensure full width for custom styled buttons #}
+        {#
+        {% set attr = attr|merge({
+            class: (attr.class|default('') ~ ' w-full')|trim
+        }) %}
+        #}
+    {% endif %}
+    {{ parent() }}
+{% endblock %}
+
+{# Form styling #}
+{% block form_start %}
+    {% set attr = attr|merge({
+        class: (attr.class|default('') ~ ' space-y-6')|trim
+    }) %}
+    {{ parent() }}
+{% endblock %}
+
+{# Password input styling #}
+{% block password_widget %}
+    {% set type = type|default('password') %}
+    {{ block('form_widget_simple') }}
+{% endblock %}
+
+{# Email input styling #}
+{% block email_widget %}
+    {% set type = type|default('email') %}
+    {{ block('form_widget_simple') }}
+{% endblock %}
+
+{# Number input styling #}
+{% block number_widget %}
+    {% set type = type|default('number') %}
+    {{ block('form_widget_simple') }}
+{% endblock %}
+
+{# Integer input styling #}
+{% block integer_widget %}
+    {% set type = type|default('number') %}
+    {{ block('form_widget_simple') }}
+{% endblock %}
+
+{# URL input styling #}
+{% block url_widget %}
+    {% set type = type|default('url') %}
+    {{ block('form_widget_simple') }}
+{% endblock %}
+
+{# Checkbox row styling #}
+{% block checkbox_row %}
+    <div class="flex items-start mb-4">
+        <div class="flex items-center h-5">
+            {{ form_widget(form) }}
+        </div>
+        {% if label is not same as(false) %}
+            <div class="ml-3 text-sm">
+                {# Respect any custom label_attr passed to the form field #}
+                {% if label_attr.class is defined %}
+                    {{ form_label(form) }}
+                {% else %}
+                    {{ form_label(form, null, {label_attr: {class: 'text-gray-500 dark:text-gray-300'}}) }}
+                {% endif %}
+            </div>
+        {% endif %}
+        {{ form_errors(form) }}
+    </div>
+{% endblock %}
+
+{# Bootstrap 4 equivalent classes for danger styling #}
+{% block form_widget -%}
+    {%- if attr.class is defined and 'btn-danger' in attr.class -%}
+        {%- set attr = attr|merge({
+            class: attr.class|replace({'btn-danger': 'bg-red-600 hover:bg-red-700 border-red-600 hover:border-red-700 text-white font-medium px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200'})
+        }) -%}
+    {%- endif -%}
+    {{- parent() -}}
+{%- endblock form_widget %}

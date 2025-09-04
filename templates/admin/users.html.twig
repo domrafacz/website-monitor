@@ -1,44 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% trans %}admin_dashboard_title{% endtrans %}{% endblock %}
+{% block title %}{{ 'admin_dashboard_title'|trans }}{% endblock %}
 
 {% block body %}
     {% include('admin/_sidebar.html.twig') %}
-    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+    <div class="md:ml-64 flex flex-col min-h-screen">
         {% include('dashboard/_navbar.html.twig') %}
-        <div class="p-4">
-            <h3>{% trans %}admin_dashboard_title{% endtrans %}</h3>
+        <main class="flex-grow p-4 dark:bg-gray-900">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-200 mb-4">{{ 'admin_dashboard_title'|trans }}</h3>
             <div class="pt-3">
-                <div class="md-12 bg-white p-3 shadow-sm">
-                    <div class="table-responsive">
-                        <table class="table table-hover websites-list">
-                            <thead>
+                <div class="bg-white dark:bg-gray-800 p-4 shadow-md rounded-lg">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white dark:bg-gray-800">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
-                                <th scope="col">{% trans %}email{% endtrans %}</th>
-                                <th scope="col">{% trans %}status{% endtrans %}</th>
-                                <th scope="col">{% trans %}quota{% endtrans %}</th>
+                                <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">{{ 'email'|trans }}</th>
+                                <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">{{ 'status'|trans }}</th>
+                                <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">{{ 'quota'|trans }}</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                             {% for user in users %}
-                                <tr>
-                                    <td>
-                                        <a class="text-dark" href="{{ path('app_admin_users_edit', { id: user.id }) }}">{{ user.email }}</a>
+                                <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <a href="{{ path('app_admin_users_edit', { id: user.id }) }}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ user.email }}</a>
                                     </td>
-                                    <td>
+                                    <td class="py-4 px-6 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                         {% if user.active %}
-                                            <span class="badge text-bg-success">{{ 'user_status_active'|trans }}</span>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">{{ 'user_status_active'|trans }}</span>
                                         {% elseif user.blocked %}
-                                            <span class="badge text-bg-danger">{{ 'user_status_blocked'|trans }}</span>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">{{ 'user_status_blocked'|trans }}</span>
                                         {% else %}
-                                            <span class="badge text-bg-secondary">{{ 'user_status_inactive'|trans }}</span>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{{ 'user_status_inactive'|trans }}</span>
                                         {% endif %}
                                     </td>
-                                    <td>
+                                    <td class="py-4 px-6 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                         {% if user.websites.count() > user.quota %}
-                                            <span class="badge text-bg-warning">{{ user.websites.count() ~ '/' ~ user.quota }}</span>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">{{ user.websites.count() ~ '/' ~ user.quota }}</span>
                                         {% else %}
-                                            <span class="text-dark">{{ user.websites.count() ~ '/' ~ user.quota }}</span>
+                                            <span>{{ user.websites.count() ~ '/' ~ user.quota }}</span>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -48,6 +48,6 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 {% endblock %}

@@ -1,19 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% trans %}website_add_title{% endtrans %}{% endblock %}
+{% block title %}{{ 'website_add_title'|trans }}{% endblock %}
 
 {% block body %}
     {% include('dashboard/_sidebar.html.twig') %}
-    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+    <div class="md:ml-64 flex flex-col min-h-screen">
         {% include('dashboard/_navbar.html.twig') %}
-        <div class="p-4">
-            <h3>{% trans %}website_add_title{% endtrans %}</h3>
+        <main class="flex-grow p-4 dark:bg-gray-900">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-200 mb-4">{{ 'website_add_title'|trans }}</h3>
             <div class="pt-3">
-                <div class="md-12 bg-white p-3 shadow-sm">
+                <div class="bg-white dark:bg-gray-800 p-4 shadow-md rounded-lg">
                     {{ form(add_form) }}
                 </div>
             </div>
-        </div>
+        </main>
         {% include('dashboard/_flash_messages.html.twig') %}
     </div>
 {% endblock %}

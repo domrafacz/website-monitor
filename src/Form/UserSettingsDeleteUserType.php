@@ -28,7 +28,7 @@ class UserSettingsDeleteUserType extends AbstractType
                 ],
                 'label' => 'agree_user_delete',
                 'label_attr' => [
-                    'class' => 'text-danger',
+                    'class' => 'text-red-500',
                 ],
             ])
             ->add('plainPassword', PasswordType::class, [

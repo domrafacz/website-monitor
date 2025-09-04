@@ -1,71 +1,77 @@
+{% import 'dashboard/_includes/_alerts.html.twig' as alerts %}
+
 {% extends 'base.html.twig' %}
 
-{% block title %}{% trans %}websites_title{% endtrans %}{% endblock %}
+{% block title %}{{ 'websites_title'|trans }}{% endblock %}
 
 {% block body %}
     {% include('dashboard/_sidebar.html.twig') %}
-    <div class="wrapper d-flex flex-column min-vh-100 bg-light">
+    <div class="md:ml-64 flex flex-col min-h-screen">
         {% include('dashboard/_navbar.html.twig') %}
-        <div class="p-4">
-            <h3>{% trans %}websites_title{% endtrans %}</h3>
+        <main class="flex-grow p-4 dark:bg-gray-900">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-200 mb-4">{{ 'websites_title'|trans }}</h3>
             {% include('dashboard/_flash_messages.html.twig') %}
             {% if websites.count >= app.user.quota %}
-                <button class="btn btn-secondary mb-3" style="width: 6rem;" disabled>{% trans %}add{% endtrans %}</button>
-                <div class="alert alert-warning">{% trans %}exceeded_quota_message{% endtrans %}</div>
+                <button class="bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded mb-3" disabled>{{ 'add'|trans }}</button>
+                <div class="mt-4">
+                    {{ alerts.warning('', 'exceeded_quota_message'|trans) }}
+                </div>
             {% else %}
-                <a href="{{ path('app_website_add') }}" class="btn btn-success mb-3" style="width: 6rem;">{% trans %}add{% endtrans %}</a>
+                <a href="{{ path('app_website_add') }}" class="dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-normal py-2 px-4 rounded mb-3">{{ 'add'|trans }}</a>
             {% endif %}
             {% if websites.count == 0 %}
-                <div class="alert alert-warning border border-warning">{% trans %}empty_website_list_message{% endtrans %}</div>
+                <div class="mt-4">
+                    {{ alerts.warning('', 'empty_website_list_message'|trans) }}
+                </div>
             {% else %}
-                <div class="pt-3">
-                    <div class="md-12 bg-white p-3 shadow-sm">
-                        <div class="table-responsive">
-                            <table class="table table-hover websites-list">
-                                <thead>
+                <div class="mt-4 border dark:border-0">
+                    <div class="bg-white dark:bg-gray-800 p-4 shadow-md rounded-lg">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white dark:bg-gray-800">
+                                <thead class="bg-gray-100 dark:bg-gray-700">
                                 <tr>
-                                    <th scope="col">{% trans %}url{% endtrans %}</th>
-                                    <th scope="col">{% trans %}status{% endtrans %}</th>
-                                    <th scope="col">{% trans %}last_status{% endtrans %}</th>
-                                    <th scope="col">{% trans %}last_check{% endtrans %}</th>
-                                    <th scope="col">{% trans %}ssl_expire_time{% endtrans %}</th>
+                                    <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">{{ 'url'|trans }}</th>
+                                    <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">{{ 'status'|trans }}</th>
+                                    <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">{{ 'last_status'|trans }}</th>
+                                    <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">{{ 'last_check'|trans }}</th>
+                                    <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400">{{ 'ssl_expire_time'|trans }}</th>
                                 </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                 {% for website in websites %}
-                                    <tr data-url="{{ path('app_website_details', {id: website.getId}) }}">
-                                        <td>
-                                            <a href="{{ path('app_website_details', {id: website.getId}) }}" class="text-dark">
+                                    <tr class="hover:bg-blue-100 dark:hover:bg-gray-700">
+                                        <td class="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <a href="{{ path('app_website_details', {id: website.getId}) }}" class="text-blue-600 dark:text-blue-400 hover:underline">
                                                 {{ website.getUrl }}
                                             </a>
                                         </td>
-                                        <td>
+                                        <td class="py-4 px-6 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                             {% if website.isEnabled == true %}
-                                                <span class="badge text-bg-success">{% trans %}enabled{% endtrans %}</span>
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-600 text-white">{{ 'enabled'|trans }}</span>
                                             {% else %}
-                                                <span class="badge text-bg-secondary">{% trans %}disabled{% endtrans %}</span>
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{{ 'disabled'|trans }}</span>
                                             {% endif %}
                                         </td>
-                                        <td>
+                                        <td class="py-4 px-6 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                             {% if website.getLastStatus == constant('STATUS_OK', website) %}
-                                                <span class="badge text-bg-success">Ok</span>
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-600 text-white">Ok</span>
                                             {% else %}
-                                                <span class="badge text-bg-danger">{% trans %}error{% endtrans %}</span>
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">{{ 'error'|trans }}</span>
                                             {% endif %}
                                         </td>
-                                        <td>
+                                        <td class="py-4 px-6 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                             {% if website.getLastCheck is null %}
-                                                <span class="badge text-bg-secondary">{% trans %}unavailable{% endtrans %}</span>
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{{ 'unavailable'|trans }}</span>
                                             {% else %}
                                                 {{ website.getLastCheck|ago }}
                                             {% endif %}
                                         </td>
-                                        <td>
+                                        <td class="py-4 px-6 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                             {% if website.getCertExpiryTime is null %}
-                                                <span class="badge text-bg-secondary">{% trans %}unavailable{% endtrans %}</span>
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-300 text-gray-800">{{ 'unavailable'|trans }}</span>
                                             {% else %}
                                                 {% if date('now') > website.getCertExpiryTime %}
-                                                    <span class="badge text-bg-danger">{{ website.getCertExpiryTime|ago }}</span>
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">{{ website.getCertExpiryTime|ago }}</span>
                                                 {% else %}
                                                     {{ website.getCertExpiryTime|ago }}
                                                 {% endif %}
@@ -79,6 +85,6 @@
                     </div>
                 </div>
             {% endif %}
-        </div>
+        </main>
     </div>
 {% endblock %}
