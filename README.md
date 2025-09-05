@@ -33,6 +33,7 @@ Website-monitor is website uptime monitoring software built with Symfony framewo
 1. [Installation](docs/install.md)
 2. [Creating users](docs/users.md)
 3. [Updating](docs/updating.md)
+4. [Testing](docs/testing.md)
 
 ## Authors
 
