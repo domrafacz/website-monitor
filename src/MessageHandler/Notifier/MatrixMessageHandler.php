@@ -6,12 +6,13 @@ namespace App\MessageHandler\Notifier;
 
 use App\Message\Notifier\MatrixMessage;
 use App\Service\Notifier\Channels\Matrix;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-final class MatrixMessageHandler implements MessageHandlerInterface
+#[AsMessageHandler]
+final readonly class MatrixMessageHandler
 {
     public function __construct(
-        private readonly Matrix $matrixChannel,
+        private Matrix $matrixChannel,
     ) {
     }
 

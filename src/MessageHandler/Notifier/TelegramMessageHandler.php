@@ -6,12 +6,13 @@ namespace App\MessageHandler\Notifier;
 
 use App\Message\Notifier\TelegramMessage;
 use App\Service\Notifier\Channels\Telegram;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-final class TelegramMessageHandler implements MessageHandlerInterface
+#[AsMessageHandler]
+final readonly class TelegramMessageHandler
 {
     public function __construct(
-        private readonly Telegram $telegramChannel,
+        private Telegram $telegramChannel,
     ) {
     }
 

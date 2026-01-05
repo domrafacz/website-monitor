@@ -6,12 +6,13 @@ namespace App\MessageHandler\Notifier;
 
 use App\Message\Notifier\DiscordMessage;
 use App\Service\Notifier\Channels\Discord;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-final class DiscordMessageHandler implements MessageHandlerInterface
+#[AsMessageHandler]
+final readonly class DiscordMessageHandler
 {
     public function __construct(
-        private readonly Discord $discordChannel,
+        private Discord $discordChannel,
     ) {
     }
 

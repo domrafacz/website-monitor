@@ -7,18 +7,18 @@ namespace App\Service;
 use App\Entity\NotifierChannel;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
-class UserManager
+readonly class UserManager
 {
     public function __construct(
-        private readonly UserRepository $userRepository,
-        private readonly UserPasswordHasherInterface $passwordHasher,
-        private readonly Security $security,
+        private UserRepository              $userRepository,
+        private UserPasswordHasherInterface $passwordHasher,
+        private Security                    $security,
     ) {
     }
 
