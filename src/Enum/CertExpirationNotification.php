@@ -15,6 +15,10 @@ enum CertExpirationNotification: int
 
     public static function getReadyToSend(?DateTimeInterface $certExpireTime): ?CertExpirationNotification
     {
+        if ($certExpireTime === null) {
+            return null;
+        }
+
         $currentTime = new DateTimeImmutable();
 
         if ($certExpireTime < $currentTime) {

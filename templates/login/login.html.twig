@@ -1,10 +1,19 @@
 {% extends 'base.html.twig' %}
 
+{% import 'macros/inputs.html.twig' as pw %}
+
 {% block title %}{{ 'login'|trans }}{% endblock %}
 
 {% block body %}
     <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-        <h2 class="text-center text-gray-900 dark:text-white mb-2">Website-monitor</h2>
+        <div class="flex items-center justify-center space-x-2 w-full mb-2">
+            <h2 class="text-gray-900 dark:text-white">Website-monitor</h2>
+            <button id="dark-mode-toggle-login" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                </svg>
+            </button>
+        </div>
         <div class="w-full max-w-md mx-4 sm:mx-0 p-8 space-y-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
             <h1 class="text-3xl mt-4 font-bold text-center text-gray-900 dark:text-white">{{ 'login'|trans }}</h1>
             {% if error %}
@@ -15,24 +24,29 @@
             <form action="{{ path('app_login') }}" method="post" class="space-y-6">
                 <div>
                     <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ 'email'|trans }}</label>
-                    <input type="text" id="username" name="_username" value="{{ last_username }}" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                    <input type="text" id="username" name="_username" value="{{ last_username }}" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:outline-none focus-visible:outline-none focus:ring-1 focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
                 </div>
-                <div>
-                    <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ 'password'|trans }}</label>
-                    <input type="password" id="password" name="_password" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
-                </div>
+                {{ pw.password('password', '_password', 'password'|trans) }}
                 <div class="flex items-center justify-between">
                     <div class="flex items-start">
-                        <div class="flex items-center h-5">
-                            <input id="rememberMeCheckbox" name="_remember_me" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800" checked>
+                            <div class="flex items-center h-5">
+                                <div class="relative">
+                                    <input id="rememberMeCheckbox" name="_remember_me" type="checkbox" checked
+                                        class="peer absolute w-5 h-5 opacity-0 z-10 cursor-pointer" />
+                                    <div class="w-5 h-5 rounded-md border border-gray-300 bg-white dark:bg-gray-700 flex items-center justify-center transition-colors duration-200 ease-in-out peer-checked:bg-indigo-600 peer-checked:border-indigo-600">
+                                        <svg class="w-4 h-4 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414-1.414L8 11.172 4.707 7.879A1 1 0 003.293 9.293l4 4a1 1 0 001.414 0l8-8z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label for="rememberMeCheckbox" class="text-gray-700 dark:text-gray-300">{{ 'remember_me'|trans }}</label>
+                            </div>
                         </div>
-                        <div class="ml-3 text-sm">
-                            <label for="rememberMeCheckbox" class="text-gray-500 dark:text-gray-300">{{ 'remember_me'|trans }}</label>
-                        </div>
-                    </div>
                 </div>
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                <button type="submit" id="login_submit" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ 'login_button'|trans }}</button>
+                <button type="submit" id="login_submit" class="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-blue-800 transition duration-200 ease-in-out">{{ 'login_button'|trans }}</button>
             </form>
         </div>
     </div>

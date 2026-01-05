@@ -22,7 +22,7 @@ class UserEditType extends AbstractType
             ])
             ->add('status', EnumType::class, [
                 'class' => UserStatus::class,
-                'choice_label' => fn ($choice) => match ($choice) {
+                'choice_label' => fn (UserStatus $choice) => match ($choice) {
                     UserStatus::ACTIVE => 'user_status_active',
                     UserStatus::INACTIVE => 'user_status_inactive',
                     UserStatus::BLOCKED  => 'user_status_blocked',

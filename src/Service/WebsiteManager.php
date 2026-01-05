@@ -182,7 +182,7 @@ class WebsiteManager
         $readyNotification = CertExpirationNotification::getReadyToSend($website->getCertExpiryTime());
 
         // check if notification has been already send
-        if ($website->getCertExpiryTime() && $readyNotification?->value && !in_array($readyNotification?->value, $website->getCertExpirationNotifications())) {
+        if ($website->getCertExpiryTime() && $readyNotification && !in_array((string)$readyNotification->value, $website->getCertExpirationNotifications(), true)) {
             $message = sprintf(
                 $this->translator->trans('request_runner_cert_expires', [], 'messages', $website->getOwner()?->getLanguage()),
                 $website->getUrl(),

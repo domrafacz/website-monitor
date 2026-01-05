@@ -42,6 +42,7 @@ security:
     access_control:
         - { path: '^/cron', ips: '%env(TRUSTED_IPS)%' }
         - { path: '^/cron', roles: ROLE_NO_ACCESS }
+        - { path: '^/installation', roles: PUBLIC_ACCESS }
 
 when@test:
     security:

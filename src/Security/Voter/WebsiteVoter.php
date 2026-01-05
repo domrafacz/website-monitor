@@ -7,6 +7,9 @@ use App\Entity\Website;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
+/**
+ * @extends Voter<string, Website>
+ */
 class WebsiteVoter extends Voter
 {
     public const VIEW = 'view';

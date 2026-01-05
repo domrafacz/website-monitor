@@ -109,10 +109,15 @@ class RequestsRunner
 
     private function createSuccessfulResponse(ResponseInterface $response): void
     {
+        $startTime = $response->getInfo('start_time');
+        $totalTime = $response->getInfo('total_time');
+        assert(is_float($startTime) || is_int($startTime));
+        assert(is_float($totalTime) || is_int($totalTime));
+        
         $this->updateResponseDto(
             websiteId: $this->responseParser->getWebsiteId($response),
-            startTime: floatval($response->getInfo('start_time')),
-            totalTime: intval(round($response->getInfo('total_time') * 1000)),
+            startTime: (float)$startTime,
+            totalTime: (int)round((float)$totalTime * 1000),
             statusCode: $response->getStatusCode(),
             certExpireTime: $this->responseParser->getCertExpireDate($response),
         );
@@ -120,13 +125,17 @@ class RequestsRunner
 
     private function createUnsuccessfulResponse(ResponseInterface $response, string $error): void
     {
-        $this->logger->debug($response->getInfo('debug'));
+        $debugInfo = $response->getInfo('debug');
+        $this->logger->debug(is_string($debugInfo) || $debugInfo instanceof \Stringable ? $debugInfo : '');
 
+        $startTime = $response->getInfo('start_time');
+        assert(is_float($startTime) || is_int($startTime));
+        
         $this->updateResponseDto(
             $this->responseParser->getWebsiteId($response),
             null,
             [$error],
-            floatval($response->getInfo('start_time')),
+            (float)$startTime,
         );
     }
 

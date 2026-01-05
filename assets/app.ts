@@ -1,5 +1,6 @@
 import './app.css';
 import { initDarkMode } from './navbar';
+import { initPasswordToggles } from './passwordToggle';
 
 const sidebar = document.getElementById("sidebar");
 const sidebarScreenHover = document.getElementById("sidebar-screen-hover");
@@ -67,13 +68,11 @@ if (settingsTabItems && settingsTabPanes) {
     });
 }
 
-// Initialize all components when DOM is ready
 function initializeApp(): void {
-    // Initialize dark mode
     initDarkMode();
+    initPasswordToggles();
 }
 
-// Auto-initialize when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
 } else {

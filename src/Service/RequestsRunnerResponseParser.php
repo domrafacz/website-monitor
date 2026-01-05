@@ -31,7 +31,9 @@ class RequestsRunnerResponseParser
 
     public function getWebsiteId(ResponseInterface $response): int
     {
-        return intval($response->getInfo('user_data'));
+        $userData = $response->getInfo('user_data');
+        assert(is_int($userData) || is_string($userData));
+        return (int)$userData;
     }
 
     public function getCertExpireDate(ResponseInterface $response): ?\DateTimeInterface

@@ -20,15 +20,13 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 )]
 class CreateUserCommand extends Command
 {
-    private UserRepository $userRepository;
-    private UserPasswordHasherInterface $userPasswordHasher;
-    private ValidatorInterface $validator;
 
-    public function __construct(UserRepository $userRepository, UserPasswordHasherInterface $userPasswordHasher, ValidatorInterface $validator)
+    public function __construct(
+        private readonly UserRepository $userRepository,
+        private readonly UserPasswordHasherInterface $userPasswordHasher,
+        private readonly ValidatorInterface $validator
+    )
     {
-        $this->userRepository = $userRepository;
-        $this->userPasswordHasher = $userPasswordHasher;
-        $this->validator = $validator;
 
         parent::__construct();
     }
@@ -44,8 +42,12 @@ class CreateUserCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $email = strval($input->getArgument('email'));
-        $password = strval($input->getArgument('password'));
+        $emailArg = $input->getArgument('email');
+        $passwordArg = $input->getArgument('password');
+        assert(is_string($emailArg));
+        assert(is_string($passwordArg));
+        $email = $emailArg;
+        $password = $passwordArg;
 
         if ($this->isPasswordValid($password) === false) {
             $io->error('Given password is not strong enough!');

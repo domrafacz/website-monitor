@@ -12,12 +12,12 @@
             <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-200 mb-4">{{ 'websites_title'|trans }}</h3>
             {% include('dashboard/_flash_messages.html.twig') %}
             {% if websites.count >= app.user.quota %}
-                <button class="bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded mb-3" disabled>{{ 'add'|trans }}</button>
+                <button class="bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded mb-3 " disabled>{{ 'add'|trans }}</button>
                 <div class="mt-4">
                     {{ alerts.warning('', 'exceeded_quota_message'|trans) }}
                 </div>
             {% else %}
-                <a href="{{ path('app_website_add') }}" class="dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-normal py-2 px-4 rounded mb-3">{{ 'add'|trans }}</a>
+                <a href="{{ path('app_website_add') }}" class="dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-normal py-2 px-4 rounded mb-3 transition duration-200 ease-in-out">{{ 'add'|trans }}</a>
             {% endif %}
             {% if websites.count == 0 %}
                 <div class="mt-4">

@@ -77,8 +77,11 @@ class Website
     #[ORM\Column(type: Types::DATETIME_MUTABLE, options: ['default' => '1970-01-01 00:00:00'])]
     private \DateTimeInterface $nextArchiveTime;
 
+    /**
+     * @var array<string>|null
+     */
     #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
-    private array $certExpirationNotifications = [];
+    private ?array $certExpirationNotifications = [];
 
     public function __construct()
     {
@@ -399,11 +402,17 @@ class Website
         }
     }
 
+    /**
+     * @return array<string>
+     */
     public function getCertExpirationNotifications(): array
     {
-        return $this->certExpirationNotifications;
+        return $this->certExpirationNotifications ?? [];
     }
 
+    /**
+     * @param array<string>|null $certExpirationNotifications
+     */
     public function setCertExpirationNotifications(?array $certExpirationNotifications): self
     {
         $this->certExpirationNotifications = $certExpirationNotifications;
@@ -413,7 +422,7 @@ class Website
 
     public function addCertExpirationNotification(CertExpirationNotification $enum): self
     {
-        $this->setCertExpirationNotifications(array_merge($this->getCertExpirationNotifications(), [$enum->value]));
+        $this->setCertExpirationNotifications(array_merge($this->getCertExpirationNotifications(), [(string)$enum->value]));
 
         return $this;
     }
