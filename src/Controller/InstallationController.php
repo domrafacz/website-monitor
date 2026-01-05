@@ -38,9 +38,9 @@ class InstallationController extends AbstractController
     {
         $envPath = $this->projectDir . '.env';
         if (!$this->filesystem->exists($envPath)) {
-            throw $this->createNotFoundException('Already installed');
-            // todo display some nicer template
-            return $this->redirectToRoute('app_login');
+            return $this->render('installation.html.twig', [
+                'alreadyInstalled' => true,
+            ]);
         }
 
         $errors = [];
