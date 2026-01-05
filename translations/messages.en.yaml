@@ -135,3 +135,4 @@ installation_save_password_login: 'Please save this password and log in. You can
 installation_server_version: 'Database version: %s'
 installation_already_installed: 'Application is already installed.'
 installation_go_to_login: 'Go to login page'
+app_name: 'Website-monitor'

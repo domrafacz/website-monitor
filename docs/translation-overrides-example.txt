@@ -1,0 +1,18 @@
+# Translation Overrides Example
+# 
+# To override default translations without modifying the original files:
+# 1. Create the overrides directory: translations/overrides/
+# 2. Create override files with the same name as the defaults:
+#    - translations/overrides/messages.en.yaml (for English)
+#    - translations/overrides/messages.pl.yaml (for Polish)
+# 3. Add only the translations you want to override
+# 
+# The overrides/ directory is in .gitignore, so your custom translations won't be committed
+
+# Example for messages.en.yaml override:
+login:
+  title: "Custom Login Title"
+  submit: "Custom Submit Button"
+
+# Example for messages.pl.yaml override:
+#app_name: 'own name'
