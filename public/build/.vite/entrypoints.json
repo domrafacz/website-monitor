@@ -1,0 +1,34 @@
+{
+  "base": "/build/",
+  "entryPoints": {
+    "app": {
+      "css": [
+        "/build/assets/css-Db5i42ka.css"
+      ],
+      "dynamic": [],
+      "js": [
+        "/build/assets/app-D_FyxVih.js"
+      ],
+      "legacy": false,
+      "preload": []
+    },
+    "css": {
+      "css": [
+        "/build/assets/css-Db5i42ka.css"
+      ],
+      "dynamic": [],
+      "js": [],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "8.2.0",
+    8,
+    2,
+    0
+  ],
+  "viteServer": null
+}

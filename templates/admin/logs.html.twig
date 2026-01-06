@@ -1,0 +1,155 @@
+{% extends 'base.html.twig' %}
+{% import 'macros/inputs.html.twig' as inputs %}
+
+{% block title %}{{ 'admin_log_viewer_title'|trans }}{% endblock %}
+
+{% block body %}
+    {% include('admin/_sidebar.html.twig') %}
+    <div class="md:ml-64 flex flex-col min-h-screen">
+        {% include('dashboard/_navbar.html.twig') %}
+        <main class="flex-grow p-4 dark:bg-gray-900">
+            <div class="mb-6">
+                <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-200">{{ 'admin_log_viewer_title'|trans }}</h1>
+            </div>
+
+            {# Filter Form #}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 border-gray-200 p-4 mb-4">
+                <form method="get" action="{{ path('app_admin_logs') }}" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {# build file options from log_files #}
+                        {% set fileOptions = [] %}
+                        {% for f in log_files %}
+                            {% set fileOptions = fileOptions|merge([{'value': f, 'label': f}]) %}
+                        {% endfor %}
+
+                        {# static lines options #}
+                        {% set linesOptions = [
+                            {'value':'50','label':'50'},
+                            {'value':'100','label':'100'},
+                            {'value':'250','label':'250'},
+                            {'value':'500','label':'500'},
+                            {'value':'1000','label':'1000'},
+                        ] %}
+
+                        {# level options #}
+                        {% set levelOptions = [
+                            {'value':'','label': ('admin_log_all'|trans) },
+                            {'value':'DEBUG','label':'DEBUG'},
+                            {'value':'INFO','label':'INFO'},
+                            {'value':'NOTICE','label':'NOTICE'},
+                            {'value':'WARNING','label':'WARNING'},
+                            {'value':'ERROR','label':'ERROR'},
+                            {'value':'CRITICAL','label':'CRITICAL'},
+                            {'value':'ALERT','label':'ALERT'},
+                            {'value':'EMERGENCY','label':'EMERGENCY'},
+                        ] %}
+
+                        <div>
+                            {{ inputs.customSelect('file','file', ('admin_log_file'|trans), fileOptions, selected_file) }}
+                        </div>
+
+                        <div>
+                            {{ inputs.customSelect('lines','lines', ('admin_log_lines'|trans), linesOptions, lines ~ '') }}
+                        </div>
+
+                        <div>
+                            {{ inputs.customSelect('level','level', ('admin_log_level'|trans), levelOptions, level) }}
+                        </div>
+
+                        <div>
+                            <label for="search" class="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2">{{ 'admin_log_search'|trans }}</label>
+                            <input type="text" name="search" id="search" value="{{ search }}" placeholder="{{ 'admin_log_search_placeholder'|trans }}" class="w-full px-3 py-2 h-10 sm:h-10 sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-gray-200">
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                            {{ 'admin_log_apply_filters'|trans }}
+                        </button>
+                        <a href="{{ path('app_admin_logs') }}" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                            {{ 'admin_log_reset'|trans }}
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            {# Log Content #}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 border-gray-200 overflow-hidden">
+                <div class="p-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex justify-between items-center">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-200">
+                        {{ selected_file }}
+                        <span class="text-sm text-gray-500 dark:text-gray-400 ml-2">({{ log_content|length }} {{ 'admin_log_entries'|trans }})</span>
+                    </h2>
+                    <a href="{{ path('app_admin_logs_download', {'file': selected_file}) }}" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:bg-gray-700 dark:hover:bg-gray-600">
+                        {{ 'admin_log_download'|trans }}
+                    </a>
+                </div>
+                <div class="overflow-x-auto">
+                    {% if log_content is empty %}
+                        <div class="p-8 text-center text-gray-500 dark:text-gray-400">
+                            {{ 'admin_log_no_entries'|trans }}
+                        </div>
+                    {% else %}
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-800">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        {{ 'admin_log_time'|trans }}
+                                    </th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        {{ 'admin_log_level'|trans }}
+                                    </th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        {{ 'admin_log_channel'|trans }}
+                                    </th>
+                                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        {{ 'admin_log_message'|trans }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                {% for entry in log_content %}
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 {% if entry.level in ['ERROR', 'CRITICAL', 'ALERT', 'EMERGENCY'] %}bg-red-50 dark:bg-red-900/20{% elseif entry.level == 'WARNING' %}bg-yellow-50 dark:bg-yellow-900/20{% endif %}">
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200 font-mono">
+                                            {{ entry.datetime|slice(0, 19) }}
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                {% if entry.level == 'DEBUG' %}bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-200
+                                                {% elseif entry.level == 'INFO' %}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                                                {% elseif entry.level == 'NOTICE' %}bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200
+                                                {% elseif entry.level == 'WARNING' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
+                                                {% elseif entry.level == 'ERROR' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+                                                {% elseif entry.level in ['CRITICAL', 'ALERT', 'EMERGENCY'] %}bg-red-200 text-red-900 dark:bg-red-800 dark:text-red-100
+                                                {% else %}bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-200{% endif %}">
+                                                {{ entry.level }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                            {{ entry.channel }}
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-200">
+                                            <div class="max-w-3xl">
+                                                <pre class="whitespace-pre-wrap break-words font-mono text-xs">{{ entry.message|trim }}</pre>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                <p>{{ 'admin_log_showing_info'|trans({'%lines%': lines, '%file%': selected_file}) }}</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Auto-submit form when file or lines selection changes
+        document.getElementById('file').addEventListener('change', function() {
+            this.form.submit();
+        });
+    </script>
+{% endblock %}
