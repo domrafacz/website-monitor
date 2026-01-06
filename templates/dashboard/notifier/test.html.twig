@@ -9,12 +9,36 @@
         <main class="flex-grow p-4 dark:bg-gray-900">
             {% if result is not null %}
                 {% if result == true %}
-                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 test-channel-success" role="alert">
-                        <p>{{ 'test_notification_success'|trans }}</p>
+                    <div class="p-4 mb-4 rounded-xl shadow-lg border bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 dark:from-green-900/30 dark:to-emerald-900/30 dark:border-green-700 test-channel-success" role="alert">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-semibold text-green-800 dark:text-green-300">{{ 'success'|trans|default('Success') }}</h3>
+                                <p class="text-sm text-green-700 dark:text-green-400">{{ 'test_notification_success'|trans }}</p>
+                            </div>
+                        </div>
                     </div>
                 {% else %}
-                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 test-channel-error" role="alert">
-                        <p>{{ 'test_notification_error'|trans }}</p>
+                    <div class="p-4 mb-4 rounded-xl shadow-lg border bg-gradient-to-r from-red-50 to-rose-50 border-red-200 dark:from-red-900/30 dark:to-rose-900/30 dark:border-red-700 test-channel-error" role="alert">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-800 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-semibold text-red-800 dark:text-red-300">{{ 'error'|trans|default('Error') }}</h3>
+                                <p class="text-sm text-red-700 dark:text-red-400">{{ 'test_notification_error'|trans }}</p>
+                            </div>
+                        </div>
                     </div>
                 {% endif %}
             {% endif %}

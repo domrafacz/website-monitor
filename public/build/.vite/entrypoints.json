@@ -3,18 +3,18 @@
   "entryPoints": {
     "app": {
       "css": [
-        "/build/assets/css-Db5i42ka.css"
+        "/build/assets/css-x9IdXkyz.css"
       ],
       "dynamic": [],
       "js": [
-        "/build/assets/app-D_FyxVih.js"
+        "/build/assets/app-DZMCs6zu.js"
       ],
       "legacy": false,
       "preload": []
     },
     "css": {
       "css": [
-        "/build/assets/css-Db5i42ka.css"
+        "/build/assets/css-x9IdXkyz.css"
       ],
       "dynamic": [],
       "js": [],

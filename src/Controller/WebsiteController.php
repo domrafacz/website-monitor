@@ -102,7 +102,7 @@ class WebsiteController extends AbstractController
         $downtimeLogs = $website->getDowntimeLogs()->matching($criteria);
 
         return $this->render('dashboard/website/incidents.html.twig', [
-           'downtime_logs' => $downtimeLogs,
+            'downtime_logs' => $downtimeLogs,
         ]);
     }
 
@@ -117,13 +117,28 @@ class WebsiteController extends AbstractController
         NotifierChannel $notifierChannel,
         string $token,
         WebsiteRepository $websiteRepository
-    ): Response
-    {
+    ): Response {
         if ($this->isCsrfTokenValid('website-toggle-notifier-channel', $token)) {
             $website->toggleNotifierChannel($notifierChannel);
             $websiteRepository->save($website, true);
         }
 
         return $this->redirectToRoute('app_website_details', ['id' => $website->getId()]);
+    }
+
+    #[Route('/website/toggle-enabled/{id}/{token}', name: 'app_website_toggle_enabled')]
+    #[IsGranted('ROLE_USER')]
+    #[IsGranted('view', subject: 'website', statusCode: 404)]
+    public function toggleEnabled(
+        Website $website,
+        string $token,
+        WebsiteRepository $websiteRepository
+    ): Response {
+        if ($this->isCsrfTokenValid('website-toggle-enabled', $token)) {
+            $website->setEnabled(!$website->isEnabled());
+            $websiteRepository->save($website, true);
+        }
+
+        return $this->redirectToRoute('app_websites');
     }
 }
