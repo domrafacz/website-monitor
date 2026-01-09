@@ -20,5 +20,7 @@ class RequestRunnerResponseDto
 
     public ?\DateTimeInterface $certExpireTime = null;
 
+    public bool $certInvalid = false;
+
     public int $status = Website::STATUS_OK;
 }

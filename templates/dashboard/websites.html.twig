@@ -28,7 +28,7 @@
             </div>
             {% include('dashboard/_flash_messages.html.twig') %}
             {% if websites.count >= app.user.quota %}
-                <button class="bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded mb-3 " disabled>{{ 'add'|trans }}</button>
+                <button class="bg-gray-300 text-gray-500 font-normal py-2 px-4 rounded mb-3 cursor-not-allowed" disabled>{{ 'add'|trans }}</button>
                 <div class="mt-4">
                     {{ alerts.warning('', 'exceeded_quota_message'|trans) }}
                 </div>

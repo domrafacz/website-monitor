@@ -4,8 +4,12 @@
 
 {% block title %}{{ 'website_details_title'|trans }} - {{ website.getUrl }}{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    {{ vite_entry_script_tags('charts') }}
+{% endblock %}
+
 {% block body %}
-    {# Channel icons are now handled as SVG inline #}
     {% set channel_toggle_token = csrf_token('website-toggle-notifier-channel') %}
     {% include('dashboard/_sidebar.html.twig') %}
     <div class="md:ml-64 flex flex-col min-h-screen">
@@ -18,12 +22,14 @@
                     <a href="{{ path('app_website_edit', {id: website.getId}) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">{{ 'edit'|trans }}</a>
                     <button id="delete-website-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">{{ 'delete'|trans }}</button>
                 </div>
+                
+                {# Stats Cards #}
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                     <div class="bg-white dark:bg-gray-700 rounded-lg shadow-sm border dark:border-0 border-gray-200 p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
-                                <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                                     </svg>
                                 </div>
@@ -37,8 +43,8 @@
                     <div class="bg-white dark:bg-gray-700 rounded-lg shadow-sm border dark:border-0 border-gray-200 p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
-                                <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                                     </svg>
                                 </div>
@@ -52,13 +58,13 @@
                     <div class="bg-white dark:bg-gray-700 rounded-lg shadow-sm border dark:border-0 border-gray-200 p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
-                                <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                <div class="w-12 h-12 {{ website.getDowntimeLogs.count() > 0 ? 'bg-red-100 dark:bg-red-900/30' : 'bg-gray-100 dark:bg-gray-600' }} rounded-lg flex items-center justify-center">
                                     {% if website.getDowntimeLogs.count() > 0 %}
-                                        <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                                         </svg>
                                     {% else %}
-                                        <svg class="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                                         </svg>
                                     {% endif %}
@@ -82,8 +88,8 @@
                     <div class="bg-white dark:bg-gray-700 rounded-lg shadow-sm border dark:border-0 border-gray-200 p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
-                                <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
@@ -92,7 +98,7 @@
                                 <h3 class="text-sm font-medium text-gray-500 dark:text-gray-300">{{ 'average_response_time_24h'|trans }}</h3>
                                 <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                                     {% if average_response_time_24h > 1000 %}
-                                        {{ average_response_time_24h/1000 }} s
+                                        {{ (average_response_time_24h/1000)|number_format(1) }} s
                                     {% else %}
                                         {{ average_response_time_24h }} ms
                                     {% endif %}
@@ -101,32 +107,147 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-4">
-                    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg">
+
+                {# Notification Channels - Now above charts #}
+                <div class="mt-6">
+                    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border dark:border-gray-700 overflow-hidden">
                         <div class="p-4 border-b border-gray-200 dark:border-gray-700">
                             <h6 class="text-lg font-semibold text-gray-900 dark:text-white">{{ 'website_channels_list'|trans }}</h6>
                         </div>
-                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                            {% for channel in app.user.notifierChannels.getIterator %}
-                                <li class="p-4 flex justify-between items-center">
-                                    <span class="{{ website.hasNotifierChannel(channel.id) ? '' : 'opacity-50' }}">
-                                        <i class="{{ (channel_icons[channel.type] is defined) ? channel_icons[channel.type] : '' }} {{ website.hasNotifierChannel(channel.id) ? 'text-green-500' : 'text-gray-400' }} mr-2"></i>
-                                        {{ channel.name }}
-                                    </span>
-                                    {% if website.hasNotifierChannel(channel.id) %}
-                                        <a href="{{ path('app_website_toggle_notifier_channel', {'website_id': website.id, 'channel_id': channel.id, 'token': channel_toggle_token|url_encode }) }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded" id="channel_toggle_{{ channel.id }}" >{{ 'disable'|trans }}</a>
-                                    {% else %}
-                                        <a href="{{ path('app_website_toggle_notifier_channel', {'website_id': website.id, 'channel_id': channel.id, 'token': channel_toggle_token|url_encode }) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" id="channel_toggle_{{ channel.id }}" >{{ 'enable'|trans }}</a>
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                        </ul>
+                        {% if app.user.notifierChannels.count > 0 %}
+                            <div class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {% for channel in app.user.notifierChannels.getIterator %}
+                                    {% set isEnabled = website.hasNotifierChannel(channel.id) %}
+                                    <div class="relative flex items-center p-4 rounded-lg border {{ isEnabled ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-900/20' : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50' }} transition-colors hover:shadow-sm">
+                                        {# Channel Type Badge #}
+                                        <div class="flex-shrink-0 mr-3">
+                                            {% if channel.type == 0 %}
+                                                {# Telegram #}
+                                                <div class="w-10 h-10 rounded-lg bg-sky-100 dark:bg-sky-900/40 flex items-center justify-center">
+                                                    <svg class="w-5 h-5 text-sky-600 dark:text-sky-400" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                                                    </svg>
+                                                </div>
+                                            {% elseif channel.type == 1 %}
+                                                {# Discord #}
+                                                <div class="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center">
+                                                    <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
+                                                    </svg>
+                                                </div>
+                                            {% elseif channel.type == 2 %}
+                                                {# Matrix #}
+                                                <div class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
+                                                    <svg class="w-5 h-5 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M.632.55v22.9H2.28V24H0V0h2.28v.55zm7.043 7.26v1.157h.033c.309-.443.683-.784 1.117-1.024.433-.245.936-.365 1.5-.365.54 0 1.033.107 1.481.314.448.208.785.582 1.02 1.108.254-.374.6-.706 1.034-.992.434-.287.95-.43 1.546-.43.453 0 .872.056 1.26.167.388.11.716.286.993.53.276.245.489.559.646.951.152.392.23.863.23 1.417v5.728h-2.349V11.52c0-.286-.01-.559-.032-.812a1.755 1.755 0 0 0-.18-.66 1.106 1.106 0 0 0-.438-.448c-.194-.11-.457-.166-.789-.166-.351 0-.63.058-.844.175a1.436 1.436 0 0 0-.53.488 1.86 1.86 0 0 0-.28.69 3.79 3.79 0 0 0-.08.774v5.59h-2.36v-5.75c0-.271-.014-.535-.043-.79a1.873 1.873 0 0 0-.175-.668 1.043 1.043 0 0 0-.421-.454c-.182-.116-.446-.174-.786-.174-.09 0-.208.02-.354.06a1.55 1.55 0 0 0-.443.189 1.315 1.315 0 0 0-.384.366c-.107.153-.162.352-.162.603v6.62H5.29V7.81zm14.197 0H24v-.55h-2.28V24H21.368V.55h.504z"/>
+                                                    </svg>
+                                                </div>
+                                            {% else %}
+                                                {# Default/Unknown #}
+                                                <div class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                                                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                                    </svg>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        {# Channel Info #}
+                                        <div class="flex-1 min-w-0">
+                                            <p class="font-medium text-gray-900 dark:text-white truncate">{{ channel.name }}</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                {% if channel.type == 0 %}Telegram
+                                                {% elseif channel.type == 1 %}Discord
+                                                {% elseif channel.type == 2 %}Matrix
+                                                {% else %}Unknown{% endif %}
+                                            </p>
+                                        </div>
+                                        
+                                        {# Toggle Button #}
+                                        <a href="{{ path('app_website_toggle_notifier_channel', {'website_id': website.id, 'channel_id': channel.id, 'token': channel_toggle_token|url_encode }) }}" 
+                                           id="channel_toggle_{{ channel.id }}"
+                                           class="ml-3 flex-shrink-0 inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md transition-colors {{ isEnabled ? 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600' : 'bg-emerald-500 text-white hover:bg-emerald-600' }}">
+                                            {{ isEnabled ? 'disable'|trans : 'enable'|trans }}
+                                        </a>
+                                        
+                                        {# Status Indicator #}
+                                        {% if isEnabled %}
+                                            <div class="absolute top-2 right-2">
+                                                <span class="flex h-2 w-2">
+                                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                                </span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="p-4">
+                                {{ alerts.warning('', 'empty_notification_channel_list_message'|trans) }}
+                            </div>
+                        {% endif %}
                     </div>
-                    {% if app.user.notifierChannels.count == 0 %}
-                        <div class="mt-4">
-                            {{ alerts.warning('', 'empty_notification_channel_list_message'|trans) }}
+                </div>
+
+                {# Charts Section #}
+                <div id="website-charts-container" data-website-id="{{ website.getId }}" class="mt-6 grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    {# Uptime Chart Card #}
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 overflow-hidden">
+                        <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                                <span class="w-3 h-3 bg-emerald-500 rounded-full mr-2"></span>
+                                {{ 'uptime_chart_title'|trans }}
+                            </h4>
+                            <div class="flex flex-wrap gap-1">
+                                <button data-period="1h" class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">{{ 'period_1h'|trans }}</button>
+                                <button data-period="24h" class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30">{{ 'period_24h'|trans }}</button>
+                                <button data-period="7d" class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">{{ 'period_7d'|trans }}</button>
+                                <button data-period="30d" class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">{{ 'period_30d'|trans }}</button>
+                                <button data-period="3m" class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">{{ 'period_3m'|trans }}</button>
+                                <button data-period="6m" class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">{{ 'period_6m'|trans }}</button>
+                                <button data-period="1y" class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">{{ 'period_1y'|trans }}</button>
+                            </div>
                         </div>
-                    {% endif %}
+                        <div class="p-4 relative">
+                            <div id="charts-loader" class="hidden absolute inset-0 bg-white/80 dark:bg-gray-800/80 flex items-center justify-center z-10">
+                                <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                            <div id="uptime-chart-no-data" class="hidden h-[300px] flex items-center justify-center text-gray-500 dark:text-gray-400">
+                                <div class="text-center">
+                                    <svg class="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    <p class="text-sm font-medium">{{ 'chart_no_data'|trans }}</p>
+                                </div>
+                            </div>
+                            <div id="uptime-chart"></div>
+                        </div>
+                    </div>
+
+                    {# Latency Chart Card #}
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 overflow-hidden">
+                        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                                <span class="w-3 h-3 bg-indigo-500 rounded-full mr-2"></span>
+                                {{ 'latency_chart_title'|trans }}
+                            </h4>
+                        </div>
+                        <div class="p-4 relative">
+                            <div id="latency-chart-no-data" class="hidden h-[300px] flex items-center justify-center text-gray-500 dark:text-gray-400">
+                                <div class="text-center">
+                                    <svg class="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <p class="text-sm font-medium">{{ 'chart_no_data'|trans }}</p>
+                                </div>
+                            </div>
+                            <div id="latency-chart"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>

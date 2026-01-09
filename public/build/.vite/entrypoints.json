@@ -3,21 +3,30 @@
   "entryPoints": {
     "app": {
       "css": [
-        "/build/assets/css-x9IdXkyz.css"
+        "/build/assets/css-BFkzgCUa.css"
       ],
       "dynamic": [],
       "js": [
-        "/build/assets/app-DZMCs6zu.js"
+        "/build/assets/app-DGtuuj3e.js"
       ],
       "legacy": false,
       "preload": []
     },
     "css": {
       "css": [
-        "/build/assets/css-x9IdXkyz.css"
+        "/build/assets/css-BFkzgCUa.css"
       ],
       "dynamic": [],
       "js": [],
+      "legacy": false,
+      "preload": []
+    },
+    "charts": {
+      "css": [],
+      "dynamic": [],
+      "js": [
+        "/build/assets/charts-DXfdpgLS.js"
+      ],
       "legacy": false,
       "preload": []
     }

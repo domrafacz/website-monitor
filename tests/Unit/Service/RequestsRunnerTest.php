@@ -74,7 +74,7 @@ class RequestsRunnerTest extends TestCase
 
     public function testRequestTimeout(): void
     {
-        $mockResponse = new MockResponse(['',''], ['debug' => 'dummy']);
+        $mockResponse = new MockResponse(['', ''], ['debug' => 'dummy']);
         $errorMessage = 'request_runner_timeout';
 
         $requestRunner = $this->createRequestRunner(
@@ -140,5 +140,56 @@ class RequestsRunnerTest extends TestCase
         ]);
 
         $this->assertCount(3, $requestRunner->getResponseData());
+    }
+
+    public function testSslCertificateErrorRetryWithoutVerification(): void
+    {
+        // First response fails with SSL error, second response (retry) succeeds
+        $sslErrorResponse = new MockResponse('...', [
+            'error' => 'SSL certificate problem: certificate has expired',
+            'debug' => 'dummy'
+        ]);
+        $retrySuccessResponse = new MockResponse('OK', ['http_code' => 200]);
+
+        $requestRunner = $this->createRequestRunner(
+            responseFactory: [$sslErrorResponse, $retrySuccessResponse],
+            allowPrivateNetworks: true,
+        );
+
+        $website = $this->createWebsite(10, 'https://google.com', 'GET');
+
+        $requestRunner->run([$website]);
+
+        $responseData = $requestRunner->getResponseData()[$website->getId()];
+
+        // Should NOT have errors (request succeeded after retry)
+        $this->assertEmpty($responseData->errors);
+        // Should be marked as certInvalid
+        $this->assertTrue($responseData->certInvalid);
+        // Status should be OK (not an error/downtime)
+        $this->assertEquals(1, $responseData->status);
+    }
+
+    public function testNonSslTransportExceptionReportsError(): void
+    {
+        // Test that non-SSL transport exceptions still report errors
+        $mockResponse = new MockResponse('...', [
+            'error' => 'Connection refused',
+            'debug' => 'dummy'
+        ]);
+        $errorMessage = 'request_runner_stream_transport_exception';
+
+        $requestRunner = $this->createRequestRunner(
+            responseFactory: [$mockResponse],
+            allowPrivateNetworks: true,
+        );
+
+        $website = $this->createWebsite(10, 'https://google.com', 'GET');
+
+        $requestRunner->run([$website]);
+
+        $this->assertEquals($errorMessage, $requestRunner->getResponseData()[$website->getId()]->errors[0]);
+        // certInvalid should NOT be set
+        $this->assertFalse($requestRunner->getResponseData()[$website->getId()]->certInvalid);
     }
 }

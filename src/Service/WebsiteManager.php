@@ -142,6 +142,9 @@ class WebsiteManager
         $dto->website?->setLastCheck($startTime);
         $dto->website?->setLastStatus($dto->status);
 
+        // Update certificate invalid status
+        $dto->website?->setCertInvalid($dto->certInvalid);
+
         if ($dto->website && $dto->status === Website::STATUS_OK) {
             $dto->website = $this->updateCertExpireTime($dto->website, $dto->certExpireTime);
 
@@ -182,7 +185,7 @@ class WebsiteManager
         $readyNotification = CertExpirationNotification::getReadyToSend($website->getCertExpiryTime());
 
         // check if notification has been already send
-        if ($website->getCertExpiryTime() && $readyNotification && !in_array((string)$readyNotification->value, $website->getCertExpirationNotifications(), true)) {
+        if ($website->getCertExpiryTime() && $readyNotification && !in_array((string) $readyNotification->value, $website->getCertExpirationNotifications(), true)) {
             $message = sprintf(
                 $this->translator->trans('request_runner_cert_expires', [], 'messages', $website->getOwner()?->getLanguage()),
                 $website->getUrl(),

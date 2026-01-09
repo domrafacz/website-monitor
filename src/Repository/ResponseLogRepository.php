@@ -75,9 +75,89 @@ class ResponseLogRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * Get aggregated chart data with time-bucketed averages
+     * 
+     * @return array<int, array{bucket_time: \DateTimeImmutable, avg_response_time: int, uptime_percent: float}>
+     */
+    public function getAggregatedChartData(
+        Website $website,
+        \DateTimeImmutable $startTime,
+        \DateTimeImmutable $endTime,
+        int $intervalSeconds
+    ): array {
+        $conn = $this->getEntityManager()->getConnection();
+        $platform = $conn->getDatabasePlatform()->getName();
+
+        // Use platform-specific SQL for time bucketing
+        if ($platform === 'postgresql') {
+            $sql = "
+                SELECT 
+                    to_timestamp(FLOOR(EXTRACT(EPOCH FROM r.time) / :interval) * :interval) AS bucket_time,
+                    AVG(r.response_time) AS avg_response_time,
+                    (SUM(CASE WHEN r.status = 1 THEN 1 ELSE 0 END)::float / COUNT(*)) * 100 AS uptime_percent
+                FROM response_log r
+                WHERE r.website_id = :websiteId
+                AND r.time >= :startTime
+                AND r.time <= :endTime
+                GROUP BY FLOOR(EXTRACT(EPOCH FROM r.time) / :interval)
+                ORDER BY bucket_time ASC
+            ";
+        } elseif ($platform === 'mysql') {
+            $sql = "
+                SELECT 
+                    FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(r.time) / :interval) * :interval) AS bucket_time,
+                    AVG(r.response_time) AS avg_response_time,
+                    (SUM(CASE WHEN r.status = 1 THEN 1 ELSE 0 END) / COUNT(*)) * 100 AS uptime_percent
+                FROM response_log r
+                WHERE r.website_id = :websiteId
+                AND r.time >= :startTime
+                AND r.time <= :endTime
+                GROUP BY FLOOR(UNIX_TIMESTAMP(r.time) / :interval)
+                ORDER BY bucket_time ASC
+            ";
+        } else {
+            // SQLite fallback
+            $sql = "
+                SELECT 
+                    datetime((strftime('%s', r.time) / :interval) * :interval, 'unixepoch') AS bucket_time,
+                    AVG(r.response_time) AS avg_response_time,
+                    (CAST(SUM(CASE WHEN r.status = 1 THEN 1 ELSE 0 END) AS REAL) / COUNT(*)) * 100 AS uptime_percent
+                FROM response_log r
+                WHERE r.website_id = :websiteId
+                AND r.time >= :startTime
+                AND r.time <= :endTime
+                GROUP BY (strftime('%s', r.time) / :interval)
+                ORDER BY bucket_time ASC
+            ";
+        }
+
+        $result = $conn->executeQuery($sql, [
+            'websiteId' => $website->getId(),
+            'startTime' => $startTime->format('Y-m-d H:i:s'),
+            'endTime' => $endTime->format('Y-m-d H:i:s'),
+            'interval' => $intervalSeconds,
+        ]);
+
+        $data = [];
+        foreach ($result->fetchAllAssociative() as $row) {
+            $bucketTime = is_string($row['bucket_time']) ? $row['bucket_time'] : '';
+            $avgResponseTime = is_numeric($row['avg_response_time'] ?? null) ? intval($row['avg_response_time']) : 0;
+            $uptimePercent = is_numeric($row['uptime_percent'] ?? null) ? floatval($row['uptime_percent']) : 100.0;
+
+            $data[] = [
+                'bucket_time' => new \DateTimeImmutable($bucketTime),
+                'avg_response_time' => $avgResponseTime,
+                'uptime_percent' => $uptimePercent,
+            ];
+        }
+
+        return $data;
+    }
+
     public function deleteOlderThan(Website $website, \DateTimeImmutable $endTime): void
     {
-        $query = $this->getEntityManager()->createQuery(
+        $this->getEntityManager()->createQuery(
             'DELETE FROM App\Entity\ResponseLog r
             WHERE r.website = :website
             AND r.time <= :endTime'
@@ -86,29 +166,4 @@ class ResponseLogRepository extends ServiceEntityRepository
             ->setParameter('endTime', $endTime)
             ->execute();
     }
-
-//    /**
-//     * @return ResponseLog[] Returns an array of ResponseLog objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('r.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?ResponseLog
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

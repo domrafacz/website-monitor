@@ -1,21 +1,27 @@
 {
   "assets/app.css": {
-    "file": "assets/css-x9IdXkyz.css",
+    "file": "assets/css-BFkzgCUa.css",
     "src": "assets/app.css",
     "isEntry": true
   },
   "assets/app.ts": {
-    "file": "assets/app-DZMCs6zu.js",
+    "file": "assets/app-DGtuuj3e.js",
     "name": "app",
     "src": "assets/app.ts",
     "isEntry": true,
     "css": [
-      "assets/css-x9IdXkyz.css"
+      "assets/css-BFkzgCUa.css"
     ],
     "assets": [
       "assets/Montserrat-Regular-D3UCWjz4.ttf",
       "assets/Montserrat-Medium-DW6Dzcuv.ttf"
     ]
+  },
+  "assets/charts.ts": {
+    "file": "assets/charts-DXfdpgLS.js",
+    "name": "charts",
+    "src": "assets/charts.ts",
+    "isEntry": true
   },
   "assets/fonts/Montserrat-Medium.ttf": {
     "file": "assets/Montserrat-Medium-DW6Dzcuv.ttf",

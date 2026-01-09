@@ -49,6 +49,9 @@ class Website
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $certExpiryTime = null;
 
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private bool $certInvalid = false;
+
     #[ORM\Column]
     private int $frequency;
 
@@ -190,6 +193,18 @@ class Website
     public function setCertExpiryTime(?\DateTimeInterface $CertExpiryTime): self
     {
         $this->certExpiryTime = $CertExpiryTime;
+
+        return $this;
+    }
+
+    public function isCertInvalid(): bool
+    {
+        return $this->certInvalid;
+    }
+
+    public function setCertInvalid(bool $certInvalid): self
+    {
+        $this->certInvalid = $certInvalid;
 
         return $this;
     }
@@ -422,7 +437,7 @@ class Website
 
     public function addCertExpirationNotification(CertExpirationNotification $enum): self
     {
-        $this->setCertExpirationNotifications(array_merge($this->getCertExpirationNotifications(), [(string)$enum->value]));
+        $this->setCertExpirationNotifications(array_merge($this->getCertExpirationNotifications(), [(string) $enum->value]));
 
         return $this;
     }
