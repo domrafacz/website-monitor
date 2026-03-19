@@ -3,18 +3,18 @@
   "entryPoints": {
     "app": {
       "css": [
-        "/build/assets/css-BFkzgCUa.css"
+        "/build/assets/css-DO3nZECf.css"
       ],
       "dynamic": [],
       "js": [
-        "/build/assets/app-DGtuuj3e.js"
+        "/build/assets/app-DCCUWwUj.js"
       ],
       "legacy": false,
       "preload": []
     },
     "css": {
       "css": [
-        "/build/assets/css-BFkzgCUa.css"
+        "/build/assets/css-DO3nZECf.css"
       ],
       "dynamic": [],
       "js": [],
@@ -25,7 +25,7 @@
       "css": [],
       "dynamic": [],
       "js": [
-        "/build/assets/charts-DXfdpgLS.js"
+        "/build/assets/charts-fDRpDuf-.js"
       ],
       "legacy": false,
       "preload": []
@@ -34,10 +34,10 @@
   "legacy": false,
   "metadatas": {},
   "version": [
-    "8.2.0",
+    "8.2.3",
     8,
     2,
-    0
+    3
   ],
   "viteServer": null
 }

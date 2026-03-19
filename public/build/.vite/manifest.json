@@ -1,16 +1,16 @@
 {
   "assets/app.css": {
-    "file": "assets/css-BFkzgCUa.css",
+    "file": "assets/css-DO3nZECf.css",
     "src": "assets/app.css",
     "isEntry": true
   },
   "assets/app.ts": {
-    "file": "assets/app-DGtuuj3e.js",
+    "file": "assets/app-DCCUWwUj.js",
     "name": "app",
     "src": "assets/app.ts",
     "isEntry": true,
     "css": [
-      "assets/css-BFkzgCUa.css"
+      "assets/css-DO3nZECf.css"
     ],
     "assets": [
       "assets/Montserrat-Regular-D3UCWjz4.ttf",
@@ -18,7 +18,7 @@
     ]
   },
   "assets/charts.ts": {
-    "file": "assets/charts-DXfdpgLS.js",
+    "file": "assets/charts-fDRpDuf-.js",
     "name": "charts",
     "src": "assets/charts.ts",
     "isEntry": true
